@@ -15,7 +15,7 @@ import CarCard from "../components/CarCard";
 const FILTERS = ["hamısı", "boş", "icarədə", "servisdə"];
 
 export default function Cars() {
-  const { setCompanyName } = useOutletContext();
+  const { setCompanyName, setCompanyLogo } = useOutletContext();
   const companyId = getCompanyId();
   const [cars, setCars] = useState(null);
   const [rentals, setRentals] = useState([]);
@@ -28,16 +28,17 @@ export default function Cars() {
     const unsubCars = listenCars(companyId, setCars);
     const unsubRentals = listenRentals(companyId, setRentals);
     const unsubRequests = listenRequests(companyId, setRequests);
-    const unsubProfile = listenCompanyProfile(companyId, (p) =>
-      setCompanyName(p?.name)
-    );
+    const unsubProfile = listenCompanyProfile(companyId, (p) => {
+      setCompanyName(p?.name);
+      setCompanyLogo(p?.logo || null);
+    });
     return () => {
       unsubCars();
       unsubRentals();
       unsubRequests();
       unsubProfile();
     };
-  }, [companyId, setCompanyName]);
+  }, [companyId, setCompanyName, setCompanyLogo]);
 
   function copyCatalogLink() {
     const url = `${window.location.origin}/kataloq/${companyId}`;

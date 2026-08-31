@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShieldCheck, Delete, ArrowLeft } from "lucide-react";
+import { Delete, ArrowLeft } from "lucide-react";
 import { listenPlatformAdminPin } from "../lib/data";
 import { setPlatformAuthed, isPlatformAuthed, MASTER_PIN } from "../lib/session";
 
@@ -54,9 +54,7 @@ export default function PlatformLogin() {
         Geri
       </button>
 
-      <div className="h-14 w-14 rounded-2xl bg-white/10 flex items-center justify-center mb-5">
-        <ShieldCheck size={26} className="text-white" strokeWidth={2.2} />
-      </div>
+      <img src="/logo-icon.png" alt="" className="h-14 w-14 rounded-2xl bg-white/10 p-2.5 mb-5" />
       <h1 className="text-lg font-semibold text-white">Platform Admin</h1>
       <p className="text-[13px] text-slate-400 mt-1 mb-8">PIN kodu daxil edin</p>
 

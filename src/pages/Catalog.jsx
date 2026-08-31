@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Car, CheckCircle2, Phone } from "lucide-react";
+import { CheckCircle2, Phone, Images } from "lucide-react";
 import { getPublicCompany, listenPublicCars, submitCarRequest } from "../lib/data";
+import Lightbox from "../components/Lightbox";
 import Footer from "../components/Footer";
 
 export default function Catalog() {
@@ -34,9 +35,19 @@ export default function Catalog() {
   return (
     <div className="min-h-screen bg-paper flex flex-col">
       <header className="bg-ink px-6 py-8 text-center">
-        <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center mx-auto mb-3">
-          <Car size={22} className="text-white" strokeWidth={2.2} />
-        </div>
+        {company.logo ? (
+          <img
+            src={company.logo}
+            alt={company.name}
+            className="h-16 w-16 rounded-2xl object-cover mx-auto mb-3 ring-1 ring-white/10"
+          />
+        ) : (
+          <img
+            src="/logo-icon.png"
+            alt=""
+            className="h-14 w-14 rounded-2xl bg-white/10 p-2 mx-auto mb-3"
+          />
+        )}
         <h1 className="text-white font-semibold text-[18px]">{company.name}</h1>
         <p className="text-slate-400 text-[13px] mt-1">Mövcud maşınlar</p>
       </header>
@@ -66,6 +77,8 @@ function CarListing({ companyId, car }) {
   const [phone, setPhone] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const photos = car.photos || [];
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -84,53 +97,74 @@ function CarListing({ companyId, car }) {
   }
 
   return (
-    <div className="rounded-xl2 bg-white ring-1 ring-slate-100 shadow-soft p-4">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="font-semibold text-ink text-[15px]">{car.name}</p>
-          <p className="text-[12.5px] text-slate-500 mt-0.5">{car.plate}</p>
+    <div className="rounded-xl2 bg-white ring-1 ring-slate-100 shadow-soft overflow-hidden">
+      {photos.length > 0 && (
+        <button
+          onClick={() => setLightboxOpen(true)}
+          className="relative w-full h-40 block"
+        >
+          <img src={photos[0]} alt={car.name} className="w-full h-full object-cover" />
+          {photos.length > 1 && (
+            <span className="absolute bottom-2 right-2 h-6 px-2 rounded-full bg-black/60 text-white text-[11px] font-medium flex items-center gap-1">
+              <Images size={12} />
+              {photos.length}
+            </span>
+          )}
+        </button>
+      )}
+
+      <div className="p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="font-semibold text-ink text-[15px]">{car.name}</p>
+            <p className="text-[12.5px] text-slate-500 mt-0.5">{car.plate}</p>
+          </div>
+          <p className="font-semibold text-ink text-[16px] shrink-0">
+            {car.dailyPrice} ₼<span className="text-[12px] text-slate-400 font-normal">/gün</span>
+          </p>
         </div>
-        <p className="font-semibold text-ink text-[16px] shrink-0">
-          {car.dailyPrice} ₼<span className="text-[12px] text-slate-400 font-normal">/gün</span>
-        </p>
+
+        {sent ? (
+          <p className="flex items-center gap-1.5 text-[12.5px] text-emerald-600 font-medium mt-3">
+            <CheckCircle2 size={15} />
+            Sorğunuz göndərildi, tezliklə əlaqə saxlanılacaq
+          </p>
+        ) : open ? (
+          <form onSubmit={handleSubmit} className="mt-3 pt-3 border-t border-slate-50 space-y-2.5">
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Adınız"
+              className="w-full h-10 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
+            />
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Telefon nömrəniz"
+              className="w-full h-10 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
+            />
+            <button
+              type="submit"
+              disabled={sending}
+              className="w-full h-10 rounded-lg bg-ink text-white text-[13px] font-medium disabled:opacity-40"
+            >
+              {sending ? "Göndərilir..." : "Sorğunu göndər"}
+            </button>
+          </form>
+        ) : (
+          <button
+            onClick={() => setOpen(true)}
+            className="w-full h-10 rounded-lg bg-ink text-white text-[13px] font-medium mt-3 flex items-center justify-center gap-1.5"
+          >
+            <Phone size={14} />
+            Bu maşını istəyirəm
+          </button>
+        )}
       </div>
 
-      {sent ? (
-        <p className="flex items-center gap-1.5 text-[12.5px] text-emerald-600 font-medium mt-3">
-          <CheckCircle2 size={15} />
-          Sorğunuz göndərildi, tezliklə əlaqə saxlanılacaq
-        </p>
-      ) : open ? (
-        <form onSubmit={handleSubmit} className="mt-3 pt-3 border-t border-slate-50 space-y-2.5">
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Adınız"
-            className="w-full h-10 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
-          />
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="Telefon nömrəniz"
-            className="w-full h-10 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
-          />
-          <button
-            type="submit"
-            disabled={sending}
-            className="w-full h-10 rounded-lg bg-ink text-white text-[13px] font-medium disabled:opacity-40"
-          >
-            {sending ? "Göndərilir..." : "Sorğunu göndər"}
-          </button>
-        </form>
-      ) : (
-        <button
-          onClick={() => setOpen(true)}
-          className="w-full h-10 rounded-lg bg-ink text-white text-[13px] font-medium mt-3 flex items-center justify-center gap-1.5"
-        >
-          <Phone size={14} />
-          Bu maşını istəyirəm
-        </button>
+      {lightboxOpen && (
+        <Lightbox photos={photos} onClose={() => setLightboxOpen(false)} />
       )}
     </div>
   );

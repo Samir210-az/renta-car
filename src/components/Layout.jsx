@@ -14,6 +14,7 @@ const NAV_ITEMS = [
 export default function Layout() {
   const navigate = useNavigate();
   const [companyName, setCompanyName] = useState("Renta-Car");
+  const [companyLogo, setCompanyLogo] = useState(null);
 
   function handleLogout() {
     logoutCompany();
@@ -24,18 +25,24 @@ export default function Layout() {
     <div className="min-h-screen bg-paper flex flex-col">
       <header className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-slate-100">
         <div className="max-w-lg mx-auto px-5 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="h-8 w-8 rounded-xl bg-ink flex items-center justify-center">
-              <Car size={17} className="text-white" strokeWidth={2.2} />
-            </span>
-            <span className="font-semibold text-ink text-[15px]">
+          <div className="flex items-center gap-2 min-w-0">
+            {companyLogo ? (
+              <img
+                src={companyLogo}
+                alt={companyName}
+                className="h-8 w-8 rounded-xl object-cover ring-1 ring-slate-100"
+              />
+            ) : (
+              <img src="/logo-icon.png" alt="" className="h-8 w-8 rounded-xl bg-ink p-1" />
+            )}
+            <span className="font-semibold text-ink text-[15px] truncate">
               {companyName}
             </span>
           </div>
           <button
             onClick={handleLogout}
             aria-label="Çıxış"
-            className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors"
+            className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors shrink-0"
           >
             <LogOut size={16} />
           </button>
@@ -43,7 +50,7 @@ export default function Layout() {
       </header>
 
       <main className="flex-1 max-w-lg w-full mx-auto px-5 py-5 pb-24">
-        <Outlet context={{ setCompanyName }} />
+        <Outlet context={{ setCompanyName, setCompanyLogo }} />
       </main>
 
       <nav className="fixed bottom-0 inset-x-0 z-20 bg-white border-t border-slate-100">

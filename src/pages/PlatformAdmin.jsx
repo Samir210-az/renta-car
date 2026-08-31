@@ -82,13 +82,16 @@ export default function PlatformAdmin() {
             Çıxış
           </button>
         </div>
-        <div className="max-w-2xl mx-auto px-5 pb-4">
-          <h1 className="text-white font-semibold text-[17px]">
-            Platform Admin
-          </h1>
-          <p className="text-[12.5px] text-slate-400 mt-0.5">
-            Bütün rent-a-car şirkətləri
-          </p>
+        <div className="max-w-2xl mx-auto px-5 pb-4 flex items-center gap-2.5">
+          <img src="/logo-icon.png" alt="" className="h-8 w-8 rounded-lg bg-white/10 p-1.5" />
+          <div>
+            <h1 className="text-white font-semibold text-[17px]">
+              Platform Admin
+            </h1>
+            <p className="text-[12.5px] text-slate-400 mt-0.5">
+              Bütün rent-a-car şirkətləri
+            </p>
+          </div>
         </div>
       </header>
 

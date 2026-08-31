@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Car, Delete } from "lucide-react";
+import { Delete } from "lucide-react";
 import { loginCompany } from "../lib/data";
 import { setCompanyId, isCompanyAuthed } from "../lib/session";
 import Footer from "../components/Footer";
@@ -86,11 +86,10 @@ export default function Login() {
         <button
           onClick={handleLogoTap}
           aria-label="logo"
-          className="h-14 w-14 rounded-2xl bg-ink flex items-center justify-center shadow-card mb-5 touch-manipulation active:scale-95 transition-transform"
+          className="mb-3 touch-manipulation active:scale-95 transition-transform"
         >
-          <Car size={26} className="text-white" strokeWidth={2.2} />
+          <img src="/logo-wide-light.png" alt="AutoCar" className="w-64" />
         </button>
-        <h1 className="text-lg font-semibold text-ink">Renta-Car</h1>
         <p className="text-[13px] text-slate-400 mt-1 mb-6">
           Telefon və PIN kodu ilə daxil olun
         </p>

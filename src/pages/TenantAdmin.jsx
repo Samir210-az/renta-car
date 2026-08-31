@@ -70,7 +70,16 @@ export default function TenantAdmin() {
             Çıxış
           </button>
         </div>
-        <div className="max-w-2xl mx-auto px-5 pb-3">
+        <div className="max-w-2xl mx-auto px-5 pb-3 flex items-center gap-2.5">
+          {profile?.logo ? (
+            <img
+              src={profile.logo}
+              alt=""
+              className="h-8 w-8 rounded-lg object-cover ring-1 ring-white/10"
+            />
+          ) : (
+            <img src="/logo-icon.png" alt="" className="h-8 w-8 rounded-lg bg-white/10 p-1.5" />
+          )}
           <h1 className="text-white font-semibold text-[17px]">
             {profile?.name || "Admin Panel"}
           </h1>

@@ -55,7 +55,7 @@ export async function findCompanyByPhone(phone) {
   return null;
 }
 
-export async function registerCompany({ name, phone, pin }) {
+export async function registerCompany({ name, phone, pin, logo }) {
   const existing = await findCompanyByPhone(phone);
   if (existing) {
     throw new Error("Bu nömrə ilə artıq qeydiyyat var");
@@ -66,6 +66,7 @@ export async function registerCompany({ name, phone, pin }) {
     phone: normalizePhone(phone),
     pin,
     tenantAdminPin: pin,
+    logo: logo || null,
     status: "pending",
     plan: null,
     activatedAt: null,

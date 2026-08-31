@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ImagePlus, X } from "lucide-react";
 import { registerCompany } from "../lib/data";
+import { compressImage } from "../lib/image";
 import Footer from "../components/Footer";
 
 export default function Register() {
@@ -9,6 +10,8 @@ export default function Register() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
+  const [logo, setLogo] = useState(null);
+  const [logoBusy, setLogoBusy] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
@@ -16,13 +19,25 @@ export default function Register() {
   const isValid =
     name.trim().length > 1 && phone.trim().length >= 7 && pin.length === 4;
 
+  async function handleLogoSelect(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoBusy(true);
+    try {
+      const dataUrl = await compressImage(file, { maxWidth: 320, quality: 0.7 });
+      setLogo(dataUrl);
+    } finally {
+      setLogoBusy(false);
+    }
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (!isValid || saving) return;
     setSaving(true);
     setError("");
     try {
-      await registerCompany({ name, phone, pin });
+      await registerCompany({ name, phone, pin, logo });
       setDone(true);
     } catch (err) {
       setError(err.message || "Xəta baş verdi");
@@ -66,12 +81,48 @@ export default function Register() {
           Geri
         </button>
 
-        <h1 className="text-lg font-semibold text-ink mb-1">Qeydiyyat</h1>
+        <h1 className="text-lg font-semibold text-ink mb-1 flex items-center gap-2">
+          <img src="/logo-icon.png" alt="" className="h-6 w-6" />
+          Qeydiyyat
+        </h1>
         <p className="text-[13px] text-slate-400 mb-6">
           Şirkətinizi qeydə alın, təsdiqdən sonra daxil ola bilərsiniz
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <Field label="Şirkət loqosu (istəyə görə)">
+            {logo ? (
+              <div className="flex items-center gap-3">
+                <img
+                  src={logo}
+                  alt=""
+                  className="h-14 w-14 rounded-xl object-cover ring-1 ring-slate-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => setLogo(null)}
+                  className="h-8 px-3 rounded-lg ring-1 ring-slate-200 text-[12px] text-slate-500 flex items-center gap-1.5"
+                >
+                  <X size={13} />
+                  Sil
+                </button>
+              </div>
+            ) : (
+              <label className="h-20 rounded-xl bg-white ring-1 ring-dashed ring-slate-300 flex flex-col items-center justify-center gap-1 text-slate-400 cursor-pointer">
+                <ImagePlus size={18} />
+                <span className="text-[12px]">
+                  {logoBusy ? "Yüklənir..." : "Loqo seç"}
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleLogoSelect}
+                />
+              </label>
+            )}
+          </Field>
+
           <Field label="Şirkət adı">
             <input
               value={name}

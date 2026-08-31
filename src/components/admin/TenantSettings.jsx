@@ -1,11 +1,27 @@
 import { useState } from "react";
+import { ImagePlus, X } from "lucide-react";
 import { updateCompanyProfile } from "../../lib/data";
+import { compressImage } from "../../lib/image";
 
 export default function TenantSettings({ companyId, profile }) {
   const [name, setName] = useState(profile.name || "");
   const [loginPin, setLoginPin] = useState(profile.pin || "");
   const [adminPin, setAdminPin] = useState(profile.tenantAdminPin || "");
+  const [logo, setLogo] = useState(profile.logo || null);
+  const [logoBusy, setLogoBusy] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  async function handleLogoSelect(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoBusy(true);
+    try {
+      const dataUrl = await compressImage(file, { maxWidth: 320, quality: 0.7 });
+      setLogo(dataUrl);
+    } finally {
+      setLogoBusy(false);
+    }
+  }
 
   async function handleSave(e) {
     e.preventDefault();
@@ -13,6 +29,7 @@ export default function TenantSettings({ companyId, profile }) {
       name: name.trim(),
       pin: loginPin.trim(),
       tenantAdminPin: adminPin.trim(),
+      logo: logo || null,
     });
     setSaved(true);
     setTimeout(() => setSaved(false), 1600);
@@ -23,6 +40,39 @@ export default function TenantSettings({ companyId, profile }) {
       onSubmit={handleSave}
       className="rounded-xl2 bg-white ring-1 ring-slate-100 shadow-soft p-4 space-y-4"
     >
+      <Field label="Şirkət loqosu">
+        {logo ? (
+          <div className="flex items-center gap-3">
+            <img
+              src={logo}
+              alt=""
+              className="h-14 w-14 rounded-xl object-cover ring-1 ring-slate-200"
+            />
+            <button
+              type="button"
+              onClick={() => setLogo(null)}
+              className="h-8 px-3 rounded-lg ring-1 ring-slate-200 text-[12px] text-slate-500 flex items-center gap-1.5"
+            >
+              <X size={13} />
+              Sil
+            </button>
+          </div>
+        ) : (
+          <label className="h-16 rounded-xl bg-paper ring-1 ring-dashed ring-slate-300 flex items-center justify-center gap-2 text-slate-400 cursor-pointer">
+            <ImagePlus size={16} />
+            <span className="text-[12.5px]">
+              {logoBusy ? "Yüklənir..." : "Loqo seç"}
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleLogoSelect}
+            />
+          </label>
+        )}
+      </Field>
+
       <Field label="Şirkət adı">
         <input
           value={name}
