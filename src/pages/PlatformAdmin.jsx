@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, LogOut, Building2 } from "lucide-react";
-import { listenCompanies, activateCompany, deactivateCompany } from "../lib/data";
+import { ArrowLeft, LogOut, Building2, Trash2 } from "lucide-react";
+import { listenCompanies, activateCompany, deactivateCompany, deleteCompany } from "../lib/data";
 import { logoutPlatform } from "../lib/session";
 import { PLAN_OPTIONS, planLabel } from "../lib/plans";
 import Footer from "../components/Footer";
@@ -53,6 +53,21 @@ export default function PlatformAdmin() {
     setBusyId(companyId);
     try {
       await deactivateCompany(companyId);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleDelete(companyId, name) {
+    if (
+      !confirm(
+        `"${name}" tamamilə silinsin? Bütün maşınları, icarələri və məlumatları həmişəlik itəcək. Bu geri qaytarıla bilməz.`
+      )
+    )
+      return;
+    setBusyId(companyId);
+    try {
+      await deleteCompany(companyId);
     } finally {
       setBusyId(null);
     }
@@ -120,6 +135,7 @@ export default function PlatformAdmin() {
                           busy={busyId === c.id}
                           onActivate={handleActivate}
                           onDeactivate={handleDeactivate}
+                          onDelete={handleDelete}
                         />
                       ))}
                     </div>
@@ -135,7 +151,7 @@ export default function PlatformAdmin() {
   );
 }
 
-function CompanyCard({ company, status, busy, onActivate, onDeactivate }) {
+function CompanyCard({ company, status, busy, onActivate, onDeactivate, onDelete }) {
   const daysLeft =
     status === "active"
       ? Math.max(0, Math.ceil((company.expiresAt - Date.now()) / 86400000))
@@ -182,6 +198,16 @@ function CompanyCard({ company, status, busy, onActivate, onDeactivate }) {
             className="h-8 px-3 rounded-lg text-[12px] font-medium text-rose-500 hover:bg-rose-500/10 disabled:opacity-40 transition-colors ml-auto"
           >
             Deaktiv et
+          </button>
+        )}
+        {status === "deactivated" && (
+          <button
+            disabled={busy}
+            onClick={() => onDelete(company.id, company.name)}
+            className="h-8 px-3 rounded-lg text-[12px] font-medium text-rose-500 hover:bg-rose-500/10 disabled:opacity-40 transition-colors ml-auto flex items-center gap-1.5"
+          >
+            <Trash2 size={13} />
+            Həmişəlik sil
           </button>
         )}
       </div>

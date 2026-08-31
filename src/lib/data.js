@@ -116,6 +116,16 @@ export async function deactivateCompany(companyId) {
   await update(ref(db, `companyIndex/${companyId}`), { status: "deactivated" });
 }
 
+export async function deleteCompany(companyId) {
+  const snap = await get(ref(db, `companies/${companyId}/profile`));
+  const profile = snap.val();
+  await Promise.all([
+    remove(ref(db, `companies/${companyId}`)),
+    remove(ref(db, `companyIndex/${companyId}`)),
+    profile?.phone ? remove(ref(db, `phoneIndex/${profile.phone}`)) : null,
+  ]);
+}
+
 export async function loginCompany(phone, pin) {
   const companyId = await findCompanyIdByPhone(phone);
   if (!companyId) return { ok: false, reason: "not-found" };
