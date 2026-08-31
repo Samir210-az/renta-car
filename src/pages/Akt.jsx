@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Printer } from "lucide-react";
 import { getRentalDetail } from "../lib/data";
 import DamageDiagram, { DAMAGE_TYPES } from "../components/DamageDiagram";
+import PhoneActions from "../components/PhoneActions";
 
 function fmtDate(ts) {
   if (!ts) return "—";
@@ -67,12 +68,32 @@ export default function Akt() {
 
         <Section title="Şirkət">
           <Row label="Ad" value={company?.name} />
-          <Row label="Telefon" value={`+${company?.phone}`} />
+          <Row
+            label="Telefon"
+            value={
+              <span className="flex items-center gap-1.5">
+                +{company?.phone}
+                <span className="print:hidden">
+                  <PhoneActions phone={company?.phone} />
+                </span>
+              </span>
+            }
+          />
         </Section>
 
         <Section title="Müştəri">
           <Row label="Ad" value={rental.customerName} />
-          <Row label="Telefon" value={rental.customerPhone} />
+          <Row
+            label="Telefon"
+            value={
+              <span className="flex items-center gap-1.5">
+                {rental.customerPhone}
+                <span className="print:hidden">
+                  <PhoneActions phone={rental.customerPhone} />
+                </span>
+              </span>
+            }
+          />
           <Row label="Sürücülük vəsiqəsi №" value={rental.licenseNumber || "—"} />
           <Row
             label="Vəsiqə hüququ bitmə tarixi"

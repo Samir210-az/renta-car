@@ -5,6 +5,7 @@ import { updateCar, deleteCar } from "../../lib/data";
 import { compressImage } from "../../lib/image";
 import CarForm from "../CarForm";
 import StatusBadge from "../StatusBadge";
+import PhoneActions from "../PhoneActions";
 
 const STATUS_OPTIONS = ["boş", "icarədə", "servisdə"];
 const MAX_PHOTOS = 5;
@@ -143,6 +144,7 @@ export default function AdminCars({ companyId, cars }) {
                 placeholder="Sahibə/gün ₼"
                 className="h-9 w-28 rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px] text-stone-50"
               />
+              {car.ownerPhone && <PhoneActions phone={car.ownerPhone} />}
             </div>
           </div>
         ))}

@@ -7,6 +7,7 @@ import { calcOwnerOwed, calcTotalPaid } from "../lib/money";
 import { compressImage } from "../lib/image";
 import StatusBadge from "../components/StatusBadge";
 import Lightbox from "../components/Lightbox";
+import PhoneActions from "../components/PhoneActions";
 
 export default function CarDetail() {
   const { carId } = useParams();
@@ -193,7 +194,19 @@ export default function CarDetail() {
           <Section title="Maşın sahibi">
             <div className="rounded-xl2 bg-surface ring-1 ring-stone-700 p-4 space-y-1.5 text-stone-50">
               <Row label="Ad" value={car.ownerName || "—"} />
-              <Row label="Telefon" value={car.ownerPhone || "—"} />
+              <Row
+                label="Telefon"
+                value={
+                  car.ownerPhone ? (
+                    <span className="flex items-center gap-1.5">
+                      {car.ownerPhone}
+                      <PhoneActions phone={car.ownerPhone} />
+                    </span>
+                  ) : (
+                    "—"
+                  )
+                }
+              />
               <Row
                 label="Sahibə günlük"
                 value={car.ownerDailyRate ? `${car.ownerDailyRate} ₼` : "—"}

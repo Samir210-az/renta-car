@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Check, X, Inbox } from "lucide-react";
 import { resolveRequest } from "../../lib/data";
+import PhoneActions from "../PhoneActions";
 
 export default function AdminRequests({ companyId, requests, carsById }) {
   const navigate = useNavigate();
@@ -51,8 +52,9 @@ export default function AdminRequests({ companyId, requests, carsById }) {
             <p className="font-medium text-stone-50 text-[14px]">
               {car?.name || "Silinmiş maşın"}
             </p>
-            <p className="text-[12.5px] text-stone-500 mt-0.5">
-              {r.customerName} · {r.customerPhone}
+            <p className="text-[12.5px] text-stone-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+              <span>{r.customerName} · {r.customerPhone}</span>
+              <PhoneActions phone={r.customerPhone} />
             </p>
 
             <div className="flex items-center gap-2 mt-3 pt-3 border-t border-stone-700">

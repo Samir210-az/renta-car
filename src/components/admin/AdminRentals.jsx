@@ -4,6 +4,7 @@ import { CheckCircle2, Trash2, FileText, X } from "lucide-react";
 import { closeRental, deleteRental } from "../../lib/data";
 import StatusBadge from "../StatusBadge";
 import DamageDiagram from "../DamageDiagram";
+import PhoneActions from "../PhoneActions";
 
 const FUEL_LEVELS = ["Boş", "1/4", "1/2", "3/4", "Dolu"];
 
@@ -37,8 +38,9 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
                 <p className="font-medium text-stone-50 text-[14px]">
                   {car?.name || "Silinmiş maşın"}
                 </p>
-                <p className="text-[12.5px] text-stone-500 mt-0.5">
-                  {r.customerName} · {r.customerPhone}
+                <p className="text-[12.5px] text-stone-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                  <span>{r.customerName} · {r.customerPhone}</span>
+                  <PhoneActions phone={r.customerPhone} />
                 </p>
                 <p className="text-[12.5px] text-stone-400 mt-0.5">
                   {r.startDate} → {r.endDate}

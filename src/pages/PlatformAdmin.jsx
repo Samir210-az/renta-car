@@ -5,6 +5,7 @@ import { listenCompanies, activateCompany, deactivateCompany, deleteCompany } fr
 import { logoutPlatform } from "../lib/session";
 import { PLAN_OPTIONS, planLabel } from "../lib/plans";
 import Footer from "../components/Footer";
+import PhoneActions from "../components/PhoneActions";
 
 function statusOf(company) {
   if (company.status === "pending") return "pending";
@@ -164,8 +165,9 @@ function CompanyCard({ company, status, busy, onActivate, onDeactivate, onDelete
           <p className="font-medium text-stone-50 text-[14px] truncate">
             {company.name}
           </p>
-          <p className="text-[12.5px] text-stone-500 mt-0.5">
+          <p className="text-[12.5px] text-stone-500 mt-0.5 flex items-center gap-1.5">
             {company.phone}
+            <PhoneActions phone={company.phone} />
           </p>
           {status === "active" && (
             <p className="text-[12px] text-emerald-600 mt-1 font-medium">
