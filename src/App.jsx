@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import {
-  isCompanyAuthed,
-  isTenantAdminAuthed,
-  isPlatformAuthed,
-} from "./lib/session";
+import { isCompanyAuthed, isPlatformAuthed } from "./lib/session";
 import { ensureDefaultPlatform } from "./lib/data";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Cars from "./pages/Cars";
 import NewRental from "./pages/NewRental";
 import Calendar from "./pages/Calendar";
-import TenantAdminLogin from "./pages/TenantAdminLogin";
 import TenantAdmin from "./pages/TenantAdmin";
 import PlatformLogin from "./pages/PlatformLogin";
 import PlatformAdmin from "./pages/PlatformAdmin";
@@ -19,13 +14,6 @@ import Layout from "./components/Layout";
 
 function RequireCompany({ children }) {
   if (!isCompanyAuthed()) return <Navigate to="/login" replace />;
-  return children;
-}
-
-function RequireTenantAdmin({ children }) {
-  if (!isCompanyAuthed()) return <Navigate to="/login" replace />;
-  if (!isTenantAdminAuthed())
-    return <Navigate to="/tenant-admin-login" replace />;
   return children;
 }
 
@@ -64,13 +52,12 @@ export default function App() {
         }
       />
 
-      <Route path="/tenant-admin-login" element={<TenantAdminLogin />} />
       <Route
         path="/tenant-admin"
         element={
-          <RequireTenantAdmin>
+          <RequireCompany>
             <TenantAdmin />
-          </RequireTenantAdmin>
+          </RequireCompany>
         }
       />
 

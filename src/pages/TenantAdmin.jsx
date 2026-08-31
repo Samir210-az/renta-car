@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, LogOut } from "lucide-react";
-import { getCompanyId, logoutTenantAdmin } from "../lib/session";
+import { getCompanyId, logoutCompany } from "../lib/session";
 import { listenCars, listenRentals, listenCompanyProfile } from "../lib/data";
 import Footer from "../components/Footer";
 import AdminCars from "../components/admin/AdminCars";
@@ -41,9 +41,9 @@ export default function TenantAdmin() {
     return map;
   }, [cars]);
 
-  function handleExit() {
-    logoutTenantAdmin();
-    navigate("/");
+  function handleLogout() {
+    logoutCompany();
+    navigate("/login", { replace: true });
   }
 
   return (
@@ -51,14 +51,14 @@ export default function TenantAdmin() {
       <header className="sticky top-0 z-20 bg-ink">
         <div className="max-w-2xl mx-auto px-5 py-4 flex items-center justify-between">
           <button
-            onClick={handleExit}
+            onClick={() => navigate("/")}
             className="flex items-center gap-1.5 text-[13px] text-slate-300 hover:text-white transition-colors"
           >
             <ArrowLeft size={16} />
             Tətbiqə qayıt
           </button>
           <button
-            onClick={handleExit}
+            onClick={handleLogout}
             className="flex items-center gap-1.5 text-[13px] text-slate-300 hover:text-white transition-colors"
           >
             <LogOut size={15} />

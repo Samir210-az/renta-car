@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { to: "/", label: "Maşınlar", icon: Car, end: true },
   { to: "/yeni-icare", label: "Yeni icarə", icon: PlusCircle, end: false },
   { to: "/teqvim", label: "Təqvim", icon: CalendarDays, end: false },
-  { to: "/tenant-admin-login", label: "Admin", icon: ShieldCheck, end: false },
+  { to: "/tenant-admin", label: "Admin", icon: ShieldCheck, end: false },
 ];
 
 export default function Layout() {
