@@ -2,14 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, LogOut } from "lucide-react";
 import { getCompanyId, logoutCompany } from "../lib/session";
-import { listenCars, listenRentals, listenCompanyProfile } from "../lib/data";
+import { listenCars, listenRentals, listenCompanyProfile, listenRequests } from "../lib/data";
 import Footer from "../components/Footer";
 import AdminCars from "../components/admin/AdminCars";
 import AdminRentals from "../components/admin/AdminRentals";
 import AdminReport from "../components/admin/AdminReport";
+import AdminRequests from "../components/admin/AdminRequests";
 import TenantSettings from "../components/admin/TenantSettings";
 
 const TABS = [
+  { id: "requests", label: "Sorğular" },
   { id: "cars", label: "Maşınlar" },
   { id: "rentals", label: "İcarələr" },
   { id: "report", label: "Hesabat" },
@@ -19,18 +21,21 @@ const TABS = [
 export default function TenantAdmin() {
   const navigate = useNavigate();
   const companyId = getCompanyId();
-  const [tab, setTab] = useState("cars");
+  const [tab, setTab] = useState("requests");
   const [cars, setCars] = useState([]);
   const [rentals, setRentals] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     const unsubCars = listenCars(companyId, setCars);
     const unsubRentals = listenRentals(companyId, setRentals);
+    const unsubRequests = listenRequests(companyId, setRequests);
     const unsubProfile = listenCompanyProfile(companyId, setProfile);
     return () => {
       unsubCars();
       unsubRentals();
+      unsubRequests();
       unsubProfile();
     };
   }, [companyId]);
@@ -75,19 +80,31 @@ export default function TenantAdmin() {
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`shrink-0 px-3.5 py-2.5 text-[13px] font-medium border-b-2 transition-colors ${
+              className={`shrink-0 px-3.5 py-2.5 text-[13px] font-medium border-b-2 transition-colors relative ${
                 tab === t.id
                   ? "border-white text-white"
                   : "border-transparent text-slate-400"
               }`}
             >
               {t.label}
+              {t.id === "requests" && requests.length > 0 && (
+                <span className="absolute -top-0.5 -right-1.5 h-4 min-w-4 px-1 rounded-full bg-rose-500 text-white text-[9.5px] font-semibold flex items-center justify-center">
+                  {requests.length}
+                </span>
+              )}
             </button>
           ))}
         </div>
       </header>
 
       <main className="flex-1 max-w-2xl w-full mx-auto px-5 py-5">
+        {tab === "requests" && (
+          <AdminRequests
+            companyId={companyId}
+            requests={requests}
+            carsById={carsById}
+          />
+        )}
         {tab === "cars" && <AdminCars companyId={companyId} cars={cars} />}
         {tab === "rentals" && (
           <AdminRentals

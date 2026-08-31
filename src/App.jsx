@@ -4,6 +4,7 @@ import { isCompanyAuthed, isPlatformAuthed } from "./lib/session";
 import { ensureDefaultPlatform } from "./lib/data";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Catalog from "./pages/Catalog";
 import Cars from "./pages/Cars";
 import NewRental from "./pages/NewRental";
 import Calendar from "./pages/Calendar";
@@ -41,6 +42,7 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/kataloq/:companyId" element={<Catalog />} />
 
       <Route path="/platform-login" element={<PlatformLogin />} />
       <Route

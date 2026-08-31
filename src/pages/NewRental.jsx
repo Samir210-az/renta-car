@@ -30,6 +30,20 @@ export default function NewRental() {
     return () => unsub();
   }, [companyId]);
 
+  useEffect(() => {
+    const raw = sessionStorage.getItem("rc_prefill_request");
+    if (!raw) return;
+    sessionStorage.removeItem("rc_prefill_request");
+    try {
+      const prefill = JSON.parse(raw);
+      setCarId(prefill.carId || "");
+      setCustomerName(prefill.customerName || "");
+      setCustomerPhone(prefill.customerPhone || "");
+    } catch {
+      // sorğu formatı yanlışdırsa sadəcə boş forma göstərilir
+    }
+  }, []);
+
   const availableCars = useMemo(
     () => (cars || []).filter((c) => c.status === "boş"),
     [cars]

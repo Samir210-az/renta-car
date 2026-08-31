@@ -192,3 +192,51 @@ export async function deleteRental(companyId, rental) {
     });
   }
 }
+
+// ---- İctimai kataloq üçün (giriş tələb olunmur) ----
+
+export async function getPublicCompany(companyId) {
+  const snap = await get(ref(db, `companies/${companyId}/profile`));
+  return snap.val();
+}
+
+export function listenPublicCars(companyId, callback) {
+  return onValue(ref(db, `companies/${companyId}/cars`), (snap) => {
+    const val = snap.val() || {};
+    const list = Object.entries(val)
+      .map(([id, car]) => ({ id, ...car }))
+      .filter((c) => c.status === "boş");
+    list.sort((a, b) => a.name.localeCompare(b.name, "az"));
+    callback(list);
+  });
+}
+
+// ---- Sorğular (müştəri kataloqdan seçir, işçi təsdiqləyir) ----
+
+export function listenRequests(companyId, callback) {
+  return onValue(ref(db, `companies/${companyId}/requests`), (snap) => {
+    const val = snap.val() || {};
+    const list = Object.entries(val).map(([id, r]) => ({ id, ...r }));
+    list.sort((a, b) => b.createdAt - a.createdAt);
+    callback(list.filter((r) => r.status === "pending"));
+  });
+}
+
+export async function submitCarRequest(companyId, { carId, customerName, customerPhone }) {
+  const requestsRef = ref(db, `companies/${companyId}/requests`);
+  const newRef = push(requestsRef);
+  await set(newRef, {
+    carId,
+    customerName: customerName.trim(),
+    customerPhone: customerPhone.trim(),
+    status: "pending",
+    createdAt: Date.now(),
+  });
+  return newRef.key;
+}
+
+export async function resolveRequest(companyId, requestId, status) {
+  await update(ref(db, `companies/${companyId}/requests/${requestId}`), {
+    status,
+  });
+}

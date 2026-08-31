@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { useOutletContext } from "react-router-dom";
-import { CarFront, Plus, X } from "lucide-react";
+import { useOutletContext, Link } from "react-router-dom";
+import { CarFront, Plus, X, Share2, Inbox } from "lucide-react";
 import { getCompanyId } from "../lib/session";
 import {
   listenCars,
   listenRentals,
+  listenRequests,
   updateCar,
   addCar,
   listenCompanyProfile,
@@ -18,21 +19,33 @@ export default function Cars() {
   const companyId = getCompanyId();
   const [cars, setCars] = useState(null);
   const [rentals, setRentals] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [filter, setFilter] = useState("hamısı");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const unsubCars = listenCars(companyId, setCars);
     const unsubRentals = listenRentals(companyId, setRentals);
+    const unsubRequests = listenRequests(companyId, setRequests);
     const unsubProfile = listenCompanyProfile(companyId, (p) =>
       setCompanyName(p?.name)
     );
     return () => {
       unsubCars();
       unsubRentals();
+      unsubRequests();
       unsubProfile();
     };
   }, [companyId, setCompanyName]);
+
+  function copyCatalogLink() {
+    const url = `${window.location.origin}/kataloq/${companyId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    });
+  }
 
   const activeRentalByCar = useMemo(() => {
     const map = {};
@@ -67,14 +80,35 @@ export default function Cars() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-lg font-semibold text-ink">Maşınlar</h1>
-        <button
-          onClick={() => setShowAddForm((v) => !v)}
-          className="h-9 w-9 rounded-full bg-ink text-white flex items-center justify-center active:scale-95 transition-transform"
-          aria-label="Maşın əlavə et"
-        >
-          {showAddForm ? <X size={17} /> : <Plus size={18} />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={copyCatalogLink}
+            className="h-9 px-3 rounded-full bg-white ring-1 ring-slate-200 text-slate-600 text-[12.5px] font-medium flex items-center gap-1.5 active:scale-95 transition-transform"
+          >
+            <Share2 size={14} />
+            {copied ? "Kopyalandı!" : "Kataloq linki"}
+          </button>
+          <button
+            onClick={() => setShowAddForm((v) => !v)}
+            className="h-9 w-9 rounded-full bg-ink text-white flex items-center justify-center active:scale-95 transition-transform"
+            aria-label="Maşın əlavə et"
+          >
+            {showAddForm ? <X size={17} /> : <Plus size={18} />}
+          </button>
+        </div>
       </div>
+
+      {requests.length > 0 && (
+        <Link
+          to="/tenant-admin"
+          className="flex items-center gap-2.5 rounded-xl2 bg-amber-50 ring-1 ring-amber-200 px-4 py-3 mb-4"
+        >
+          <Inbox size={16} className="text-amber-600 shrink-0" />
+          <span className="text-[13px] text-amber-800 font-medium">
+            {requests.length} yeni sorğu gözləyir
+          </span>
+        </Link>
+      )}
 
       {showAddForm && (
         <AddCarForm
