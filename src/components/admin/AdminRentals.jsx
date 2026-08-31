@@ -98,7 +98,8 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
 function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
   const [km, setKm] = useState("");
   const [fuel, setFuel] = useState("Dolu");
-  const [notes, setNotes] = useState("");
+  const [exteriorNotes, setExteriorNotes] = useState("");
+  const [interiorNotes, setInteriorNotes] = useState("");
   const [damage, setDamage] = useState([]);
   const [saving, setSaving] = useState(false);
 
@@ -108,7 +109,8 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
       await closeRental(companyId, rental, {
         km: km ? Number(km) : null,
         fuel,
-        notes: notes.trim(),
+        exteriorNotes: exteriorNotes.trim(),
+        interiorNotes: interiorNotes.trim(),
         damageMarkers: damage,
         signedAt: Date.now(),
       });
@@ -145,13 +147,20 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
         </select>
       </div>
       <textarea
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        placeholder="Əlavə qeyd (istəyə görə)"
+        value={exteriorNotes}
+        onChange={(e) => setExteriorNotes(e.target.value)}
+        placeholder="Xarici vəziyyət qeydi (istəyə görə)"
         rows={2}
         className="w-full rounded-lg bg-paper ring-1 ring-slate-200 px-3 py-2 text-[13px] resize-none"
       />
       <DamageDiagram value={damage} onChange={setDamage} />
+      <textarea
+        value={interiorNotes}
+        onChange={(e) => setInteriorNotes(e.target.value)}
+        placeholder="Daxili vəziyyət qeydi (salon, oturacaqlar, ləkə və s.)"
+        rows={2}
+        className="w-full rounded-lg bg-paper ring-1 ring-slate-200 px-3 py-2 text-[13px] resize-none"
+      />
       <div className="flex items-center gap-2">
         <button
           onClick={handleConfirm}

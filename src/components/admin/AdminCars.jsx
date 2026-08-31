@@ -10,6 +10,7 @@ const MAX_PHOTOS = 5;
 export default function AdminCars({ companyId, cars }) {
   const [name, setName] = useState("");
   const [plate, setPlate] = useState("");
+  const [year, setYear] = useState("");
   const [dailyPrice, setDailyPrice] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -21,10 +22,12 @@ export default function AdminCars({ companyId, cars }) {
       await addCar(companyId, {
         name: name.trim(),
         plate: plate.trim().toUpperCase(),
+        year: year ? Number(year) : null,
         dailyPrice: Number(dailyPrice),
       });
       setName("");
       setPlate("");
+      setYear("");
       setDailyPrice("");
     } finally {
       setSaving(false);
@@ -59,6 +62,14 @@ export default function AdminCars({ companyId, cars }) {
         </div>
         <div className="flex gap-3">
           <input
+            value={year}
+            onChange={(e) => setYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
+            type="text"
+            inputMode="numeric"
+            placeholder="İl (məs. 2021)"
+            className="h-11 w-32 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
+          />
+          <input
             value={dailyPrice}
             onChange={(e) => setDailyPrice(e.target.value)}
             type="number"
@@ -90,7 +101,12 @@ export default function AdminCars({ companyId, cars }) {
           >
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="font-medium text-ink text-[14px]">{car.name}</p>
+                <p className="font-medium text-ink text-[14px]">
+                  {car.name}
+                  {car.year ? (
+                    <span className="text-slate-400 font-normal"> · {car.year}</span>
+                  ) : null}
+                </p>
                 <p className="text-[12.5px] text-slate-500">{car.plate}</p>
               </div>
               <button
@@ -104,7 +120,7 @@ export default function AdminCars({ companyId, cars }) {
 
             <CarPhotos companyId={companyId} car={car} />
 
-            <div className="flex items-center gap-2 mt-3">
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
               <select
                 value={car.status}
                 onChange={(e) =>
@@ -118,6 +134,20 @@ export default function AdminCars({ companyId, cars }) {
                   </option>
                 ))}
               </select>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={car.year ?? ""}
+                onChange={(e) =>
+                  updateCar(companyId, car.id, {
+                    year: e.target.value.replace(/\D/g, "").slice(0, 4)
+                      ? Number(e.target.value.replace(/\D/g, "").slice(0, 4))
+                      : null,
+                  })
+                }
+                placeholder="İl"
+                className="h-9 w-16 rounded-lg bg-paper ring-1 ring-slate-200 px-2 text-[12.5px]"
+              />
               <input
                 type="number"
                 min="0"

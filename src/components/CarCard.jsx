@@ -10,7 +10,10 @@ export default function CarCard({ car, activeRental, onCycleStatus }) {
             {car.name}
           </h3>
         </div>
-        <p className="text-[13px] text-slate-500 mt-0.5">{car.plate}</p>
+        <p className="text-[13px] text-slate-500 mt-0.5">
+          {car.plate}
+          {car.year ? ` · ${car.year}` : ""}
+        </p>
 
         {car.status === "icarədə" && activeRental && (
           <p className="text-[12.5px] text-slate-500 mt-2">

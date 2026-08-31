@@ -117,7 +117,10 @@ function CarListing({ companyId, car }) {
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="font-semibold text-ink text-[15px]">{car.name}</p>
-            <p className="text-[12.5px] text-slate-500 mt-0.5">{car.plate}</p>
+            <p className="text-[12.5px] text-slate-500 mt-0.5">
+              {car.plate}
+              {car.year ? ` · ${car.year}` : ""}
+            </p>
           </div>
           <p className="font-semibold text-ink text-[16px] shrink-0">
             {car.dailyPrice} ₼<span className="text-[12px] text-slate-400 font-normal">/gün</span>

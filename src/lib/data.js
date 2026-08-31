@@ -133,6 +133,7 @@ export async function addCar(companyId, car) {
   await set(newRef, {
     name: car.name,
     plate: car.plate,
+    year: car.year ?? null,
     dailyPrice: car.dailyPrice,
     status: "boş",
     createdAt: Date.now(),

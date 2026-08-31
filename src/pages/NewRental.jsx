@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ImagePlus, X } from "lucide-react";
 import { getCompanyId } from "../lib/session";
 import { listenCars, addRental } from "../lib/data";
+import { compressImage } from "../lib/image";
 import DamageDiagram from "../components/DamageDiagram";
 
 const FUEL_LEVELS = ["Boş", "1/4", "1/2", "3/4", "Dolu"];
@@ -23,12 +24,17 @@ export default function NewRental() {
   const [carId, setCarId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
+  const [licenseValidUntil, setLicenseValidUntil] = useState("");
   const [startDate, setStartDate] = useState(todayISO());
   const [endDate, setEndDate] = useState(todayISO());
   const [pickupKm, setPickupKm] = useState("");
   const [pickupFuel, setPickupFuel] = useState("Dolu");
-  const [pickupNotes, setPickupNotes] = useState("");
+  const [pickupExteriorNotes, setPickupExteriorNotes] = useState("");
+  const [pickupInteriorNotes, setPickupInteriorNotes] = useState("");
   const [pickupDamage, setPickupDamage] = useState([]);
+  const [platePhoto, setPlatePhoto] = useState(null);
+  const [platePhotoBusy, setPlatePhotoBusy] = useState(false);
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -69,6 +75,18 @@ export default function NewRental() {
   const isValid =
     carId && customerName.trim() && customerPhone.trim() && startDate && endDate && endDate >= startDate;
 
+  async function handlePlatePhoto(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPlatePhotoBusy(true);
+    try {
+      const dataUrl = await compressImage(file, { maxWidth: 640, quality: 0.6 });
+      setPlatePhoto(dataUrl);
+    } finally {
+      setPlatePhotoBusy(false);
+    }
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (!isValid || saving) return;
@@ -78,6 +96,8 @@ export default function NewRental() {
         carId,
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim(),
+        licenseNumber: licenseNumber.trim(),
+        licenseValidUntil: licenseValidUntil || null,
         startDate,
         endDate,
         dailyPrice: Number(selectedCar.dailyPrice || 0),
@@ -85,8 +105,10 @@ export default function NewRental() {
         pickupCondition: {
           km: pickupKm ? Number(pickupKm) : null,
           fuel: pickupFuel,
-          notes: pickupNotes.trim(),
+          exteriorNotes: pickupExteriorNotes.trim(),
+          interiorNotes: pickupInteriorNotes.trim(),
           damageMarkers: pickupDamage,
+          platePhoto: platePhoto || null,
           signedAt: Date.now(),
         },
       });
@@ -155,6 +177,26 @@ export default function NewRental() {
       </Field>
 
       <div className="grid grid-cols-2 gap-3">
+        <Field label="Sürücülük vəsiqəsi №">
+          <input
+            type="text"
+            value={licenseNumber}
+            onChange={(e) => setLicenseNumber(e.target.value)}
+            placeholder="AZE0000000"
+            className="w-full h-12 rounded-xl bg-white ring-1 ring-slate-200 px-3.5 text-[14px] text-ink placeholder:text-slate-400"
+          />
+        </Field>
+        <Field label="Vəsiqə hüququ bitmə tarixi">
+          <input
+            type="date"
+            value={licenseValidUntil}
+            onChange={(e) => setLicenseValidUntil(e.target.value)}
+            className="w-full h-12 rounded-xl bg-white ring-1 ring-slate-200 px-3 text-[14px] text-ink"
+          />
+        </Field>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
         <Field label="Başlanğıc">
           <input
             type="date"
@@ -212,14 +254,59 @@ export default function NewRental() {
             ))}
           </select>
         </div>
+
         <textarea
-          value={pickupNotes}
-          onChange={(e) => setPickupNotes(e.target.value)}
-          placeholder="Əlavə qeyd (istəyə görə)"
+          value={pickupExteriorNotes}
+          onChange={(e) => setPickupExteriorNotes(e.target.value)}
+          placeholder="Xarici vəziyyət qeydi (istəyə görə)"
           rows={2}
           className="w-full rounded-lg bg-paper ring-1 ring-slate-200 px-3 py-2.5 text-[13.5px] resize-none"
         />
         <DamageDiagram value={pickupDamage} onChange={setPickupDamage} />
+
+        <textarea
+          value={pickupInteriorNotes}
+          onChange={(e) => setPickupInteriorNotes(e.target.value)}
+          placeholder="Daxili vəziyyət qeydi (salon, oturacaqlar, ləkə və s.)"
+          rows={2}
+          className="w-full rounded-lg bg-paper ring-1 ring-slate-200 px-3 py-2.5 text-[13.5px] resize-none"
+        />
+
+        <div>
+          <p className="text-[12.5px] font-medium text-slate-500 mb-1.5">
+            Nömrə şəkli
+          </p>
+          {platePhoto ? (
+            <div className="relative w-28">
+              <img
+                src={platePhoto}
+                alt=""
+                className="w-28 h-20 rounded-lg object-cover ring-1 ring-slate-200"
+              />
+              <button
+                type="button"
+                onClick={() => setPlatePhoto(null)}
+                className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-rose-500 text-white flex items-center justify-center"
+              >
+                <X size={11} />
+              </button>
+            </div>
+          ) : (
+            <label className="w-28 h-20 rounded-lg bg-paper ring-1 ring-dashed ring-slate-300 flex flex-col items-center justify-center gap-0.5 text-slate-400 cursor-pointer">
+              <ImagePlus size={16} />
+              <span className="text-[10px]">
+                {platePhotoBusy ? "..." : "şəkil çək"}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handlePlatePhoto}
+              />
+            </label>
+          )}
+        </div>
       </div>
 
       <button

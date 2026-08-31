@@ -73,10 +73,16 @@ export default function Akt() {
         <Section title="Müştəri">
           <Row label="Ad" value={rental.customerName} />
           <Row label="Telefon" value={rental.customerPhone} />
+          <Row label="Sürücülük vəsiqəsi №" value={rental.licenseNumber || "—"} />
+          <Row
+            label="Vəsiqə hüququ bitmə tarixi"
+            value={rental.licenseValidUntil || "—"}
+          />
         </Section>
 
         <Section title="Maşın">
           <Row label="Marka/Model" value={car?.name} />
+          <Row label="İl" value={car?.year || "—"} />
           <Row label="Dövlət nömrəsi" value={car?.plate} />
           <Row label="Günlük qiymət" value={`${rental.dailyPrice} ₼`} />
         </Section>
@@ -91,10 +97,21 @@ export default function Akt() {
           <Row label="Tarix" value={fmtDate(pickup.signedAt)} />
           <Row label="Km sayğacı" value={pickup.km ?? "—"} />
           <Row label="Yanacaq" value={pickup.fuel || "—"} />
-          <Row label="Qeyd" value={pickup.notes || "Qeyd yoxdur"} />
+          <Row label="Xarici qeyd" value={pickup.exteriorNotes || "Qeyd yoxdur"} />
+          <Row label="Daxili qeyd" value={pickup.interiorNotes || "Qeyd yoxdur"} />
           {pickup.damageMarkers?.length > 0 && (
             <div className="mt-2">
               <DamageDiagram value={pickup.damageMarkers} readOnly />
+            </div>
+          )}
+          {pickup.platePhoto && (
+            <div className="mt-2">
+              <p className="text-slate-500 mb-1.5">Nömrə şəkli</p>
+              <img
+                src={pickup.platePhoto}
+                alt="Nömrə şəkli"
+                className="w-40 rounded-lg ring-1 ring-slate-200"
+              />
             </div>
           )}
         </Section>
@@ -105,7 +122,8 @@ export default function Akt() {
               <Row label="Tarix" value={fmtDate(ret.signedAt)} />
               <Row label="Km sayğacı" value={ret.km ?? "—"} />
               <Row label="Yanacaq" value={ret.fuel || "—"} />
-              <Row label="Qeyd" value={ret.notes || "Qeyd yoxdur"} />
+              <Row label="Xarici qeyd" value={ret.exteriorNotes || "Qeyd yoxdur"} />
+              <Row label="Daxili qeyd" value={ret.interiorNotes || "Qeyd yoxdur"} />
               {ret.damageMarkers?.length > 0 && (
                 <div className="mt-2">
                   <DamageDiagram value={ret.damageMarkers} readOnly />
