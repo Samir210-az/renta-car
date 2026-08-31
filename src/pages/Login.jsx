@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Car, Delete } from "lucide-react";
 import { listenSettings } from "../lib/data";
@@ -12,6 +12,8 @@ export default function Login() {
   const [settings, setSettings] = useState(null);
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
+  const tapCount = useRef(0);
+  const tapTimer = useRef(null);
 
   useEffect(() => {
     if (isStaffAuthed()) navigate("/", { replace: true });
@@ -45,12 +47,31 @@ export default function Login() {
     setPin((p) => p.slice(0, -1));
   }
 
+  function handleLogoTap() {
+    tapCount.current += 1;
+    clearTimeout(tapTimer.current);
+
+    if (tapCount.current >= 5) {
+      tapCount.current = 0;
+      navigate("/admin-login");
+      return;
+    }
+
+    tapTimer.current = setTimeout(() => {
+      tapCount.current = 0;
+    }, 2500);
+  }
+
   return (
     <div className="min-h-screen bg-paper flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center px-6">
-        <div className="h-14 w-14 rounded-2xl bg-ink flex items-center justify-center shadow-card mb-5">
+        <button
+          onClick={handleLogoTap}
+          aria-label="logo"
+          className="h-14 w-14 rounded-2xl bg-ink flex items-center justify-center shadow-card mb-5 touch-manipulation active:scale-95 transition-transform"
+        >
           <Car size={26} className="text-white" strokeWidth={2.2} />
-        </div>
+        </button>
         <h1 className="text-lg font-semibold text-ink">
           {settings?.companyName || "Renta-Car"}
         </h1>
