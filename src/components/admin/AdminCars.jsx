@@ -11,6 +11,12 @@ const MAX_PHOTOS = 5;
 
 export default function AdminCars({ companyId, cars }) {
   async function handleDelete(car) {
+    if (car.status === "icarədə") {
+      alert(
+        "Bu maşın hazırda aktiv icarədədir. Silmək üçün əvvəlcə İcarələr bölməsindən icarəni bağlayın."
+      );
+      return;
+    }
     if (!confirm(`"${car.name}" silinsin? Bu geri qaytarıla bilməz.`)) return;
     await deleteCar(companyId, car.id);
   }

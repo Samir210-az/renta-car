@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Wallet, FileText, ImagePlus } from "lucide-react";
+import { ArrowLeft, Wallet, FileText, ImagePlus, Trash2 } from "lucide-react";
 import { getCompanyId } from "../lib/session";
-import { getCarDetail, updateCar, addOwnerPayment } from "../lib/data";
+import { getCarDetail, updateCar, addOwnerPayment, deleteCar } from "../lib/data";
 import { calcOwnerOwed, calcTotalPaid } from "../lib/money";
 import { compressImage } from "../lib/image";
 import StatusBadge from "../components/StatusBadge";
@@ -32,6 +32,19 @@ export default function CarDetail() {
   async function handleStatusChange(status) {
     await updateCar(companyId, carId, { status });
     reload();
+  }
+
+  async function handleDelete() {
+    if (data.car.status === "icarədə") {
+      alert(
+        "Bu maşın hazırda aktiv icarədədir. Silmək üçün əvvəlcə İcarələr bölməsindən icarəni bağlayın."
+      );
+      return;
+    }
+    if (!confirm(`"${data.car.name}" silinsin? Bu geri qaytarıla bilməz.`))
+      return;
+    await deleteCar(companyId, carId);
+    navigate("/", { replace: true });
   }
 
   async function handlePhotoAdd(e) {
@@ -106,8 +119,15 @@ export default function CarDetail() {
             </h1>
             <p className="text-stone-400 text-[12px]">{car.plate}</p>
           </div>
-          <div className="ml-auto shrink-0">
+          <div className="ml-auto shrink-0 flex items-center gap-2">
             <StatusBadge status={car.status} />
+            <button
+              onClick={handleDelete}
+              aria-label="Maşını sil"
+              className="h-8 w-8 rounded-lg flex items-center justify-center text-stone-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+            >
+              <Trash2 size={16} />
+            </button>
           </div>
         </div>
       </header>
