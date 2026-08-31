@@ -220,13 +220,13 @@ export default function CarDetail() {
                   value={payAmount}
                   onChange={(e) => setPayAmount(e.target.value)}
                   placeholder="Məbləğ (₼)"
-                  className="h-10 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
+                  className="h-10 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
                 />
                 <input
                   value={payNote}
                   onChange={(e) => setPayNote(e.target.value)}
                   placeholder="Qeyd (istəyə görə)"
-                  className="h-10 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
+                  className="h-10 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
                 />
               </div>
               <button

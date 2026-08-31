@@ -139,13 +139,13 @@ function PaymentDetail({ companyId, car, owed, paid, payments }) {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="Məbləğ (₼)"
-          className="h-10 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
+          className="h-10 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
         />
         <input
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder="Qeyd"
-          className="h-10 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
+          className="h-10 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
         />
         <button
           type="submit"

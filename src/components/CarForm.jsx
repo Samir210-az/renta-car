@@ -85,7 +85,7 @@ export default function CarForm({ companyId, onDone, className = "" }) {
           type="number"
           min="0"
           placeholder="Müştəriyə günlük (₼)"
-          className="h-11 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+          className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
         />
       </div>
 
