@@ -90,7 +90,7 @@ export default function Login() {
         >
           <img src="/logo-wide-light.png" alt="AutoCar" className="w-64" />
         </button>
-        <p className="text-[13px] text-slate-400 mt-1 mb-6">
+        <p className="text-[13px] text-stone-400 mt-1 mb-6">
           Telefon və PIN kodu ilə daxil olun
         </p>
 
@@ -99,7 +99,7 @@ export default function Login() {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="+994 XX XXX XX XX"
-          className="w-full max-w-[280px] h-12 rounded-xl bg-white ring-1 ring-slate-200 px-4 text-center text-[15px] text-ink placeholder:text-slate-400 mb-6"
+          className="w-full max-w-[280px] h-12 rounded-xl bg-white ring-1 ring-stone-200 px-4 text-center text-[15px] text-ink placeholder:text-stone-400 mb-6"
         />
 
         <div
@@ -115,7 +115,7 @@ export default function Login() {
                   ? error
                     ? "bg-rose-500"
                     : "bg-ink"
-                  : "bg-slate-200"
+                  : "bg-stone-200"
               }`}
             />
           ))}
@@ -134,7 +134,7 @@ export default function Login() {
             <button
               key={d}
               onClick={() => press(d)}
-              className="h-16 rounded-2xl bg-white ring-1 ring-slate-100 shadow-soft text-xl font-medium text-ink active:scale-95 transition-transform"
+              className="h-16 rounded-2xl bg-white ring-1 ring-stone-100 shadow-soft text-xl font-medium text-ink active:scale-95 transition-transform"
             >
               {d}
             </button>
@@ -142,13 +142,13 @@ export default function Login() {
           <div />
           <button
             onClick={() => press("0")}
-            className="h-16 rounded-2xl bg-white ring-1 ring-slate-100 shadow-soft text-xl font-medium text-ink active:scale-95 transition-transform"
+            className="h-16 rounded-2xl bg-white ring-1 ring-stone-100 shadow-soft text-xl font-medium text-ink active:scale-95 transition-transform"
           >
             0
           </button>
           <button
             onClick={backspace}
-            className="h-16 rounded-2xl flex items-center justify-center text-slate-400 active:scale-95 transition-transform"
+            className="h-16 rounded-2xl flex items-center justify-center text-stone-400 active:scale-95 transition-transform"
             aria-label="Sil"
           >
             <Delete size={20} />
@@ -157,7 +157,7 @@ export default function Login() {
 
         <Link
           to="/register"
-          className="text-[13px] text-slate-500 mt-8 hover:text-ink transition-colors"
+          className="text-[13px] text-stone-500 mt-8 hover:text-ink transition-colors"
         >
           Hələ hesabınız yoxdur? <span className="font-medium text-ink">Qeydiyyatdan keçin</span>
         </Link>

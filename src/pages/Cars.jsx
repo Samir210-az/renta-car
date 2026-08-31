@@ -71,7 +71,7 @@ export default function Cars() {
     return (
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-[76px] rounded-xl2 bg-slate-100 animate-pulse" />
+          <div key={i} className="h-[76px] rounded-xl2 bg-stone-100 animate-pulse" />
         ))}
       </div>
     );
@@ -84,7 +84,7 @@ export default function Cars() {
         <div className="flex items-center gap-2">
           <button
             onClick={copyCatalogLink}
-            className="h-9 px-3 rounded-full bg-white ring-1 ring-slate-200 text-slate-600 text-[12.5px] font-medium flex items-center gap-1.5 active:scale-95 transition-transform"
+            className="h-9 px-3 rounded-full bg-white ring-1 ring-stone-200 text-stone-600 text-[12.5px] font-medium flex items-center gap-1.5 active:scale-95 transition-transform"
           >
             <Share2 size={14} />
             {copied ? "Kopyalandı!" : "Kataloq linki"}
@@ -126,7 +126,7 @@ export default function Cars() {
             className={`shrink-0 rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition-colors ${
               filter === f
                 ? "bg-ink text-white"
-                : "bg-white text-slate-500 ring-1 ring-slate-100"
+                : "bg-white text-stone-500 ring-1 ring-stone-100"
             }`}
           >
             {f}
@@ -137,7 +137,7 @@ export default function Cars() {
       {cars.length === 0 ? (
         <EmptyState />
       ) : visibleCars.length === 0 ? (
-        <p className="text-center text-[13px] text-slate-400 mt-16">
+        <p className="text-center text-[13px] text-stone-400 mt-16">
           Bu statusda maşın yoxdur
         </p>
       ) : (
@@ -159,11 +159,11 @@ export default function Cars() {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center text-center mt-16">
-      <div className="h-14 w-14 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-        <CarFront size={24} className="text-slate-400" />
+      <div className="h-14 w-14 rounded-2xl bg-stone-100 flex items-center justify-center mb-4">
+        <CarFront size={24} className="text-stone-400" />
       </div>
       <p className="text-[14px] font-medium text-ink">Hələ maşın əlavə olunmayıb</p>
-      <p className="text-[13px] text-slate-400 mt-1 max-w-[240px]">
+      <p className="text-[13px] text-stone-400 mt-1 max-w-[240px]">
         Yuxarıdakı + düyməsi ilə ilk maşınızı əlavə edin
       </p>
     </div>
@@ -195,7 +195,7 @@ function AddCarForm({ companyId, onDone }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-xl2 bg-white ring-1 ring-slate-100 shadow-soft p-4 space-y-3 mb-4"
+      className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft p-4 space-y-3 mb-4"
     >
       <div className="grid grid-cols-2 gap-3">
         <input
@@ -203,13 +203,13 @@ function AddCarForm({ companyId, onDone }) {
           onChange={(e) => setName(e.target.value)}
           placeholder="Marka / Model"
           autoFocus
-          className="h-11 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
+          className="h-11 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
         />
         <input
           value={plate}
           onChange={(e) => setPlate(e.target.value)}
           placeholder="Dövlət nömrəsi"
-          className="h-11 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
+          className="h-11 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
         />
       </div>
       <div className="flex gap-3">
@@ -219,7 +219,7 @@ function AddCarForm({ companyId, onDone }) {
           type="number"
           min="0"
           placeholder="Günlük qiymət (₼)"
-          className="h-11 flex-1 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
+          className="h-11 flex-1 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
         />
         <button
           type="submit"

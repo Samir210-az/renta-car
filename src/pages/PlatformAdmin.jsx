@@ -69,14 +69,14 @@ export default function PlatformAdmin() {
         <div className="max-w-2xl mx-auto px-5 py-4 flex items-center justify-between">
           <button
             onClick={() => navigate("/login")}
-            className="flex items-center gap-1.5 text-[13px] text-slate-300 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 text-[13px] text-stone-300 hover:text-white transition-colors"
           >
             <ArrowLeft size={16} />
             Giriş ekranı
           </button>
           <button
             onClick={handleExit}
-            className="flex items-center gap-1.5 text-[13px] text-slate-300 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 text-[13px] text-stone-300 hover:text-white transition-colors"
           >
             <LogOut size={15} />
             Çıxış
@@ -88,7 +88,7 @@ export default function PlatformAdmin() {
             <h1 className="text-white font-semibold text-[17px]">
               Platform Admin
             </h1>
-            <p className="text-[12.5px] text-slate-400 mt-0.5">
+            <p className="text-[12.5px] text-stone-400 mt-0.5">
               Bütün rent-a-car şirkətləri
             </p>
           </div>
@@ -97,7 +97,7 @@ export default function PlatformAdmin() {
 
       <main className="flex-1 max-w-2xl w-full mx-auto px-5 py-5">
         {companies === null ? (
-          <p className="text-[13px] text-slate-400 text-center py-10">
+          <p className="text-[13px] text-stone-400 text-center py-10">
             Yüklənir...
           </p>
         ) : companies.length === 0 ? (
@@ -108,7 +108,7 @@ export default function PlatformAdmin() {
               (g) =>
                 grouped[g.key].length > 0 && (
                   <section key={g.key}>
-                    <p className="text-[12.5px] font-semibold text-slate-400 mb-2.5">
+                    <p className="text-[12.5px] font-semibold text-stone-400 mb-2.5">
                       {g.label} ({grouped[g.key].length})
                     </p>
                     <div className="space-y-2.5">
@@ -142,13 +142,13 @@ function CompanyCard({ company, status, busy, onActivate, onDeactivate }) {
       : null;
 
   return (
-    <div className="rounded-xl2 bg-white ring-1 ring-slate-100 shadow-soft p-4">
+    <div className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="font-medium text-ink text-[14px] truncate">
             {company.name}
           </p>
-          <p className="text-[12.5px] text-slate-500 mt-0.5">
+          <p className="text-[12.5px] text-stone-500 mt-0.5">
             {company.phone} · PIN {company.pin}
           </p>
           {status === "active" && (
@@ -164,13 +164,13 @@ function CompanyCard({ company, status, busy, onActivate, onDeactivate }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5 mt-3 pt-3 border-t border-slate-50">
+      <div className="flex flex-wrap items-center gap-1.5 mt-3 pt-3 border-t border-stone-50">
         {PLAN_OPTIONS.map((p) => (
           <button
             key={p.id}
             disabled={busy}
             onClick={() => onActivate(company.id, p.id)}
-            className="h-8 px-3 rounded-lg bg-paper ring-1 ring-slate-200 text-[12px] font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-40 transition-colors"
+            className="h-8 px-3 rounded-lg bg-paper ring-1 ring-stone-200 text-[12px] font-medium text-stone-700 hover:bg-stone-100 disabled:opacity-40 transition-colors"
           >
             {p.label}
           </button>
@@ -192,8 +192,8 @@ function CompanyCard({ company, status, busy, onActivate, onDeactivate }) {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center text-center mt-20">
-      <div className="h-14 w-14 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
-        <Building2 size={24} className="text-slate-400" />
+      <div className="h-14 w-14 rounded-2xl bg-stone-100 flex items-center justify-center mb-4">
+        <Building2 size={24} className="text-stone-400" />
       </div>
       <p className="text-[14px] font-medium text-ink">Hələ qeydiyyat yoxdur</p>
     </div>

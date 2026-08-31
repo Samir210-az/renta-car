@@ -21,14 +21,14 @@ export default function Akt() {
   if (data === undefined) {
     return (
       <div className="min-h-screen bg-paper flex items-center justify-center">
-        <div className="h-8 w-8 rounded-full border-2 border-slate-300 border-t-slate-800 animate-spin" />
+        <div className="h-8 w-8 rounded-full border-2 border-stone-300 border-t-stone-800 animate-spin" />
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-paper flex items-center justify-center text-[13px] text-slate-400">
+      <div className="min-h-screen bg-paper flex items-center justify-center text-[13px] text-stone-400">
         Sənəd tapılmadı
       </div>
     );
@@ -43,7 +43,7 @@ export default function Akt() {
       <div className="max-w-lg mx-auto px-5 py-5 print:hidden flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1.5 text-[13px] text-slate-500"
+          className="flex items-center gap-1.5 text-[13px] text-stone-500"
         >
           <ArrowLeft size={16} />
           Geri
@@ -61,7 +61,7 @@ export default function Akt() {
         <h1 className="text-[17px] font-semibold text-center mb-1">
           MAŞIN TƏHVİL-TƏSLİM AKTI
         </h1>
-        <p className="text-center text-slate-400 text-[12px] mb-6">
+        <p className="text-center text-stone-400 text-[12px] mb-6">
           {company?.name}
         </p>
 
@@ -106,11 +106,11 @@ export default function Akt() {
           )}
           {pickup.platePhoto && (
             <div className="mt-2">
-              <p className="text-slate-500 mb-1.5">Nömrə şəkli</p>
+              <p className="text-stone-500 mb-1.5">Nömrə şəkli</p>
               <img
                 src={pickup.platePhoto}
                 alt="Nömrə şəkli"
-                className="w-40 rounded-lg ring-1 ring-slate-200"
+                className="w-40 rounded-lg ring-1 ring-stone-200"
               />
             </div>
           )}
@@ -131,14 +131,14 @@ export default function Akt() {
               )}
             </>
           ) : (
-            <p className="text-slate-400">Maşın hələ qaytarılmayıb</p>
+            <p className="text-stone-400">Maşın hələ qaytarılmayıb</p>
           )}
         </Section>
 
         {(pickup.damageMarkers?.length > 0 || ret?.damageMarkers?.length > 0) && (
           <div className="flex items-center gap-3 -mt-2 mb-5">
             {DAMAGE_TYPES.map((t) => (
-              <span key={t.id} className="flex items-center gap-1 text-[11px] text-slate-500">
+              <span key={t.id} className="flex items-center gap-1 text-[11px] text-stone-500">
                 <span
                   className="h-2 w-2 rounded-full inline-block"
                   style={{ background: t.color }}
@@ -151,12 +151,12 @@ export default function Akt() {
 
         <div className="grid grid-cols-2 gap-8 mt-12 pt-6">
           <div>
-            <div className="border-b border-slate-300 h-10" />
-            <p className="text-[11.5px] text-slate-400 mt-1.5">Şirkət imzası</p>
+            <div className="border-b border-stone-300 h-10" />
+            <p className="text-[11.5px] text-stone-400 mt-1.5">Şirkət imzası</p>
           </div>
           <div>
-            <div className="border-b border-slate-300 h-10" />
-            <p className="text-[11.5px] text-slate-400 mt-1.5">Müştəri imzası</p>
+            <div className="border-b border-stone-300 h-10" />
+            <p className="text-[11.5px] text-stone-400 mt-1.5">Müştəri imzası</p>
           </div>
         </div>
       </div>
@@ -167,7 +167,7 @@ export default function Akt() {
 function Section({ title, children }) {
   return (
     <div className="mb-5">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400 mb-1.5">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-400 mb-1.5">
         {title}
       </p>
       <div className="space-y-1">{children}</div>
@@ -177,8 +177,8 @@ function Section({ title, children }) {
 
 function Row({ label, value }) {
   return (
-    <div className="flex items-center justify-between border-b border-dashed border-slate-100 py-1">
-      <span className="text-slate-500">{label}</span>
+    <div className="flex items-center justify-between border-b border-dashed border-stone-100 py-1">
+      <span className="text-stone-500">{label}</span>
       <span className="font-medium text-ink">{value}</span>
     </div>
   );

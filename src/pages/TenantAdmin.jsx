@@ -57,14 +57,14 @@ export default function TenantAdmin() {
         <div className="max-w-2xl mx-auto px-5 py-4 flex items-center justify-between">
           <button
             onClick={() => navigate("/")}
-            className="flex items-center gap-1.5 text-[13px] text-slate-300 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 text-[13px] text-stone-300 hover:text-white transition-colors"
           >
             <ArrowLeft size={16} />
             Tətbiqə qayıt
           </button>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 text-[13px] text-slate-300 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 text-[13px] text-stone-300 hover:text-white transition-colors"
           >
             <LogOut size={15} />
             Çıxış
@@ -92,7 +92,7 @@ export default function TenantAdmin() {
               className={`shrink-0 px-3.5 py-2.5 text-[13px] font-medium border-b-2 transition-colors relative ${
                 tab === t.id
                   ? "border-white text-white"
-                  : "border-transparent text-slate-400"
+                  : "border-transparent text-stone-400"
               }`}
             >
               {t.label}

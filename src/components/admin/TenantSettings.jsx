@@ -38,7 +38,7 @@ export default function TenantSettings({ companyId, profile }) {
   return (
     <form
       onSubmit={handleSave}
-      className="rounded-xl2 bg-white ring-1 ring-slate-100 shadow-soft p-4 space-y-4"
+      className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft p-4 space-y-4"
     >
       <Field label="Şirkət loqosu">
         {logo ? (
@@ -46,19 +46,19 @@ export default function TenantSettings({ companyId, profile }) {
             <img
               src={logo}
               alt=""
-              className="h-14 w-14 rounded-xl object-cover ring-1 ring-slate-200"
+              className="h-14 w-14 rounded-xl object-cover ring-1 ring-stone-200"
             />
             <button
               type="button"
               onClick={() => setLogo(null)}
-              className="h-8 px-3 rounded-lg ring-1 ring-slate-200 text-[12px] text-slate-500 flex items-center gap-1.5"
+              className="h-8 px-3 rounded-lg ring-1 ring-stone-200 text-[12px] text-stone-500 flex items-center gap-1.5"
             >
               <X size={13} />
               Sil
             </button>
           </div>
         ) : (
-          <label className="h-16 rounded-xl bg-paper ring-1 ring-dashed ring-slate-300 flex items-center justify-center gap-2 text-slate-400 cursor-pointer">
+          <label className="h-16 rounded-xl bg-paper ring-1 ring-dashed ring-stone-300 flex items-center justify-center gap-2 text-stone-400 cursor-pointer">
             <ImagePlus size={16} />
             <span className="text-[12.5px]">
               {logoBusy ? "Yüklənir..." : "Loqo seç"}
@@ -77,7 +77,7 @@ export default function TenantSettings({ companyId, profile }) {
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full h-11 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
+          className="w-full h-11 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
         />
       </Field>
 
@@ -88,7 +88,7 @@ export default function TenantSettings({ companyId, profile }) {
             setLoginPin(e.target.value.replace(/\D/g, "").slice(0, 4))
           }
           inputMode="numeric"
-          className="w-full h-11 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px] tracking-widest"
+          className="w-full h-11 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px] tracking-widest"
         />
       </Field>
 
@@ -99,7 +99,7 @@ export default function TenantSettings({ companyId, profile }) {
             setAdminPin(e.target.value.replace(/\D/g, "").slice(0, 4))
           }
           inputMode="numeric"
-          className="w-full h-11 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px] tracking-widest"
+          className="w-full h-11 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px] tracking-widest"
         />
       </Field>
 
@@ -116,7 +116,7 @@ export default function TenantSettings({ companyId, profile }) {
 function Field({ label, children }) {
   return (
     <label className="block">
-      <span className="block text-[12.5px] font-medium text-slate-500 mb-1.5">
+      <span className="block text-[12.5px] font-medium text-stone-500 mb-1.5">
         {label}
       </span>
       {children}

@@ -4,15 +4,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#0f172a",
-        paper: "#f8fafc",
+        ink: "#1c1917",
+        paper: "#f5f2ec",
       },
       fontFamily: {
         sans: ["'Inter'", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        soft: "0 1px 2px rgba(15,23,42,0.04), 0 4px 16px rgba(15,23,42,0.06)",
-        card: "0 2px 8px rgba(15,23,42,0.06), 0 8px 24px rgba(15,23,42,0.08)",
+        soft: "0 1px 2px rgba(28,25,23,0.05), 0 4px 16px rgba(28,25,23,0.07)",
+        card: "0 2px 8px rgba(28,25,23,0.07), 0 8px 24px rgba(28,25,23,0.1)",
       },
       borderRadius: {
         xl2: "1.25rem",

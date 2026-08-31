@@ -19,7 +19,7 @@ export default function Catalog() {
   if (company === undefined || cars === null) {
     return (
       <div className="min-h-screen bg-paper flex items-center justify-center">
-        <div className="h-8 w-8 rounded-full border-2 border-slate-300 border-t-slate-800 animate-spin" />
+        <div className="h-8 w-8 rounded-full border-2 border-stone-300 border-t-stone-800 animate-spin" />
       </div>
     );
   }
@@ -27,7 +27,7 @@ export default function Catalog() {
   if (!company) {
     return (
       <div className="min-h-screen bg-paper flex items-center justify-center px-6 text-center">
-        <p className="text-[14px] text-slate-400">Bu link mövcud deyil</p>
+        <p className="text-[14px] text-stone-400">Bu link mövcud deyil</p>
       </div>
     );
   }
@@ -49,12 +49,12 @@ export default function Catalog() {
           />
         )}
         <h1 className="text-white font-semibold text-[18px]">{company.name}</h1>
-        <p className="text-slate-400 text-[13px] mt-1">Mövcud maşınlar</p>
+        <p className="text-stone-400 text-[13px] mt-1">Mövcud maşınlar</p>
       </header>
 
       <main className="flex-1 max-w-lg w-full mx-auto px-5 py-5">
         {cars.length === 0 ? (
-          <p className="text-center text-[13.5px] text-slate-400 mt-12">
+          <p className="text-center text-[13.5px] text-stone-400 mt-12">
             Hazırda boş maşın yoxdur
           </p>
         ) : (
@@ -97,7 +97,7 @@ function CarListing({ companyId, car }) {
   }
 
   return (
-    <div className="rounded-xl2 bg-white ring-1 ring-slate-100 shadow-soft overflow-hidden">
+    <div className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft overflow-hidden">
       {photos.length > 0 && (
         <button
           onClick={() => setLightboxOpen(true)}
@@ -117,13 +117,13 @@ function CarListing({ companyId, car }) {
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="font-semibold text-ink text-[15px]">{car.name}</p>
-            <p className="text-[12.5px] text-slate-500 mt-0.5">
+            <p className="text-[12.5px] text-stone-500 mt-0.5">
               {car.plate}
               {car.year ? ` · ${car.year}` : ""}
             </p>
           </div>
           <p className="font-semibold text-ink text-[16px] shrink-0">
-            {car.dailyPrice} ₼<span className="text-[12px] text-slate-400 font-normal">/gün</span>
+            {car.dailyPrice} ₼<span className="text-[12px] text-stone-400 font-normal">/gün</span>
           </p>
         </div>
 
@@ -133,19 +133,19 @@ function CarListing({ companyId, car }) {
             Sorğunuz göndərildi, tezliklə əlaqə saxlanılacaq
           </p>
         ) : open ? (
-          <form onSubmit={handleSubmit} className="mt-3 pt-3 border-t border-slate-50 space-y-2.5">
+          <form onSubmit={handleSubmit} className="mt-3 pt-3 border-t border-stone-50 space-y-2.5">
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Adınız"
-              className="w-full h-10 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
+              className="w-full h-10 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
             />
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="Telefon nömrəniz"
-              className="w-full h-10 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
+              className="w-full h-10 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
             />
             <button
               type="submit"

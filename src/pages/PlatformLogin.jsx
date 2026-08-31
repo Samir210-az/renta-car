@@ -48,7 +48,7 @@ export default function PlatformLogin() {
     <div className="min-h-screen bg-ink flex flex-col items-center justify-center px-6 relative">
       <button
         onClick={() => navigate("/login")}
-        className="absolute top-6 left-6 text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 text-[13px]"
+        className="absolute top-6 left-6 text-stone-400 hover:text-white transition-colors flex items-center gap-1.5 text-[13px]"
       >
         <ArrowLeft size={16} />
         Geri
@@ -56,7 +56,7 @@ export default function PlatformLogin() {
 
       <img src="/logo-icon.png" alt="" className="h-14 w-14 rounded-2xl bg-white/10 p-2.5 mb-5" />
       <h1 className="text-lg font-semibold text-white">Platform Admin</h1>
-      <p className="text-[13px] text-slate-400 mt-1 mb-8">PIN kodu daxil edin</p>
+      <p className="text-[13px] text-stone-400 mt-1 mb-8">PIN kodu daxil edin</p>
 
       <div
         className={`flex items-center gap-3 mb-10 ${
@@ -96,7 +96,7 @@ export default function PlatformLogin() {
         </button>
         <button
           onClick={backspace}
-          className="h-16 rounded-2xl flex items-center justify-center text-slate-400 active:scale-95 transition-transform"
+          className="h-16 rounded-2xl flex items-center justify-center text-stone-400 active:scale-95 transition-transform"
           aria-label="Sil"
         >
           <Delete size={20} />

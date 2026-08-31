@@ -5,7 +5,7 @@ export default function Footer({ className = "" }) {
         href="https://instagram.com/securtiy_group"
         target="_blank"
         rel="noopener noreferrer"
-        className="text-[11px] tracking-wide text-slate-400 hover:text-slate-600 transition-colors"
+        className="text-[11px] tracking-wide text-stone-400 hover:text-stone-600 transition-colors"
       >
         By securtiy_group
       </a>

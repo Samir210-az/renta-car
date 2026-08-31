@@ -54,7 +54,7 @@ export default function Register() {
           <p className="font-semibold text-ink text-[16px]">
             Qeydiyyat göndərildi
           </p>
-          <p className="text-[13.5px] text-slate-500 mt-2 max-w-[260px]">
+          <p className="text-[13.5px] text-stone-500 mt-2 max-w-[260px]">
             Hesabınız təsdiqləndikdən sonra bu telefon nömrəsi və PIN kodu ilə
             daxil ola bilərsiniz.
           </p>
@@ -75,7 +75,7 @@ export default function Register() {
       <div className="max-w-sm w-full mx-auto px-6 pt-8">
         <button
           onClick={() => navigate("/login")}
-          className="flex items-center gap-1.5 text-[13px] text-slate-500 hover:text-ink transition-colors mb-6"
+          className="flex items-center gap-1.5 text-[13px] text-stone-500 hover:text-ink transition-colors mb-6"
         >
           <ArrowLeft size={16} />
           Geri
@@ -85,7 +85,7 @@ export default function Register() {
           <img src="/logo-icon.png" alt="" className="h-6 w-6" />
           Qeydiyyat
         </h1>
-        <p className="text-[13px] text-slate-400 mb-6">
+        <p className="text-[13px] text-stone-400 mb-6">
           Şirkətinizi qeydə alın, təsdiqdən sonra daxil ola bilərsiniz
         </p>
 
@@ -96,19 +96,19 @@ export default function Register() {
                 <img
                   src={logo}
                   alt=""
-                  className="h-14 w-14 rounded-xl object-cover ring-1 ring-slate-200"
+                  className="h-14 w-14 rounded-xl object-cover ring-1 ring-stone-200"
                 />
                 <button
                   type="button"
                   onClick={() => setLogo(null)}
-                  className="h-8 px-3 rounded-lg ring-1 ring-slate-200 text-[12px] text-slate-500 flex items-center gap-1.5"
+                  className="h-8 px-3 rounded-lg ring-1 ring-stone-200 text-[12px] text-stone-500 flex items-center gap-1.5"
                 >
                   <X size={13} />
                   Sil
                 </button>
               </div>
             ) : (
-              <label className="h-20 rounded-xl bg-white ring-1 ring-dashed ring-slate-300 flex flex-col items-center justify-center gap-1 text-slate-400 cursor-pointer">
+              <label className="h-20 rounded-xl bg-white ring-1 ring-dashed ring-stone-300 flex flex-col items-center justify-center gap-1 text-stone-400 cursor-pointer">
                 <ImagePlus size={18} />
                 <span className="text-[12px]">
                   {logoBusy ? "Yüklənir..." : "Loqo seç"}
@@ -128,7 +128,7 @@ export default function Register() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Məs. Ram Rent a Car"
-              className="w-full h-12 rounded-xl bg-white ring-1 ring-slate-200 px-3.5 text-[14px] text-ink placeholder:text-slate-400"
+              className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3.5 text-[14px] text-ink placeholder:text-stone-400"
             />
           </Field>
 
@@ -138,7 +138,7 @@ export default function Register() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+994 XX XXX XX XX"
-              className="w-full h-12 rounded-xl bg-white ring-1 ring-slate-200 px-3.5 text-[14px] text-ink placeholder:text-slate-400"
+              className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3.5 text-[14px] text-ink placeholder:text-stone-400"
             />
           </Field>
 
@@ -151,7 +151,7 @@ export default function Register() {
                 setPin(e.target.value.replace(/\D/g, "").slice(0, 4))
               }
               placeholder="••••"
-              className="w-full h-12 rounded-xl bg-white ring-1 ring-slate-200 px-3.5 text-[16px] tracking-[0.4em] text-ink placeholder:text-slate-400"
+              className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3.5 text-[16px] tracking-[0.4em] text-ink placeholder:text-stone-400"
             />
           </Field>
 
@@ -176,7 +176,7 @@ export default function Register() {
 function Field({ label, children }) {
   return (
     <label className="block">
-      <span className="block text-[12.5px] font-medium text-slate-500 mb-1.5">
+      <span className="block text-[12.5px] font-medium text-stone-500 mb-1.5">
         {label}
       </span>
       {children}
