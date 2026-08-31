@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
+import { getCompanyId } from "../lib/session";
 import { listenCars, addRental } from "../lib/data";
 
 function todayISO() {
@@ -14,6 +15,7 @@ function daysBetween(start, end) {
 
 export default function NewRental() {
   const navigate = useNavigate();
+  const companyId = getCompanyId();
   const [cars, setCars] = useState(null);
   const [carId, setCarId] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -24,9 +26,9 @@ export default function NewRental() {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    const unsub = listenCars(setCars);
+    const unsub = listenCars(companyId, setCars);
     return () => unsub();
-  }, []);
+  }, [companyId]);
 
   const availableCars = useMemo(
     () => (cars || []).filter((c) => c.status === "boş"),
@@ -51,7 +53,7 @@ export default function NewRental() {
     if (!isValid || saving) return;
     setSaving(true);
     try {
-      await addRental({
+      await addRental(companyId, {
         carId,
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim(),

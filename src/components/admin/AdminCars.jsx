@@ -5,7 +5,7 @@ import StatusBadge from "../StatusBadge";
 
 const STATUS_OPTIONS = ["boş", "icarədə", "servisdə"];
 
-export default function AdminCars({ cars }) {
+export default function AdminCars({ companyId, cars }) {
   const [name, setName] = useState("");
   const [plate, setPlate] = useState("");
   const [dailyPrice, setDailyPrice] = useState("");
@@ -16,7 +16,7 @@ export default function AdminCars({ cars }) {
     if (!name.trim() || !plate.trim() || !dailyPrice) return;
     setSaving(true);
     try {
-      await addCar({
+      await addCar(companyId, {
         name: name.trim(),
         plate: plate.trim().toUpperCase(),
         dailyPrice: Number(dailyPrice),
@@ -31,7 +31,7 @@ export default function AdminCars({ cars }) {
 
   async function handleDelete(car) {
     if (!confirm(`"${car.name}" silinsin? Bu geri qaytarıla bilməz.`)) return;
-    await deleteCar(car.id);
+    await deleteCar(companyId, car.id);
   }
 
   return (
@@ -102,7 +102,9 @@ export default function AdminCars({ cars }) {
             <div className="flex items-center gap-2">
               <select
                 value={car.status}
-                onChange={(e) => updateCar(car.id, { status: e.target.value })}
+                onChange={(e) =>
+                  updateCar(companyId, car.id, { status: e.target.value })
+                }
                 className="h-9 rounded-lg bg-paper ring-1 ring-slate-200 px-2.5 text-[12.5px]"
               >
                 {STATUS_OPTIONS.map((s) => (
@@ -116,7 +118,9 @@ export default function AdminCars({ cars }) {
                 min="0"
                 value={car.dailyPrice}
                 onChange={(e) =>
-                  updateCar(car.id, { dailyPrice: Number(e.target.value) })
+                  updateCar(companyId, car.id, {
+                    dailyPrice: Number(e.target.value),
+                  })
                 }
                 className="h-9 w-24 rounded-lg bg-paper ring-1 ring-slate-200 px-2.5 text-[12.5px]"
               />

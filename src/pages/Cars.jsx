@@ -1,27 +1,31 @@
 import { useEffect, useMemo, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { CarFront } from "lucide-react";
-import { listenCars, listenRentals, updateCar, listenSettings } from "../lib/data";
+import { getCompanyId } from "../lib/session";
+import { listenCars, listenRentals, updateCar, listenCompanyProfile } from "../lib/data";
 import CarCard from "../components/CarCard";
 
 const FILTERS = ["hamısı", "boş", "icarədə", "servisdə"];
 
 export default function Cars() {
   const { setCompanyName } = useOutletContext();
+  const companyId = getCompanyId();
   const [cars, setCars] = useState(null);
   const [rentals, setRentals] = useState([]);
   const [filter, setFilter] = useState("hamısı");
 
   useEffect(() => {
-    const unsubCars = listenCars(setCars);
-    const unsubRentals = listenRentals(setRentals);
-    const unsubSettings = listenSettings((s) => setCompanyName(s.companyName));
+    const unsubCars = listenCars(companyId, setCars);
+    const unsubRentals = listenRentals(companyId, setRentals);
+    const unsubProfile = listenCompanyProfile(companyId, (p) =>
+      setCompanyName(p?.name)
+    );
     return () => {
       unsubCars();
       unsubRentals();
-      unsubSettings();
+      unsubProfile();
     };
-  }, [setCompanyName]);
+  }, [companyId, setCompanyName]);
 
   const activeRentalByCar = useMemo(() => {
     const map = {};
@@ -39,7 +43,7 @@ export default function Cars() {
 
   async function cycleStatus(car) {
     const next = car.status === "boş" ? "servisdə" : "boş";
-    await updateCar(car.id, { status: next });
+    await updateCar(companyId, car.id, { status: next });
   }
 
   if (cars === null) {

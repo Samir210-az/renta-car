@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { Car, CalendarDays, PlusCircle } from "lucide-react";
+import { Car, CalendarDays, PlusCircle, LogOut } from "lucide-react";
+import { logoutCompany } from "../lib/session";
 import Footer from "./Footer";
 
 const NAV_ITEMS = [
@@ -21,13 +22,18 @@ export default function Layout() {
 
     if (tapCount.current >= 5) {
       tapCount.current = 0;
-      navigate("/admin-login");
+      navigate("/tenant-admin-login");
       return;
     }
 
     tapTimer.current = setTimeout(() => {
       tapCount.current = 0;
     }, 1500);
+  }
+
+  function handleLogout() {
+    logoutCompany();
+    navigate("/login", { replace: true });
   }
 
   return (
@@ -45,6 +51,13 @@ export default function Layout() {
             <span className="font-semibold text-ink text-[15px]">
               {companyName}
             </span>
+          </button>
+          <button
+            onClick={handleLogout}
+            aria-label="Çıxış"
+            className="h-8 w-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors"
+          >
+            <LogOut size={16} />
           </button>
         </div>
       </header>

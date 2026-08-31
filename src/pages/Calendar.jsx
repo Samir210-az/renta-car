@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { differenceInCalendarDays, format, parseISO } from "date-fns";
 import { az } from "date-fns/locale";
 import { CalendarClock } from "lucide-react";
+import { getCompanyId } from "../lib/session";
 import { listenCars, listenRentals } from "../lib/data";
 
 function groupLabel(days) {
@@ -15,21 +16,22 @@ function groupLabel(days) {
 const GROUP_ORDER = ["Gecikib", "Bu gün", "Sabah", "Bu həftə", "Sonra"];
 
 export default function Calendar() {
+  const companyId = getCompanyId();
   const [cars, setCars] = useState({});
   const [rentals, setRentals] = useState([]);
 
   useEffect(() => {
-    const unsubCars = listenCars((list) => {
+    const unsubCars = listenCars(companyId, (list) => {
       const map = {};
       for (const c of list) map[c.id] = c;
       setCars(map);
     });
-    const unsubRentals = listenRentals(setRentals);
+    const unsubRentals = listenRentals(companyId, setRentals);
     return () => {
       unsubCars();
       unsubRentals();
     };
-  }, []);
+  }, [companyId]);
 
   const groups = useMemo(() => {
     const active = rentals.filter((r) => r.status === "aktiv");

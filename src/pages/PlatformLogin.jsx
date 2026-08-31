@@ -1,29 +1,29 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShieldCheck, Delete, ArrowLeft } from "lucide-react";
-import { listenSettings } from "../lib/data";
-import { setAdminAuthed, isAdminAuthed, MASTER_ADMIN_PIN } from "../lib/session";
+import { listenPlatformAdminPin } from "../lib/data";
+import { setPlatformAuthed, isPlatformAuthed, MASTER_PIN } from "../lib/session";
 
 const PIN_LENGTH = 4;
 
-export default function AdminLogin() {
+export default function PlatformLogin() {
   const navigate = useNavigate();
-  const [settings, setSettings] = useState(null);
+  const [platformPin, setPlatformPin] = useState(null);
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    if (isAdminAuthed()) navigate("/admin", { replace: true });
-    const unsub = listenSettings(setSettings);
+    if (isPlatformAuthed()) navigate("/platform-admin", { replace: true });
+    const unsub = listenPlatformAdminPin(setPlatformPin);
     return () => unsub();
   }, [navigate]);
 
   useEffect(() => {
-    if (pin.length !== PIN_LENGTH || !settings) return;
+    if (pin.length !== PIN_LENGTH || platformPin === null) return;
 
-    if (pin === settings.adminPin || pin.toUpperCase() === MASTER_ADMIN_PIN) {
-      setAdminAuthed();
-      navigate("/admin", { replace: true });
+    if (pin === platformPin || pin.toUpperCase() === MASTER_PIN) {
+      setPlatformAuthed();
+      navigate("/platform-admin", { replace: true });
     } else {
       setError(true);
       const t = setTimeout(() => {
@@ -32,7 +32,7 @@ export default function AdminLogin() {
       }, 500);
       return () => clearTimeout(t);
     }
-  }, [pin, settings, navigate]);
+  }, [pin, platformPin, navigate]);
 
   function press(digit) {
     if (pin.length >= PIN_LENGTH) return;
@@ -47,7 +47,7 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen bg-ink flex flex-col items-center justify-center px-6 relative">
       <button
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/login")}
         className="absolute top-6 left-6 text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 text-[13px]"
       >
         <ArrowLeft size={16} />
@@ -57,10 +57,8 @@ export default function AdminLogin() {
       <div className="h-14 w-14 rounded-2xl bg-white/10 flex items-center justify-center mb-5">
         <ShieldCheck size={26} className="text-white" strokeWidth={2.2} />
       </div>
-      <h1 className="text-lg font-semibold text-white">Admin Panel</h1>
-      <p className="text-[13px] text-slate-400 mt-1 mb-8">
-        Admin PIN kodu daxil edin
-      </p>
+      <h1 className="text-lg font-semibold text-white">Platform Admin</h1>
+      <p className="text-[13px] text-slate-400 mt-1 mb-8">PIN kodu daxil edin</p>
 
       <div
         className={`flex items-center gap-3 mb-10 ${

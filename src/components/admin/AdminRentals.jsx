@@ -2,15 +2,15 @@ import { CheckCircle2, Trash2 } from "lucide-react";
 import { closeRental, deleteRental } from "../../lib/data";
 import StatusBadge from "../StatusBadge";
 
-export default function AdminRentals({ rentals, carsById }) {
+export default function AdminRentals({ companyId, rentals, carsById }) {
   async function handleClose(rental) {
     if (!confirm("Bu icarə bağlansın (maşın boşaldılsın)?")) return;
-    await closeRental(rental);
+    await closeRental(companyId, rental);
   }
 
   async function handleDelete(rental) {
     if (!confirm("Bu icarə qeydi silinsin?")) return;
-    await deleteRental(rental);
+    await deleteRental(companyId, rental);
   }
 
   if (rentals.length === 0) {

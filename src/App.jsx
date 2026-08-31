@@ -1,22 +1,36 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { isStaffAuthed, isAdminAuthed } from "./lib/session";
-import { ensureDefaultSettings } from "./lib/data";
+import {
+  isCompanyAuthed,
+  isTenantAdminAuthed,
+  isPlatformAuthed,
+} from "./lib/session";
+import { ensureDefaultPlatform } from "./lib/data";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Cars from "./pages/Cars";
 import NewRental from "./pages/NewRental";
 import Calendar from "./pages/Calendar";
-import AdminLogin from "./pages/AdminLogin";
-import Admin from "./pages/Admin";
+import TenantAdminLogin from "./pages/TenantAdminLogin";
+import TenantAdmin from "./pages/TenantAdmin";
+import PlatformLogin from "./pages/PlatformLogin";
+import PlatformAdmin from "./pages/PlatformAdmin";
 import Layout from "./components/Layout";
 
-function RequireStaff({ children }) {
-  if (!isStaffAuthed()) return <Navigate to="/login" replace />;
+function RequireCompany({ children }) {
+  if (!isCompanyAuthed()) return <Navigate to="/login" replace />;
   return children;
 }
 
-function RequireAdmin({ children }) {
-  if (!isAdminAuthed()) return <Navigate to="/admin-login" replace />;
+function RequireTenantAdmin({ children }) {
+  if (!isCompanyAuthed()) return <Navigate to="/login" replace />;
+  if (!isTenantAdminAuthed())
+    return <Navigate to="/tenant-admin-login" replace />;
+  return children;
+}
+
+function RequirePlatform({ children }) {
+  if (!isPlatformAuthed()) return <Navigate to="/platform-login" replace />;
   return children;
 }
 
@@ -24,7 +38,7 @@ export default function App() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    ensureDefaultSettings().finally(() => setReady(true));
+    ensureDefaultPlatform().finally(() => setReady(true));
   }, []);
 
   if (!ready) {
@@ -38,13 +52,33 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/admin-login" element={<AdminLogin />} />
+      <Route path="/register" element={<Register />} />
+
+      <Route path="/platform-login" element={<PlatformLogin />} />
+      <Route
+        path="/platform-admin"
+        element={
+          <RequirePlatform>
+            <PlatformAdmin />
+          </RequirePlatform>
+        }
+      />
+
+      <Route path="/tenant-admin-login" element={<TenantAdminLogin />} />
+      <Route
+        path="/tenant-admin"
+        element={
+          <RequireTenantAdmin>
+            <TenantAdmin />
+          </RequireTenantAdmin>
+        }
+      />
 
       <Route
         element={
-          <RequireStaff>
+          <RequireCompany>
             <Layout />
-          </RequireStaff>
+          </RequireCompany>
         }
       >
         <Route path="/" element={<Cars />} />
@@ -52,16 +86,7 @@ export default function App() {
         <Route path="/teqvim" element={<Calendar />} />
       </Route>
 
-      <Route
-        path="/admin"
-        element={
-          <RequireAdmin>
-            <Admin />
-          </RequireAdmin>
-        }
-      />
-
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

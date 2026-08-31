@@ -1,22 +1,12 @@
 {
   "rules": {
-    "settings": {
+    "platform": {
       ".read": true,
       ".write": true
     },
-    "cars": {
+    "companies": {
       ".read": true,
-      ".write": true,
-      "$carId": {
-        ".validate": "newData.hasChildren(['name', 'plate', 'status'])"
-      }
-    },
-    "rentals": {
-      ".read": true,
-      ".write": true,
-      "$rentalId": {
-        ".validate": "newData.hasChildren(['carId', 'customerName', 'startDate', 'endDate'])"
-      }
+      ".write": true
     },
     "$other": {
       ".read": false,
