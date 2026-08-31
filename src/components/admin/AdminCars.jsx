@@ -20,7 +20,15 @@ export default function AdminCars({ companyId, cars }) {
 
   async function handleAdd(e) {
     e.preventDefault();
-    if (!name.trim() || !plate.trim() || !dailyPrice) return;
+    if (
+      !name.trim() ||
+      !plate.trim() ||
+      !dailyPrice ||
+      !ownerName.trim() ||
+      !ownerPhone.trim() ||
+      !ownerDailyRate
+    )
+      return;
     setSaving(true);
     try {
       await addCar(companyId, {
@@ -89,7 +97,15 @@ export default function AdminCars({ companyId, cars }) {
           />
           <button
             type="submit"
-            disabled={saving}
+            disabled={
+              saving ||
+              !name.trim() ||
+              !plate.trim() ||
+              !dailyPrice ||
+              !ownerName.trim() ||
+              !ownerPhone.trim() ||
+              !ownerDailyRate
+            }
             className="h-11 px-4 rounded-lg bg-gold text-ink flex items-center gap-1.5 text-[13.5px] font-semibold disabled:opacity-40"
           >
             <Plus size={16} />
@@ -98,20 +114,20 @@ export default function AdminCars({ companyId, cars }) {
         </div>
 
         <div className="border-t border-stone-700 pt-3">
-          <p className="text-[12px] text-stone-500 mb-2">
-            Maşın sahibi (əgər başqasına məxsusdursa)
-          </p>
+          <p className="text-[12px] text-stone-500 mb-2">Maşın sahibi</p>
           <div className="grid grid-cols-2 gap-3 mb-3">
             <input
               value={ownerName}
               onChange={(e) => setOwnerName(e.target.value)}
               placeholder="Sahibin adı"
+              required
               className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
             />
             <input
               value={ownerPhone}
               onChange={(e) => setOwnerPhone(e.target.value)}
               placeholder="Sahibin telefonu"
+              required
               className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
             />
           </div>
@@ -120,6 +136,7 @@ export default function AdminCars({ companyId, cars }) {
             onChange={(e) => setOwnerDailyRate(e.target.value)}
             type="number"
             min="0"
+            required
             placeholder="Sahibə günlük ödəniləcək məbləğ (₼)"
             className="h-11 w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
           />
