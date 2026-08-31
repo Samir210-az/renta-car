@@ -41,3 +41,9 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+@media print {
+  body {
+    background: white;
+  }
+}

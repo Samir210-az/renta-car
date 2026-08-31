@@ -5,6 +5,7 @@ import { ensureDefaultPlatform } from "./lib/data";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Catalog from "./pages/Catalog";
+import Akt from "./pages/Akt";
 import Cars from "./pages/Cars";
 import NewRental from "./pages/NewRental";
 import Calendar from "./pages/Calendar";
@@ -59,6 +60,14 @@ export default function App() {
         element={
           <RequireCompany>
             <TenantAdmin />
+          </RequireCompany>
+        }
+      />
+      <Route
+        path="/akt/:companyId/:rentalId"
+        element={
+          <RequireCompany>
+            <Akt />
           </RequireCompany>
         }
       />

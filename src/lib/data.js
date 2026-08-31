@@ -175,13 +175,29 @@ export async function addRental(companyId, rental) {
   return newRef.key;
 }
 
-export async function closeRental(companyId, rental) {
+export async function closeRental(companyId, rental, returnCondition) {
   await update(ref(db, `companies/${companyId}/rentals/${rental.id}`), {
     status: "bitib",
+    returnCondition,
   });
   await update(ref(db, `companies/${companyId}/cars/${rental.carId}`), {
     status: "boş",
   });
+}
+
+export async function getRentalDetail(companyId, rentalId) {
+  const [rentalSnap, companySnap] = await Promise.all([
+    get(ref(db, `companies/${companyId}/rentals/${rentalId}`)),
+    get(ref(db, `companies/${companyId}/profile`)),
+  ]);
+  const rental = rentalSnap.val();
+  if (!rental) return null;
+  const carSnap = await get(ref(db, `companies/${companyId}/cars/${rental.carId}`));
+  return {
+    rental: { id: rentalId, ...rental },
+    car: carSnap.val(),
+    company: companySnap.val(),
+  };
 }
 
 export async function deleteRental(companyId, rental) {

@@ -4,6 +4,8 @@ import { CheckCircle2 } from "lucide-react";
 import { getCompanyId } from "../lib/session";
 import { listenCars, addRental } from "../lib/data";
 
+const FUEL_LEVELS = ["Boş", "1/4", "1/2", "3/4", "Dolu"];
+
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -22,6 +24,9 @@ export default function NewRental() {
   const [customerPhone, setCustomerPhone] = useState("");
   const [startDate, setStartDate] = useState(todayISO());
   const [endDate, setEndDate] = useState(todayISO());
+  const [pickupKm, setPickupKm] = useState("");
+  const [pickupFuel, setPickupFuel] = useState("Dolu");
+  const [pickupNotes, setPickupNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -75,6 +80,12 @@ export default function NewRental() {
         endDate,
         dailyPrice: Number(selectedCar.dailyPrice || 0),
         totalPrice,
+        pickupCondition: {
+          km: pickupKm ? Number(pickupKm) : null,
+          fuel: pickupFuel,
+          notes: pickupNotes.trim(),
+          signedAt: Date.now(),
+        },
       });
       setDone(true);
       setTimeout(() => navigate("/"), 900);
@@ -172,6 +183,40 @@ export default function NewRental() {
           </span>
         </div>
       )}
+
+      <div className="rounded-xl2 bg-white ring-1 ring-slate-100 shadow-soft p-4 space-y-3">
+        <p className="text-[13px] font-medium text-slate-500">
+          Təhvil zamanı vəziyyət (aktın hissəsi)
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          <input
+            type="number"
+            min="0"
+            value={pickupKm}
+            onChange={(e) => setPickupKm(e.target.value)}
+            placeholder="Km sayğacı"
+            className="h-11 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
+          />
+          <select
+            value={pickupFuel}
+            onChange={(e) => setPickupFuel(e.target.value)}
+            className="h-11 rounded-lg bg-paper ring-1 ring-slate-200 px-3 text-[13.5px]"
+          >
+            {FUEL_LEVELS.map((f) => (
+              <option key={f} value={f}>
+                Yanacaq: {f}
+              </option>
+            ))}
+          </select>
+        </div>
+        <textarea
+          value={pickupNotes}
+          onChange={(e) => setPickupNotes(e.target.value)}
+          placeholder="Mövcud cızıq/zədə qeydi (yoxdursa boş saxlayın)"
+          rows={2}
+          className="w-full rounded-lg bg-paper ring-1 ring-slate-200 px-3 py-2.5 text-[13.5px] resize-none"
+        />
+      </div>
 
       <button
         type="submit"
