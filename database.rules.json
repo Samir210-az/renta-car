@@ -1,12 +1,24 @@
 {
   "rules": {
     "platform": {
+      "adminPinHash": {
+        ".read": true,
+        ".write": true
+      }
+    },
+    "phoneIndex": {
+      ".read": true,
+      ".write": true
+    },
+    "companyIndex": {
       ".read": true,
       ".write": true
     },
     "companies": {
-      ".read": true,
-      ".write": true
+      "$companyId": {
+        ".read": true,
+        ".write": true
+      }
     },
     "$other": {
       ".read": false,

@@ -1,38 +1,40 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Delete, ArrowLeft } from "lucide-react";
-import { listenPlatformAdminPin } from "../lib/data";
-import { setPlatformAuthed, isPlatformAuthed, MASTER_PIN } from "../lib/session";
+import { checkPlatformPin } from "../lib/data";
+import { setPlatformAuthed, isPlatformAuthed } from "../lib/session";
 
 const PIN_LENGTH = 4;
 
 export default function PlatformLogin() {
   const navigate = useNavigate();
-  const [platformPin, setPlatformPin] = useState(null);
   const [pin, setPin] = useState("");
   const [error, setError] = useState(false);
+  const [checking, setChecking] = useState(false);
 
   useEffect(() => {
     if (isPlatformAuthed()) navigate("/platform-admin", { replace: true });
-    const unsub = listenPlatformAdminPin(setPlatformPin);
-    return () => unsub();
   }, [navigate]);
 
   useEffect(() => {
-    if (pin.length !== PIN_LENGTH || platformPin === null) return;
-
-    if (pin === platformPin || pin.toUpperCase() === MASTER_PIN) {
-      setPlatformAuthed();
-      navigate("/platform-admin", { replace: true });
-    } else {
-      setError(true);
-      const t = setTimeout(() => {
-        setPin("");
-        setError(false);
-      }, 500);
-      return () => clearTimeout(t);
-    }
-  }, [pin, platformPin, navigate]);
+    if (pin.length !== PIN_LENGTH || checking) return;
+    setChecking(true);
+    checkPlatformPin(pin)
+      .then((ok) => {
+        if (ok) {
+          setPlatformAuthed();
+          navigate("/platform-admin", { replace: true });
+        } else {
+          setError(true);
+          setTimeout(() => {
+            setPin("");
+            setError(false);
+          }, 500);
+        }
+      })
+      .finally(() => setChecking(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pin]);
 
   function press(digit) {
     if (pin.length >= PIN_LENGTH) return;

@@ -5,7 +5,10 @@ import { resolveRequest } from "../../lib/data";
 export default function AdminRequests({ companyId, requests, carsById }) {
   const navigate = useNavigate();
 
-  async function handleApprove(request) {
+  function handleApprove(request) {
+    // Qeyd: sorğu burada "approved" işarələnmir — bu, yalnız icarə
+    // faktiki yaradıldıqdan sonra (NewRental.jsx-də) baş verir. Əks halda
+    // işçi formu doldurmadan geri qayıtsa, sorğu izsiz itərdi.
     sessionStorage.setItem(
       "rc_prefill_request",
       JSON.stringify({
@@ -15,7 +18,6 @@ export default function AdminRequests({ companyId, requests, carsById }) {
         requestId: request.id,
       })
     );
-    await resolveRequest(companyId, request.id, "approved");
     navigate("/yeni-icare");
   }
 
@@ -53,17 +55,17 @@ export default function AdminRequests({ companyId, requests, carsById }) {
               {r.customerName} · {r.customerPhone}
             </p>
 
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-stone-50">
+            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-stone-700">
               <button
                 onClick={() => handleApprove(r)}
-                className="flex items-center gap-1.5 text-[12.5px] font-medium text-emerald-600 hover:text-emerald-700"
+                className="flex items-center gap-1.5 text-[12.5px] font-medium text-emerald-400 hover:text-emerald-300"
               >
                 <Check size={14} />
                 Təsdiqlə
               </button>
               <button
                 onClick={() => handleReject(r)}
-                className="flex items-center gap-1.5 text-[12.5px] text-stone-400 hover:text-rose-500 ml-auto"
+                className="flex items-center gap-1.5 text-[12.5px] text-stone-400 hover:text-rose-400 ml-auto"
               >
                 <X size={13} />
                 Rədd et

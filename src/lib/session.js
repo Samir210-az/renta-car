@@ -1,10 +1,6 @@
 const COMPANY_KEY = "rc_company_id";
 const PLATFORM_KEY = "rc_platform_session";
 
-// Sənin (platform sahibi) bütün "security_group" tətbiqlərində istifadə
-// etdiyin universal master PIN.
-export const MASTER_PIN = "AL2026EA";
-
 // ---- Şirkət (tenant) sessiyası ----
 
 export function getCompanyId() {

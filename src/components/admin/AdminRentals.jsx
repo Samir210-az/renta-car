@@ -62,7 +62,7 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
                 onCancel={() => setClosingId(null)}
               />
             ) : (
-              <div className="flex items-center gap-3 mt-3 pt-3 border-t border-stone-50">
+              <div className="flex items-center gap-3 mt-3 pt-3 border-t border-stone-700">
                 {r.status === "aktiv" && (
                   <button
                     onClick={() => setClosingId(r.id)}
@@ -121,7 +121,7 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
   }
 
   return (
-    <div className="mt-3 pt-3 border-t border-stone-50 space-y-2.5">
+    <div className="mt-3 pt-3 border-t border-stone-700 space-y-2.5">
       <p className="text-[12.5px] font-medium text-stone-500">
         Qaytarma zamanı vəziyyət
       </p>

@@ -1,57 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Trash2, ImagePlus, X, ExternalLink } from "lucide-react";
-import { addCar, updateCar, deleteCar } from "../../lib/data";
+import { Trash2, ImagePlus, X, ExternalLink } from "lucide-react";
+import { updateCar, deleteCar } from "../../lib/data";
 import { compressImage } from "../../lib/image";
+import CarForm from "../CarForm";
 import StatusBadge from "../StatusBadge";
 
 const STATUS_OPTIONS = ["boş", "icarədə", "servisdə"];
 const MAX_PHOTOS = 5;
 
 export default function AdminCars({ companyId, cars }) {
-  const [name, setName] = useState("");
-  const [plate, setPlate] = useState("");
-  const [year, setYear] = useState("");
-  const [dailyPrice, setDailyPrice] = useState("");
-  const [ownerName, setOwnerName] = useState("");
-  const [ownerPhone, setOwnerPhone] = useState("");
-  const [ownerDailyRate, setOwnerDailyRate] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  async function handleAdd(e) {
-    e.preventDefault();
-    if (
-      !name.trim() ||
-      !plate.trim() ||
-      !dailyPrice ||
-      !ownerName.trim() ||
-      !ownerPhone.trim() ||
-      !ownerDailyRate
-    )
-      return;
-    setSaving(true);
-    try {
-      await addCar(companyId, {
-        name: name.trim(),
-        plate: plate.trim().toUpperCase(),
-        year: year ? Number(year) : null,
-        dailyPrice: Number(dailyPrice),
-        ownerName: ownerName.trim(),
-        ownerPhone: ownerPhone.trim(),
-        ownerDailyRate: ownerDailyRate ? Number(ownerDailyRate) : null,
-      });
-      setName("");
-      setPlate("");
-      setYear("");
-      setDailyPrice("");
-      setOwnerName("");
-      setOwnerPhone("");
-      setOwnerDailyRate("");
-    } finally {
-      setSaving(false);
-    }
-  }
-
   async function handleDelete(car) {
     if (!confirm(`"${car.name}" silinsin? Bu geri qaytarıla bilməz.`)) return;
     await deleteCar(companyId, car.id);
@@ -59,89 +17,7 @@ export default function AdminCars({ companyId, cars }) {
 
   return (
     <div className="space-y-6">
-      <form
-        onSubmit={handleAdd}
-        className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4 space-y-3"
-      >
-        <p className="text-[13px] font-medium text-stone-500">Yeni maşın</p>
-        <div className="grid grid-cols-2 gap-3">
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Marka / Model"
-            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-          />
-          <input
-            value={plate}
-            onChange={(e) => setPlate(e.target.value)}
-            placeholder="Dövlət nömrəsi"
-            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-          />
-        </div>
-        <div className="flex gap-3">
-          <input
-            value={year}
-            onChange={(e) => setYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
-            type="text"
-            inputMode="numeric"
-            placeholder="İl (məs. 2021)"
-            className="h-11 w-32 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-          />
-          <input
-            value={dailyPrice}
-            onChange={(e) => setDailyPrice(e.target.value)}
-            type="number"
-            min="0"
-            placeholder="Günlük qiymət (₼)"
-            className="h-11 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-          />
-          <button
-            type="submit"
-            disabled={
-              saving ||
-              !name.trim() ||
-              !plate.trim() ||
-              !dailyPrice ||
-              !ownerName.trim() ||
-              !ownerPhone.trim() ||
-              !ownerDailyRate
-            }
-            className="h-11 px-4 rounded-lg bg-gold text-ink flex items-center gap-1.5 text-[13.5px] font-semibold disabled:opacity-40"
-          >
-            <Plus size={16} />
-            Əlavə et
-          </button>
-        </div>
-
-        <div className="border-t border-stone-700 pt-3">
-          <p className="text-[12px] text-stone-500 mb-2">Maşın sahibi</p>
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <input
-              value={ownerName}
-              onChange={(e) => setOwnerName(e.target.value)}
-              placeholder="Sahibin adı"
-              required
-              className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-            />
-            <input
-              value={ownerPhone}
-              onChange={(e) => setOwnerPhone(e.target.value)}
-              placeholder="Sahibin telefonu"
-              required
-              className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-            />
-          </div>
-          <input
-            value={ownerDailyRate}
-            onChange={(e) => setOwnerDailyRate(e.target.value)}
-            type="number"
-            min="0"
-            required
-            placeholder="Sahibə günlük ödəniləcək məbləğ (₼)"
-            className="h-11 w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-          />
-        </div>
-      </form>
+      <CarForm companyId={companyId} />
 
       <div className="space-y-2.5">
         {cars.length === 0 && (
@@ -201,8 +77,8 @@ export default function AdminCars({ companyId, cars }) {
               <input
                 type="text"
                 inputMode="numeric"
-                value={car.year ?? ""}
-                onChange={(e) =>
+                defaultValue={car.year ?? ""}
+                onBlur={(e) =>
                   updateCar(companyId, car.id, {
                     year: e.target.value.replace(/\D/g, "").slice(0, 4)
                       ? Number(e.target.value.replace(/\D/g, "").slice(0, 4))
@@ -215,12 +91,12 @@ export default function AdminCars({ companyId, cars }) {
               <input
                 type="number"
                 min="0"
-                value={car.dailyPrice}
-                onChange={(e) =>
-                  updateCar(companyId, car.id, {
-                    dailyPrice: Number(e.target.value),
-                  })
-                }
+                defaultValue={car.dailyPrice}
+                onBlur={(e) => {
+                  const v = Number(e.target.value);
+                  if (v > 0) updateCar(companyId, car.id, { dailyPrice: v });
+                  else e.target.value = car.dailyPrice;
+                }}
                 className="h-9 w-24 rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px]"
               />
               <span className="text-[12px] text-stone-400">₼/gün</span>
@@ -229,7 +105,10 @@ export default function AdminCars({ companyId, cars }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 mt-2 flex-wrap">
+            <div
+              key={`${car.id}-${car.ownerName}-${car.ownerPhone}-${car.ownerDailyRate}`}
+              className="flex items-center gap-2 mt-2 flex-wrap"
+            >
               <input
                 defaultValue={car.ownerName || ""}
                 onBlur={(e) =>

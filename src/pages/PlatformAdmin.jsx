@@ -149,7 +149,7 @@ function CompanyCard({ company, status, busy, onActivate, onDeactivate }) {
             {company.name}
           </p>
           <p className="text-[12.5px] text-stone-500 mt-0.5">
-            {company.phone} · PIN {company.pin}
+            {company.phone}
           </p>
           {status === "active" && (
             <p className="text-[12px] text-emerald-600 mt-1 font-medium">
@@ -164,7 +164,7 @@ function CompanyCard({ company, status, busy, onActivate, onDeactivate }) {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5 mt-3 pt-3 border-t border-stone-50">
+      <div className="flex flex-wrap items-center gap-1.5 mt-3 pt-3 border-t border-stone-700">
         {PLAN_OPTIONS.map((p) => (
           <button
             key={p.id}

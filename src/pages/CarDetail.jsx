@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Wallet, FileText, ImagePlus, X } from "lucide-react";
+import { ArrowLeft, Wallet, FileText, ImagePlus } from "lucide-react";
 import { getCompanyId } from "../lib/session";
 import { getCarDetail, updateCar, addOwnerPayment } from "../lib/data";
 import { calcOwnerOwed, calcTotalPaid } from "../lib/money";
@@ -83,7 +83,6 @@ export default function CarDetail() {
   }
 
   const { car, rentals, payments } = data;
-  const closedRentals = rentals.filter((r) => r.status !== "aktiv" || true);
   const totalRevenue = rentals.reduce((s, r) => s + Number(r.totalPrice || 0), 0);
   const owed = calcOwnerOwed(car, rentals);
   const paid = calcTotalPaid(payments);
@@ -128,17 +127,25 @@ export default function CarDetail() {
           </div>
         )}
 
+        {car.status === "icarədə" && (
+          <p className="flex items-center gap-1.5 text-[12px] text-stone-500">
+            <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+            Bu maşın hazırda aktiv icarədədir — statusu dəyişmək üçün əvvəlcə
+            İcarələr bölməsindən "Maşını qaytar" edin
+          </p>
+        )}
+
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleStatusChange("boş")}
-            disabled={car.status === "boş"}
+            disabled={car.status === "boş" || car.status === "icarədə"}
             className="h-9 px-3.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[12.5px] font-medium disabled:opacity-40 ring-1 ring-emerald-500/25"
           >
             Boş et
           </button>
           <button
             onClick={() => handleStatusChange("servisdə")}
-            disabled={car.status === "servisdə"}
+            disabled={car.status === "servisdə" || car.status === "icarədə"}
             className="h-9 px-3.5 rounded-full bg-amber-500/15 text-amber-400 text-[12.5px] font-medium disabled:opacity-40 ring-1 ring-amber-500/25"
           >
             Servisə göndər
@@ -235,7 +242,7 @@ export default function CarDetail() {
             <p className="text-[13px] text-stone-500">Hələ icarə olmayıb</p>
           ) : (
             <div className="space-y-2">
-              {closedRentals.map((r) => (
+              {rentals.map((r) => (
                 <Link
                   key={r.id}
                   to={`/akt/${companyId}/${r.id}`}

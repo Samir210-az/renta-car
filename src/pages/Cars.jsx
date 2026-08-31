@@ -6,10 +6,10 @@ import {
   listenCars,
   listenRentals,
   listenRequests,
-  addCar,
   listenCompanyProfile,
 } from "../lib/data";
 import CarCard from "../components/CarCard";
+import CarForm from "../components/CarForm";
 
 const FILTERS = ["hamısı", "boş", "icarədə", "servisdə"];
 
@@ -110,9 +110,10 @@ export default function Cars() {
       )}
 
       {showAddForm && (
-        <AddCarForm
+        <CarForm
           companyId={companyId}
           onDone={() => setShowAddForm(false)}
+          className="mb-4"
         />
       )}
 
@@ -164,130 +165,5 @@ function EmptyState() {
         Yuxarıda "Maşın əlavə et" düyməsi ilə ilk maşınızı əlavə edin
       </p>
     </div>
-  );
-}
-
-function AddCarForm({ companyId, onDone }) {
-  const [name, setName] = useState("");
-  const [plate, setPlate] = useState("");
-  const [year, setYear] = useState("");
-  const [dailyPrice, setDailyPrice] = useState("");
-  const [ownerName, setOwnerName] = useState("");
-  const [ownerPhone, setOwnerPhone] = useState("");
-  const [ownerDailyRate, setOwnerDailyRate] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (
-      !name.trim() ||
-      !plate.trim() ||
-      !dailyPrice ||
-      !ownerName.trim() ||
-      !ownerPhone.trim() ||
-      !ownerDailyRate
-    )
-      return;
-    setSaving(true);
-    try {
-      await addCar(companyId, {
-        name: name.trim(),
-        plate: plate.trim().toUpperCase(),
-        year: year ? Number(year) : null,
-        dailyPrice: Number(dailyPrice),
-        ownerName: ownerName.trim(),
-        ownerPhone: ownerPhone.trim(),
-        ownerDailyRate: ownerDailyRate ? Number(ownerDailyRate) : null,
-      });
-      onDone();
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-xl2 bg-surface ring-1 ring-stone-700 shadow-soft p-4 space-y-3 mb-4"
-    >
-      <div className="grid grid-cols-2 gap-3">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Marka / Model"
-          autoFocus
-          className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-        />
-        <input
-          value={plate}
-          onChange={(e) => setPlate(e.target.value)}
-          placeholder="Dövlət nömrəsi"
-          className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-        />
-      </div>
-      <div className="flex gap-3">
-        <input
-          value={year}
-          onChange={(e) => setYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
-          type="text"
-          inputMode="numeric"
-          placeholder="İl"
-          className="h-11 w-20 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-        />
-        <input
-          value={dailyPrice}
-          onChange={(e) => setDailyPrice(e.target.value)}
-          type="number"
-          min="0"
-          placeholder="Müştəriyə günlük (₼)"
-          className="h-11 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-        />
-      </div>
-
-      <div className="border-t border-stone-700 pt-3">
-        <p className="text-[12px] text-stone-500 mb-2">Maşın sahibi</p>
-        <div className="grid grid-cols-2 gap-3 mb-3">
-          <input
-            value={ownerName}
-            onChange={(e) => setOwnerName(e.target.value)}
-            placeholder="Sahibin adı"
-            required
-            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-          />
-          <input
-            value={ownerPhone}
-            onChange={(e) => setOwnerPhone(e.target.value)}
-            placeholder="Sahibin telefonu"
-            required
-            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-          />
-        </div>
-        <input
-          value={ownerDailyRate}
-          onChange={(e) => setOwnerDailyRate(e.target.value)}
-          type="number"
-          min="0"
-          required
-          placeholder="Sahibə günlük ödəniləcək məbləğ (₼)"
-          className="h-11 w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
-        />
-      </div>
-
-      <button
-        type="submit"
-        disabled={
-          saving ||
-          !name.trim() ||
-          !plate.trim() ||
-          !dailyPrice ||
-          !ownerName.trim() ||
-          !ownerPhone.trim() ||
-          !ownerDailyRate
-        }
-        className="w-full h-11 rounded-lg bg-gold text-ink text-[13.5px] font-semibold disabled:opacity-40"
-      >
-        {saving ? "..." : "Əlavə et"}
-      </button>
-    </form>
   );
 }

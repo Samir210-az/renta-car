@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ImagePlus, X } from "lucide-react";
+import { CheckCircle2, ImagePlus, X, AlertTriangle } from "lucide-react";
 import { getCompanyId } from "../lib/session";
-import { listenCars, addRental } from "../lib/data";
+import { listenCars, addRental, resolveRequest } from "../lib/data";
 import { compressImage } from "../lib/image";
 import DamageDiagram from "../components/DamageDiagram";
 
@@ -37,6 +37,8 @@ export default function NewRental() {
   const [platePhotoBusy, setPlatePhotoBusy] = useState(false);
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [prefillRequestId, setPrefillRequestId] = useState(null);
 
   useEffect(() => {
     const unsub = listenCars(companyId, setCars);
@@ -52,6 +54,7 @@ export default function NewRental() {
       setCarId(prefill.carId || "");
       setCustomerName(prefill.customerName || "");
       setCustomerPhone(prefill.customerPhone || "");
+      setPrefillRequestId(prefill.requestId || null);
     } catch {
       // sorğu formatı yanlışdırsa sadəcə boş forma göstərilir
     }
@@ -72,8 +75,17 @@ export default function NewRental() {
     return daysBetween(startDate, endDate) * Number(selectedCar.dailyPrice || 0);
   }, [selectedCar, startDate, endDate]);
 
+  const licenseExpired =
+    licenseValidUntil && licenseValidUntil < startDate;
+
   const isValid =
-    carId && customerName.trim() && customerPhone.trim() && startDate && endDate && endDate >= startDate;
+    carId &&
+    customerName.trim() &&
+    customerPhone.trim() &&
+    startDate &&
+    endDate &&
+    endDate >= startDate &&
+    !licenseExpired;
 
   async function handlePlatePhoto(e) {
     const file = e.target.files?.[0];
@@ -91,6 +103,7 @@ export default function NewRental() {
     e.preventDefault();
     if (!isValid || saving) return;
     setSaving(true);
+    setFormError("");
     try {
       await addRental(companyId, {
         carId,
@@ -112,8 +125,13 @@ export default function NewRental() {
           signedAt: Date.now(),
         },
       });
+      if (prefillRequestId) {
+        await resolveRequest(companyId, prefillRequestId, "approved");
+      }
       setDone(true);
       setTimeout(() => navigate("/"), 900);
+    } catch (err) {
+      setFormError(err.message || "İcarə yaradıla bilmədi, yenidən cəhd edin");
     } finally {
       setSaving(false);
     }
@@ -195,6 +213,14 @@ export default function NewRental() {
           />
         </Field>
       </div>
+
+      {licenseExpired && (
+        <p className="flex items-center gap-1.5 text-[12.5px] text-rose-400 -mt-2">
+          <AlertTriangle size={13} />
+          Vəsiqənin hüququ icarə başlanğıcından əvvəl bitir — davam etmək
+          mümkün deyil
+        </p>
+      )}
 
       <div className="grid grid-cols-2 gap-3">
         <Field label="Başlanğıc">
@@ -316,6 +342,13 @@ export default function NewRental() {
       >
         {saving ? "Yadda saxlanılır..." : "İcarəni təsdiqlə"}
       </button>
+
+      {formError && (
+        <p className="flex items-center gap-1.5 text-[12.5px] text-rose-400">
+          <AlertTriangle size={13} />
+          {formError}
+        </p>
+      )}
     </form>
   );
 }

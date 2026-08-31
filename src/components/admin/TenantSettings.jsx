@@ -5,8 +5,7 @@ import { compressImage } from "../../lib/image";
 
 export default function TenantSettings({ companyId, profile }) {
   const [name, setName] = useState(profile.name || "");
-  const [loginPin, setLoginPin] = useState(profile.pin || "");
-  const [adminPin, setAdminPin] = useState(profile.tenantAdminPin || "");
+  const [newPin, setNewPin] = useState("");
   const [logo, setLogo] = useState(profile.logo || null);
   const [logoBusy, setLogoBusy] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -25,12 +24,13 @@ export default function TenantSettings({ companyId, profile }) {
 
   async function handleSave(e) {
     e.preventDefault();
-    await updateCompanyProfile(companyId, {
-      name: name.trim(),
-      pin: loginPin.trim(),
-      tenantAdminPin: adminPin.trim(),
-      logo: logo || null,
-    });
+    const updates = { name: name.trim(), logo: logo || null };
+    if (newPin.trim()) {
+      if (newPin.trim().length !== 4) return;
+      updates.newPin = newPin.trim();
+    }
+    await updateCompanyProfile(companyId, updates);
+    setNewPin("");
     setSaved(true);
     setTimeout(() => setSaved(false), 1600);
   }
@@ -51,7 +51,7 @@ export default function TenantSettings({ companyId, profile }) {
             <button
               type="button"
               onClick={() => setLogo(null)}
-              className="h-8 px-3 rounded-lg ring-1 ring-stone-700 text-[12px] text-stone-500 flex items-center gap-1.5"
+              className="h-8 px-3 rounded-lg ring-1 ring-stone-700 text-[12px] text-stone-400 flex items-center gap-1.5"
             >
               <X size={13} />
               Sil
@@ -81,26 +81,17 @@ export default function TenantSettings({ companyId, profile }) {
         />
       </Field>
 
-      <Field label="Giriş PIN-i (telefon + PIN ilə daxil olmaq üçün)">
+      <Field label="Yeni giriş PIN-i (dəyişmək istəməsəniz boş saxlayın)">
         <input
-          value={loginPin}
-          onChange={(e) =>
-            setLoginPin(e.target.value.replace(/\D/g, "").slice(0, 4))
-          }
+          value={newPin}
+          onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
           inputMode="numeric"
-          className="w-full h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] tracking-widest"
+          placeholder="••••"
+          className="w-full h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] tracking-widest placeholder:tracking-normal"
         />
-      </Field>
-
-      <Field label="Admin PIN (bu panelə giriş)">
-        <input
-          value={adminPin}
-          onChange={(e) =>
-            setAdminPin(e.target.value.replace(/\D/g, "").slice(0, 4))
-          }
-          inputMode="numeric"
-          className="w-full h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] tracking-widest"
-        />
+        <p className="text-[11px] text-stone-500 mt-1">
+          Təhlükəsizlik səbəbinə görə cari PIN göstərilmir.
+        </p>
       </Field>
 
       <button

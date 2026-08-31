@@ -6,9 +6,11 @@ import {
   update,
   remove,
   get,
+  runTransaction,
 } from "firebase/database";
 import { db } from "./firebase";
 import { planDays } from "./plans";
+import { hashPin } from "./crypto";
 
 export function normalizePhone(phone) {
   return (phone || "").replace(/\D/g, "");
@@ -17,94 +19,120 @@ export function normalizePhone(phone) {
 // ---- Platform tənzimləmələri ----
 
 export async function ensureDefaultPlatform() {
-  const snap = await get(ref(db, "platform/adminPin"));
+  const snap = await get(ref(db, "platform/adminPinHash"));
   if (!snap.exists()) {
-    await set(ref(db, "platform/adminPin"), "2026");
+    await set(ref(db, "platform/adminPinHash"), await hashPin("2026"));
   }
 }
 
-export function listenPlatformAdminPin(callback) {
-  return onValue(ref(db, "platform/adminPin"), (snap) => {
-    callback(snap.val() || "2026");
+export function listenPlatformAdminPinHash(callback) {
+  return onValue(ref(db, "platform/adminPinHash"), (snap) => {
+    callback(snap.val() || null);
   });
 }
 
+export async function checkPlatformPin(pin) {
+  const snap = await get(ref(db, "platform/adminPinHash"));
+  const stored = snap.val();
+  if (!stored) return false;
+  return (await hashPin(pin)) === stored;
+}
+
 // ---- Şirkətlər (platform admin tərəfindən idarə olunur) ----
+//
+// Təhlükəsizlik: /companies node-u artıq siyahı kimi oxuna bilmir (rules-da
+// bağlıdır) — yalnız konkret ID ilə. Platform Admin üçün /companyIndex adlı
+// ayrı, "redaktə edilmiş" (PIN-siz) nüsxə saxlanılır; giriş üçün /phoneIndex
+// telefon → ID uyğunlaşdırması aparır ki, login zamanı bütün şirkətlər
+// bazaya sorğu olaraq getməsin.
+
+function toIndexEntry(profile) {
+  return {
+    name: profile.name,
+    phone: profile.phone,
+    status: profile.status,
+    plan: profile.plan,
+    expiresAt: profile.expiresAt,
+    createdAt: profile.createdAt,
+  };
+}
 
 export function listenCompanies(callback) {
-  return onValue(ref(db, "companies"), (snap) => {
+  return onValue(ref(db, "companyIndex"), (snap) => {
     const val = snap.val() || {};
-    const list = Object.entries(val).map(([id, c]) => ({
-      id,
-      ...c.profile,
-    }));
+    const list = Object.entries(val).map(([id, c]) => ({ id, ...c }));
     list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     callback(list);
   });
 }
 
-export async function findCompanyByPhone(phone) {
-  const target = normalizePhone(phone);
-  const snap = await get(ref(db, "companies"));
-  const val = snap.val() || {};
-  for (const [id, c] of Object.entries(val)) {
-    if (normalizePhone(c.profile?.phone) === target) {
-      return { id, ...c.profile };
-    }
-  }
-  return null;
+export async function findCompanyIdByPhone(phone) {
+  const snap = await get(ref(db, `phoneIndex/${normalizePhone(phone)}`));
+  return snap.val() || null;
 }
 
 export async function registerCompany({ name, phone, pin, logo }) {
-  const existing = await findCompanyByPhone(phone);
-  if (existing) {
+  const normalized = normalizePhone(phone);
+  const existingId = await findCompanyIdByPhone(normalized);
+  if (existingId) {
     throw new Error("Bu nömrə ilə artıq qeydiyyat var");
   }
   const companyRef = push(ref(db, "companies"));
-  await set(ref(db, `companies/${companyRef.key}/profile`), {
+  const id = companyRef.key;
+  const profile = {
     name: name.trim(),
-    phone: normalizePhone(phone),
-    pin,
-    tenantAdminPin: pin,
+    phone: normalized,
+    pinHash: await hashPin(pin),
     logo: logo || null,
     status: "pending",
     plan: null,
     activatedAt: null,
     expiresAt: null,
     createdAt: Date.now(),
-  });
-  return companyRef.key;
+  };
+  await Promise.all([
+    set(ref(db, `companies/${id}/profile`), profile),
+    set(ref(db, `phoneIndex/${normalized}`), id),
+    set(ref(db, `companyIndex/${id}`), toIndexEntry(profile)),
+  ]);
+  return id;
 }
 
 export async function activateCompany(companyId, planId) {
   const days = planDays(planId);
-  await update(ref(db, `companies/${companyId}/profile`), {
+  const updates = {
     status: "active",
     plan: planId,
     activatedAt: Date.now(),
     expiresAt: Date.now() + days * 86400000,
-  });
+  };
+  await update(ref(db, `companies/${companyId}/profile`), updates);
+  await update(ref(db, `companyIndex/${companyId}`), updates);
 }
 
 export async function deactivateCompany(companyId) {
-  await update(ref(db, `companies/${companyId}/profile`), {
-    status: "deactivated",
-  });
+  await update(ref(db, `companies/${companyId}/profile`), { status: "deactivated" });
+  await update(ref(db, `companyIndex/${companyId}`), { status: "deactivated" });
 }
 
 export async function loginCompany(phone, pin) {
-  const company = await findCompanyByPhone(phone);
+  const companyId = await findCompanyIdByPhone(phone);
+  if (!companyId) return { ok: false, reason: "not-found" };
+
+  const snap = await get(ref(db, `companies/${companyId}/profile`));
+  const company = snap.val();
   if (!company) return { ok: false, reason: "not-found" };
-  if (company.pin !== pin) return { ok: false, reason: "wrong-pin" };
+
+  const enteredHash = await hashPin(pin);
+  if (enteredHash !== company.pinHash) return { ok: false, reason: "wrong-pin" };
   if (company.status === "pending") return { ok: false, reason: "pending" };
-  if (company.status === "deactivated")
-    return { ok: false, reason: "deactivated" };
+  if (company.status === "deactivated") return { ok: false, reason: "deactivated" };
   if (company.status === "active" && company.expiresAt < Date.now())
     return { ok: false, reason: "expired" };
-  return { ok: true, companyId: company.id };
+  return { ok: true, companyId };
 }
 
-// ---- Şirkət profili (tenant özü dəyişə bilər: ad, PIN-lər) ----
+// ---- Şirkət profili (tenant özü dəyişə bilər: ad, PIN) ----
 
 export function listenCompanyProfile(companyId, callback) {
   return onValue(ref(db, `companies/${companyId}/profile`), (snap) => {
@@ -113,7 +141,18 @@ export function listenCompanyProfile(companyId, callback) {
 }
 
 export async function updateCompanyProfile(companyId, updates) {
-  await update(ref(db, `companies/${companyId}/profile`), updates);
+  const payload = { ...updates };
+  if (payload.newPin) {
+    payload.pinHash = await hashPin(payload.newPin);
+    delete payload.newPin;
+  }
+  await update(ref(db, `companies/${companyId}/profile`), payload);
+
+  const indexUpdate = {};
+  if ("name" in payload) indexUpdate.name = payload.name;
+  if (Object.keys(indexUpdate).length > 0) {
+    await update(ref(db, `companyIndex/${companyId}`), indexUpdate);
+  }
 }
 
 // ---- Maşınlar (tenant-scoped) ----
@@ -128,11 +167,21 @@ export function listenCars(companyId, callback) {
 }
 
 export async function addCar(companyId, car) {
+  const plate = car.plate.trim().toUpperCase();
+
+  // Nömrə nişanının təkrarlanmadığını yoxla
+  const snap = await get(ref(db, `companies/${companyId}/cars`));
+  const existing = snap.val() || {};
+  const duplicate = Object.values(existing).some((c) => c.plate === plate);
+  if (duplicate) {
+    throw new Error(`"${plate}" nömrəli maşın artıq mövcuddur`);
+  }
+
   const carsRef = ref(db, `companies/${companyId}/cars`);
   const newRef = push(carsRef);
   await set(newRef, {
     name: car.name,
-    plate: car.plate,
+    plate,
     year: car.year ?? null,
     dailyPrice: car.dailyPrice,
     ownerName: car.ownerName || null,
@@ -152,6 +201,17 @@ export async function deleteCar(companyId, id) {
   await remove(ref(db, `companies/${companyId}/cars/${id}`));
 }
 
+// Bir maşının statusunu YALNIZ "boş" olduğu halda "icarədə"-yə çevirir —
+// iki işçinin eyni maşını eyni anda icarəyə verməsinin qarşısını alır.
+export async function tryReserveCar(companyId, carId) {
+  const carRef = ref(db, `companies/${companyId}/cars/${carId}/status`);
+  const result = await runTransaction(carRef, (current) => {
+    if (current !== "boş") return; // abort — artıq boş deyil
+    return "icarədə";
+  });
+  return result.committed;
+}
+
 // ---- İcarələr (tenant-scoped) ----
 
 export function listenRentals(companyId, callback) {
@@ -167,16 +227,27 @@ export function listenRentals(companyId, callback) {
 }
 
 export async function addRental(companyId, rental) {
+  const reserved = await tryReserveCar(companyId, rental.carId);
+  if (!reserved) {
+    throw new Error(
+      "Bu maşın artıq başqası tərəfindən icarəyə verilib. Səhifəni yeniləyin."
+    );
+  }
   const rentalsRef = ref(db, `companies/${companyId}/rentals`);
   const newRef = push(rentalsRef);
-  await set(newRef, {
-    ...rental,
-    status: "aktiv",
-    createdAt: Date.now(),
-  });
-  await update(ref(db, `companies/${companyId}/cars/${rental.carId}`), {
-    status: "icarədə",
-  });
+  try {
+    await set(newRef, {
+      ...rental,
+      status: "aktiv",
+      createdAt: Date.now(),
+    });
+  } catch (err) {
+    // İcarə qeydi yaranmadısa, maşını geri "boş"a qaytar
+    await update(ref(db, `companies/${companyId}/cars/${rental.carId}`), {
+      status: "boş",
+    });
+    throw err;
+  }
   return newRef.key;
 }
 
@@ -218,7 +289,11 @@ export async function deleteRental(companyId, rental) {
 
 export async function getPublicCompany(companyId) {
   const snap = await get(ref(db, `companies/${companyId}/profile`));
-  return snap.val();
+  const val = snap.val();
+  if (!val) return null;
+  // PIN hash-i belə açıq şəkildə müştəriyə göndərmirik
+  const { pinHash, ...safe } = val;
+  return safe;
 }
 
 export function listenPublicCars(companyId, callback) {
@@ -256,6 +331,9 @@ export async function submitCarRequest(companyId, { carId, customerName, custome
   return newRef.key;
 }
 
+// status: "rejected" birbaşa; "approved" isə YALNIZ icarə faktiki
+// yarandıqdan sonra çağırılmalıdır (bax: NewRental) ki, yarımçıq qalan
+// sorğu itməsin.
 export async function resolveRequest(companyId, requestId, status) {
   await update(ref(db, `companies/${companyId}/requests/${requestId}`), {
     status,

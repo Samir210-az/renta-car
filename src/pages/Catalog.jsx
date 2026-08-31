@@ -133,7 +133,7 @@ function CarListing({ companyId, car }) {
             Sorğunuz göndərildi, tezliklə əlaqə saxlanılacaq
           </p>
         ) : open ? (
-          <form onSubmit={handleSubmit} className="mt-3 pt-3 border-t border-stone-50 space-y-2.5">
+          <form onSubmit={handleSubmit} className="mt-3 pt-3 border-t border-stone-700 space-y-2.5">
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
