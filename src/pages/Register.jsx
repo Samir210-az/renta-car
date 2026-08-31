@@ -39,8 +39,9 @@ export default function Register() {
     setError("");
     try {
       await registerCompany({ name, phone, pin, logo });
+      const platformUrl = `${window.location.origin}/platform-login`;
       notifyTelegram(
-        `🚗 <b>Renta-Car — yeni qeydiyyat</b>\nŞirkət: ${name.trim()}\nTelefon: +${phone.trim()}\n3 günlük pulsuz sınaq avtomatik aktivləşdi.`
+        `🚗 <b>Renta-Car — yeni qeydiyyat</b>\nŞirkət: ${name.trim()}\nTelefon: +${phone.trim()}\n3 günlük pulsuz sınaq avtomatik aktivləşdi.\n\n<a href="${platformUrl}">Platform Admin-ə keç</a>`
       );
       setDone(true);
     } catch (err) {
