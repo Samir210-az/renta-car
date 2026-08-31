@@ -135,6 +135,9 @@ export async function addCar(companyId, car) {
     plate: car.plate,
     year: car.year ?? null,
     dailyPrice: car.dailyPrice,
+    ownerName: car.ownerName || null,
+    ownerPhone: car.ownerPhone || null,
+    ownerDailyRate: car.ownerDailyRate ?? null,
     status: "boş",
     createdAt: Date.now(),
   });
@@ -257,4 +260,57 @@ export async function resolveRequest(companyId, requestId, status) {
   await update(ref(db, `companies/${companyId}/requests/${requestId}`), {
     status,
   });
+}
+
+// ---- Maşın sahiblərinə ödənişlər ----
+
+export function listenOwnerPayments(companyId, callback) {
+  return onValue(ref(db, `companies/${companyId}/ownerPayments`), (snap) => {
+    const val = snap.val() || {};
+    const list = Object.entries(val).map(([id, p]) => ({ id, ...p }));
+    list.sort((a, b) => b.paidAt - a.paidAt);
+    callback(list);
+  });
+}
+
+export async function addOwnerPayment(companyId, { carId, amount, note }) {
+  const paymentsRef = ref(db, `companies/${companyId}/ownerPayments`);
+  const newRef = push(paymentsRef);
+  await set(newRef, {
+    carId,
+    amount: Number(amount),
+    note: (note || "").trim(),
+    paidAt: Date.now(),
+  });
+  return newRef.key;
+}
+
+export async function deleteOwnerPayment(companyId, paymentId) {
+  await remove(ref(db, `companies/${companyId}/ownerPayments/${paymentId}`));
+}
+
+// ---- Tək maşın üçün tam profil (kart səhifəsi) ----
+
+export async function getCarDetail(companyId, carId) {
+  const [carSnap, rentalsSnap, paymentsSnap] = await Promise.all([
+    get(ref(db, `companies/${companyId}/cars/${carId}`)),
+    get(ref(db, `companies/${companyId}/rentals`)),
+    get(ref(db, `companies/${companyId}/ownerPayments`)),
+  ]);
+  const car = carSnap.val();
+  if (!car) return null;
+
+  const allRentals = rentalsSnap.val() || {};
+  const rentals = Object.entries(allRentals)
+    .map(([id, r]) => ({ id, ...r }))
+    .filter((r) => r.carId === carId)
+    .sort((a, b) => b.createdAt - a.createdAt);
+
+  const allPayments = paymentsSnap.val() || {};
+  const payments = Object.entries(allPayments)
+    .map(([id, p]) => ({ id, ...p }))
+    .filter((p) => p.carId === carId)
+    .sort((a, b) => b.paidAt - a.paidAt);
+
+  return { car: { id: carId, ...car }, rentals, payments };
 }

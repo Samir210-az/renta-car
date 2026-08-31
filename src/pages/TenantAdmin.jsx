@@ -2,18 +2,20 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, LogOut } from "lucide-react";
 import { getCompanyId, logoutCompany } from "../lib/session";
-import { listenCars, listenRentals, listenCompanyProfile, listenRequests } from "../lib/data";
+import { listenCars, listenRentals, listenCompanyProfile, listenRequests, listenOwnerPayments } from "../lib/data";
 import Footer from "../components/Footer";
 import AdminCars from "../components/admin/AdminCars";
 import AdminRentals from "../components/admin/AdminRentals";
 import AdminReport from "../components/admin/AdminReport";
 import AdminRequests from "../components/admin/AdminRequests";
+import AdminPayments from "../components/admin/AdminPayments";
 import TenantSettings from "../components/admin/TenantSettings";
 
 const TABS = [
   { id: "requests", label: "Sorğular" },
   { id: "cars", label: "Maşınlar" },
   { id: "rentals", label: "İcarələr" },
+  { id: "payments", label: "Ödənişlər" },
   { id: "report", label: "Hesabat" },
   { id: "settings", label: "Tənzimləmələr" },
 ];
@@ -25,17 +27,20 @@ export default function TenantAdmin() {
   const [cars, setCars] = useState([]);
   const [rentals, setRentals] = useState([]);
   const [requests, setRequests] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     const unsubCars = listenCars(companyId, setCars);
     const unsubRentals = listenRentals(companyId, setRentals);
     const unsubRequests = listenRequests(companyId, setRequests);
+    const unsubPayments = listenOwnerPayments(companyId, setPayments);
     const unsubProfile = listenCompanyProfile(companyId, setProfile);
     return () => {
       unsubCars();
       unsubRentals();
       unsubRequests();
+      unsubPayments();
       unsubProfile();
     };
   }, [companyId]);
@@ -120,6 +125,14 @@ export default function TenantAdmin() {
             companyId={companyId}
             rentals={rentals}
             carsById={carsById}
+          />
+        )}
+        {tab === "payments" && (
+          <AdminPayments
+            companyId={companyId}
+            cars={cars}
+            rentals={rentals}
+            payments={payments}
           />
         )}
         {tab === "report" && <AdminReport cars={cars} rentals={rentals} />}

@@ -1,4 +1,7 @@
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
+import { calcOwnerOwed } from "../../lib/money";
 
 export default function AdminReport({ cars, rentals }) {
   const stats = useMemo(() => {
@@ -35,6 +38,20 @@ export default function AdminReport({ cars, rentals }) {
     };
   }, [cars, rentals]);
 
+  const carsWithOwner = useMemo(
+    () => cars.filter((c) => c.ownerName || c.ownerDailyRate),
+    [cars]
+  );
+
+  const rentalsByCarId = useMemo(() => {
+    const map = {};
+    for (const r of rentals) {
+      if (!map[r.carId]) map[r.carId] = [];
+      map[r.carId].push(r);
+    }
+    return map;
+  }, [rentals]);
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
@@ -54,6 +71,39 @@ export default function AdminReport({ cars, rentals }) {
           <Row label="Servisdə" value={stats.serviceCount} color="bg-amber-500" />
         </div>
       </div>
+
+      {carsWithOwner.length > 0 && (
+        <div>
+          <p className="text-[13px] font-medium text-stone-500 mb-2.5">
+            Maşın sahibləri
+          </p>
+          <div className="space-y-2">
+            {carsWithOwner.map((car) => {
+              const owed = calcOwnerOwed(car, rentalsByCarId[car.id] || []);
+              return (
+                <Link
+                  key={car.id}
+                  to={`/masin/${car.id}`}
+                  className="flex items-center justify-between rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft px-4 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[13.5px] font-medium text-stone-50 truncate">
+                      {car.ownerName || "Sahib qeyd olunmayıb"}
+                    </p>
+                    <p className="text-[12px] text-stone-500">{car.name}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="text-[13px] font-medium text-stone-300">
+                      {owed} ₼
+                    </span>
+                    <ChevronRight size={15} className="text-stone-600" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

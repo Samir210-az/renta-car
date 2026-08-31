@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Plus, Trash2, ImagePlus, X } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Plus, Trash2, ImagePlus, X, ExternalLink } from "lucide-react";
 import { addCar, updateCar, deleteCar } from "../../lib/data";
 import { compressImage } from "../../lib/image";
 import StatusBadge from "../StatusBadge";
@@ -12,6 +13,9 @@ export default function AdminCars({ companyId, cars }) {
   const [plate, setPlate] = useState("");
   const [year, setYear] = useState("");
   const [dailyPrice, setDailyPrice] = useState("");
+  const [ownerName, setOwnerName] = useState("");
+  const [ownerPhone, setOwnerPhone] = useState("");
+  const [ownerDailyRate, setOwnerDailyRate] = useState("");
   const [saving, setSaving] = useState(false);
 
   async function handleAdd(e) {
@@ -24,11 +28,17 @@ export default function AdminCars({ companyId, cars }) {
         plate: plate.trim().toUpperCase(),
         year: year ? Number(year) : null,
         dailyPrice: Number(dailyPrice),
+        ownerName: ownerName.trim(),
+        ownerPhone: ownerPhone.trim(),
+        ownerDailyRate: ownerDailyRate ? Number(ownerDailyRate) : null,
       });
       setName("");
       setPlate("");
       setYear("");
       setDailyPrice("");
+      setOwnerName("");
+      setOwnerPhone("");
+      setOwnerDailyRate("");
     } finally {
       setSaving(false);
     }
@@ -86,6 +96,34 @@ export default function AdminCars({ companyId, cars }) {
             Əlavə et
           </button>
         </div>
+
+        <div className="border-t border-stone-700 pt-3">
+          <p className="text-[12px] text-stone-500 mb-2">
+            Maşın sahibi (əgər başqasına məxsusdursa)
+          </p>
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <input
+              value={ownerName}
+              onChange={(e) => setOwnerName(e.target.value)}
+              placeholder="Sahibin adı"
+              className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+            />
+            <input
+              value={ownerPhone}
+              onChange={(e) => setOwnerPhone(e.target.value)}
+              placeholder="Sahibin telefonu"
+              className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+            />
+          </div>
+          <input
+            value={ownerDailyRate}
+            onChange={(e) => setOwnerDailyRate(e.target.value)}
+            type="number"
+            min="0"
+            placeholder="Sahibə günlük ödəniləcək məbləğ (₼)"
+            className="h-11 w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+          />
+        </div>
       </form>
 
       <div className="space-y-2.5">
@@ -109,13 +147,22 @@ export default function AdminCars({ companyId, cars }) {
                 </p>
                 <p className="text-[12.5px] text-stone-500">{car.plate}</p>
               </div>
-              <button
-                onClick={() => handleDelete(car)}
-                className="h-8 w-8 rounded-lg flex items-center justify-center text-stone-300 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
-                aria-label="Sil"
-              >
-                <Trash2 size={15} />
-              </button>
+              <div className="flex items-center gap-1">
+                <Link
+                  to={`/masin/${car.id}`}
+                  className="h-8 w-8 rounded-lg flex items-center justify-center text-stone-400 hover:text-gold hover:bg-gold/10 transition-colors"
+                  aria-label="Kart səhifəsi"
+                >
+                  <ExternalLink size={15} />
+                </Link>
+                <button
+                  onClick={() => handleDelete(car)}
+                  className="h-8 w-8 rounded-lg flex items-center justify-center text-stone-300 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                  aria-label="Sil"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
             </div>
 
             <CarPhotos companyId={companyId} car={car} />
@@ -163,6 +210,37 @@ export default function AdminCars({ companyId, cars }) {
               <div className="ml-auto">
                 <StatusBadge status={car.status} />
               </div>
+            </div>
+
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              <input
+                defaultValue={car.ownerName || ""}
+                onBlur={(e) =>
+                  updateCar(companyId, car.id, { ownerName: e.target.value.trim() })
+                }
+                placeholder="Sahibin adı"
+                className="h-9 flex-1 min-w-[110px] rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px]"
+              />
+              <input
+                defaultValue={car.ownerPhone || ""}
+                onBlur={(e) =>
+                  updateCar(companyId, car.id, { ownerPhone: e.target.value.trim() })
+                }
+                placeholder="Sahibin telefonu"
+                className="h-9 flex-1 min-w-[110px] rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px]"
+              />
+              <input
+                type="number"
+                min="0"
+                defaultValue={car.ownerDailyRate ?? ""}
+                onBlur={(e) =>
+                  updateCar(companyId, car.id, {
+                    ownerDailyRate: e.target.value ? Number(e.target.value) : null,
+                  })
+                }
+                placeholder="Sahibə/gün ₼"
+                className="h-9 w-28 rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px]"
+              />
             </div>
           </div>
         ))}

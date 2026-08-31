@@ -6,7 +6,6 @@ import {
   listenCars,
   listenRentals,
   listenRequests,
-  updateCar,
   addCar,
   listenCompanyProfile,
 } from "../lib/data";
@@ -75,16 +74,11 @@ export default function Cars() {
     return cars.filter((c) => c.status === filter);
   }, [cars, filter]);
 
-  async function cycleStatus(car) {
-    const next = car.status === "boş" ? "servisdə" : "boş";
-    await updateCar(companyId, car.id, { status: next });
-  }
-
   if (cars === null) {
     return (
-      <div className="space-y-3">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-[76px] rounded-xl2 bg-stone-800/60 animate-pulse" />
+      <div className="grid grid-cols-2 gap-3">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="h-[150px] rounded-xl2 bg-stone-800/60 animate-pulse" />
         ))}
       </div>
     );
@@ -145,13 +139,12 @@ export default function Cars() {
           Bu statusda maşın yoxdur
         </p>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
           {visibleCars.map((car) => (
             <CarCard
               key={car.id}
               car={car}
               activeRental={activeRentalByCar[car.id]}
-              onCycleStatus={cycleStatus}
             />
           ))}
         </div>
@@ -179,6 +172,9 @@ function AddCarForm({ companyId, onDone }) {
   const [plate, setPlate] = useState("");
   const [year, setYear] = useState("");
   const [dailyPrice, setDailyPrice] = useState("");
+  const [ownerName, setOwnerName] = useState("");
+  const [ownerPhone, setOwnerPhone] = useState("");
+  const [ownerDailyRate, setOwnerDailyRate] = useState("");
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e) {
@@ -191,6 +187,9 @@ function AddCarForm({ companyId, onDone }) {
         plate: plate.trim().toUpperCase(),
         year: year ? Number(year) : null,
         dailyPrice: Number(dailyPrice),
+        ownerName: ownerName.trim(),
+        ownerPhone: ownerPhone.trim(),
+        ownerDailyRate: ownerDailyRate ? Number(ownerDailyRate) : null,
       });
       onDone();
     } finally {
@@ -232,17 +231,46 @@ function AddCarForm({ companyId, onDone }) {
           onChange={(e) => setDailyPrice(e.target.value)}
           type="number"
           min="0"
-          placeholder="Günlük qiymət (₼)"
+          placeholder="Müştəriyə günlük (₼)"
           className="h-11 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
         />
-        <button
-          type="submit"
-          disabled={saving}
-          className="h-11 px-4 rounded-lg bg-gold text-ink text-[13.5px] font-semibold disabled:opacity-40"
-        >
-          {saving ? "..." : "Əlavə et"}
-        </button>
       </div>
+
+      <div className="border-t border-stone-700 pt-3">
+        <p className="text-[12px] text-stone-500 mb-2">
+          Maşın sahibi (əgər başqasına məxsusdursa)
+        </p>
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <input
+            value={ownerName}
+            onChange={(e) => setOwnerName(e.target.value)}
+            placeholder="Sahibin adı"
+            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+          />
+          <input
+            value={ownerPhone}
+            onChange={(e) => setOwnerPhone(e.target.value)}
+            placeholder="Sahibin telefonu"
+            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+          />
+        </div>
+        <input
+          value={ownerDailyRate}
+          onChange={(e) => setOwnerDailyRate(e.target.value)}
+          type="number"
+          min="0"
+          placeholder="Sahibə günlük ödəniləcək məbləğ (₼)"
+          className="h-11 w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+        />
+      </div>
+
+      <button
+        type="submit"
+        disabled={saving}
+        className="w-full h-11 rounded-lg bg-gold text-ink text-[13.5px] font-semibold disabled:opacity-40"
+      >
+        {saving ? "..." : "Əlavə et"}
+      </button>
     </form>
   );
 }

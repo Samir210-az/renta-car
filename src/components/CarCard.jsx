@@ -1,42 +1,55 @@
-import { Wrench } from "lucide-react";
-import StatusBadge from "./StatusBadge";
+import { Link } from "react-router-dom";
 
-export default function CarCard({ car, activeRental, onCycleStatus }) {
+const STATUS_STYLE = {
+  boş: "ring-emerald-500/40 bg-emerald-500/[0.06]",
+  icarədə: "ring-rose-500/40 bg-rose-500/[0.06]",
+  servisdə: "ring-amber-500/40 bg-amber-500/[0.06]",
+};
+
+const STATUS_DOT = {
+  boş: "bg-emerald-500",
+  icarədə: "bg-rose-500",
+  servisdə: "bg-amber-500",
+};
+
+export default function CarCard({ car, activeRental }) {
+  const ring = STATUS_STYLE[car.status] || STATUS_STYLE.boş;
+  const dot = STATUS_DOT[car.status] || STATUS_DOT.boş;
+  const photo = car.photos?.[0];
+
   return (
-    <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4 flex items-center justify-between gap-3">
-      <div className="min-w-0">
-        <div className="flex items-center gap-2">
-          <h3 className="font-semibold text-stone-50 text-[15px] truncate">
-            {car.name}
-          </h3>
+    <Link
+      to={`/masin/${car.id}`}
+      className={`rounded-xl2 bg-surface ring-2 ${ring} p-3 flex flex-col active:scale-[0.98] transition-transform`}
+    >
+      {photo ? (
+        <img
+          src={photo}
+          alt=""
+          className="w-full h-24 rounded-lg object-cover mb-2.5"
+        />
+      ) : (
+        <div className="w-full h-24 rounded-lg bg-paper mb-2.5 flex items-center justify-center">
+          <span className={`h-2.5 w-2.5 rounded-full ${dot}`} />
         </div>
-        <p className="text-[13px] text-stone-500 mt-0.5">
-          {car.plate}
-          {car.year ? ` · ${car.year}` : ""}
+      )}
+
+      <div className="flex items-start justify-between gap-1.5">
+        <h3 className="font-semibold text-stone-50 text-[13.5px] leading-tight truncate">
+          {car.name}
+        </h3>
+        <span className={`h-2 w-2 rounded-full shrink-0 mt-1 ${dot}`} />
+      </div>
+      <p className="text-[11.5px] text-stone-500 mt-0.5">
+        {car.plate}
+        {car.year ? ` · ${car.year}` : ""}
+      </p>
+
+      {car.status === "icarədə" && activeRental && (
+        <p className="text-[11px] text-stone-400 mt-1.5 truncate">
+          {activeRental.customerName} · {activeRental.endDate}
         </p>
-
-        {car.status === "icarədə" && activeRental && (
-          <p className="text-[12.5px] text-stone-500 mt-2">
-            {activeRental.customerName} · qayıdış{" "}
-            <span className="font-medium text-stone-300">
-              {activeRental.endDate}
-            </span>
-          </p>
-        )}
-      </div>
-
-      <div className="flex flex-col items-end gap-2 shrink-0">
-        <StatusBadge status={car.status} />
-        {car.status !== "icarədə" && (
-          <button
-            onClick={() => onCycleStatus(car)}
-            className="inline-flex items-center gap-1 text-[11.5px] text-stone-400 hover:text-stone-200 transition-colors"
-          >
-            <Wrench size={12} />
-            {car.status === "boş" ? "servisə göndər" : "aktiv et"}
-          </button>
-        )}
-      </div>
-    </div>
+      )}
+    </Link>
   );
 }
