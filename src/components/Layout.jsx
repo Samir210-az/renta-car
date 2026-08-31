@@ -32,11 +32,11 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen bg-paper flex flex-col">
-      <header className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-slate-100">
+      <header className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-slate-100 touch-manipulation">
         <div className="max-w-lg mx-auto px-5 py-4 flex items-center justify-between">
           <button
             onClick={handleLogoTap}
-            className="flex items-center gap-2 select-none"
+            className="flex items-center gap-2 select-none touch-manipulation"
             aria-label={companyName}
           >
             <span className="h-8 w-8 rounded-xl bg-ink flex items-center justify-center">
