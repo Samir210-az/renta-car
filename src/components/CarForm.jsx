@@ -61,13 +61,13 @@ export default function CarForm({ companyId, onDone, className = "" }) {
           onChange={(e) => setName(e.target.value)}
           placeholder="Marka / Model"
           autoFocus
-          className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+          className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
         />
         <input
           value={plate}
           onChange={(e) => setPlate(e.target.value)}
           placeholder="Dövlət nömrəsi"
-          className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+          className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
         />
       </div>
       <div className="flex gap-3">
@@ -77,7 +77,7 @@ export default function CarForm({ companyId, onDone, className = "" }) {
           type="text"
           inputMode="numeric"
           placeholder="İl"
-          className="h-11 w-20 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+          className="h-11 w-20 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
         />
         <input
           value={dailyPrice}
@@ -85,7 +85,7 @@ export default function CarForm({ companyId, onDone, className = "" }) {
           type="number"
           min="0"
           placeholder="Müştəriyə günlük (₼)"
-          className="h-11 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+          className="h-11 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
         />
       </div>
 
@@ -97,14 +97,14 @@ export default function CarForm({ companyId, onDone, className = "" }) {
             onChange={(e) => setOwnerName(e.target.value)}
             placeholder="Sahibin adı"
             required
-            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
           />
           <input
             value={ownerPhone}
             onChange={(e) => setOwnerPhone(e.target.value)}
             placeholder="Sahibin telefonu"
             required
-            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
           />
         </div>
         <input
@@ -114,7 +114,7 @@ export default function CarForm({ companyId, onDone, className = "" }) {
           min="0"
           required
           placeholder="Sahibə günlük ödəniləcək məbləğ (₼)"
-          className="h-11 w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+          className="h-11 w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
         />
       </div>
 

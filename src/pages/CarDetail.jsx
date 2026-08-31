@@ -171,7 +171,7 @@ export default function CarDetail() {
 
         {(car.ownerName || car.ownerDailyRate) && (
           <Section title="Maşın sahibi">
-            <div className="rounded-xl2 bg-surface ring-1 ring-stone-700 p-4 space-y-1.5">
+            <div className="rounded-xl2 bg-surface ring-1 ring-stone-700 p-4 space-y-1.5 text-stone-50">
               <Row label="Ad" value={car.ownerName || "—"} />
               <Row label="Telefon" value={car.ownerPhone || "—"} />
               <Row
@@ -188,7 +188,7 @@ export default function CarDetail() {
               />
             </div>
 
-            <form onSubmit={handlePay} className="rounded-xl2 bg-surface ring-1 ring-stone-700 p-4 space-y-2.5 mt-3">
+            <form onSubmit={handlePay} className="rounded-xl2 bg-surface ring-1 ring-stone-700 p-4 space-y-2.5 mt-3 text-stone-50">
               <p className="text-[12.5px] font-medium text-stone-400 flex items-center gap-1.5">
                 <Wallet size={13} />
                 Sahibə ödəniş et
@@ -200,13 +200,13 @@ export default function CarDetail() {
                   value={payAmount}
                   onChange={(e) => setPayAmount(e.target.value)}
                   placeholder="Məbləğ (₼)"
-                  className="h-10 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px]"
+                  className="h-10 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
                 />
                 <input
                   value={payNote}
                   onChange={(e) => setPayNote(e.target.value)}
                   placeholder="Qeyd (istəyə görə)"
-                  className="h-10 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px]"
+                  className="h-10 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
                 />
               </div>
               <button
@@ -246,7 +246,7 @@ export default function CarDetail() {
                 <Link
                   key={r.id}
                   to={`/akt/${companyId}/${r.id}`}
-                  className="flex items-center justify-between rounded-xl2 bg-surface ring-1 ring-stone-700 px-4 py-3"
+                  className="flex items-center justify-between rounded-xl2 bg-surface ring-1 ring-stone-700 px-4 py-3 text-stone-50"
                 >
                   <div className="min-w-0">
                     <p className="text-[13px] font-medium text-stone-100 truncate">
@@ -278,7 +278,7 @@ export default function CarDetail() {
 
 function StatCard({ label, value }) {
   return (
-    <div className="rounded-xl2 bg-surface ring-1 ring-stone-700 p-3.5 text-center">
+    <div className="rounded-xl2 bg-surface ring-1 ring-stone-700 p-3.5 text-center text-stone-50">
       <p className="text-[17px] font-semibold text-stone-50">{value}</p>
       <p className="text-[11px] text-stone-500 mt-0.5">{label}</p>
     </div>

@@ -138,14 +138,14 @@ function CarListing({ companyId, car }) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Adınız"
-              className="w-full h-10 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+              className="w-full h-10 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
             />
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="Telefon nömrəniz"
-              className="w-full h-10 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+              className="w-full h-10 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
             />
             <button
               type="submit"

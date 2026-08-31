@@ -132,12 +132,12 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
           value={km}
           onChange={(e) => setKm(e.target.value)}
           placeholder="Km sayğacı"
-          className="h-10 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px]"
+          className="h-10 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
         />
         <select
           value={fuel}
           onChange={(e) => setFuel(e.target.value)}
-          className="h-10 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px]"
+          className="h-10 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
         >
           {FUEL_LEVELS.map((f) => (
             <option key={f} value={f}>
@@ -151,7 +151,7 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
         onChange={(e) => setExteriorNotes(e.target.value)}
         placeholder="Xarici vəziyyət qeydi (istəyə görə)"
         rows={2}
-        className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2 text-[13px] resize-none"
+        className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2 text-[13px] resize-none text-stone-50"
       />
       <DamageDiagram value={damage} onChange={setDamage} />
       <textarea
@@ -159,7 +159,7 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
         onChange={(e) => setInteriorNotes(e.target.value)}
         placeholder="Daxili vəziyyət qeydi (salon, oturacaqlar, ləkə və s.)"
         rows={2}
-        className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2 text-[13px] resize-none"
+        className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2 text-[13px] resize-none text-stone-50"
       />
       <div className="flex items-center gap-2">
         <button

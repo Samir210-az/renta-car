@@ -77,7 +77,7 @@ export default function TenantSettings({ companyId, profile }) {
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+          className="w-full h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
         />
       </Field>
 
@@ -87,7 +87,7 @@ export default function TenantSettings({ companyId, profile }) {
           onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
           inputMode="numeric"
           placeholder="••••"
-          className="w-full h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] tracking-widest placeholder:tracking-normal"
+          className="w-full h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] tracking-widest placeholder:tracking-normal text-stone-50"
         />
         <p className="text-[11px] text-stone-500 mt-1">
           Təhlükəsizlik səbəbinə görə cari PIN göstərilmir.

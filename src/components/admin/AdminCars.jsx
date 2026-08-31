@@ -66,7 +66,7 @@ export default function AdminCars({ companyId, cars }) {
                 onChange={(e) =>
                   updateCar(companyId, car.id, { status: e.target.value })
                 }
-                className="h-9 rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px]"
+                className="h-9 rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px] text-stone-50"
               >
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
@@ -86,7 +86,7 @@ export default function AdminCars({ companyId, cars }) {
                   })
                 }
                 placeholder="İl"
-                className="h-9 w-16 rounded-lg bg-paper ring-1 ring-stone-700 px-2 text-[12.5px]"
+                className="h-9 w-16 rounded-lg bg-paper ring-1 ring-stone-700 px-2 text-[12.5px] text-stone-50"
               />
               <input
                 type="number"
@@ -97,7 +97,7 @@ export default function AdminCars({ companyId, cars }) {
                   if (v > 0) updateCar(companyId, car.id, { dailyPrice: v });
                   else e.target.value = car.dailyPrice;
                 }}
-                className="h-9 w-24 rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px]"
+                className="h-9 w-24 rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px] text-stone-50"
               />
               <span className="text-[12px] text-stone-400">₼/gün</span>
               <div className="ml-auto">
@@ -115,7 +115,7 @@ export default function AdminCars({ companyId, cars }) {
                   updateCar(companyId, car.id, { ownerName: e.target.value.trim() })
                 }
                 placeholder="Sahibin adı"
-                className="h-9 flex-1 min-w-[110px] rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px]"
+                className="h-9 flex-1 min-w-[110px] rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px] text-stone-50"
               />
               <input
                 defaultValue={car.ownerPhone || ""}
@@ -123,7 +123,7 @@ export default function AdminCars({ companyId, cars }) {
                   updateCar(companyId, car.id, { ownerPhone: e.target.value.trim() })
                 }
                 placeholder="Sahibin telefonu"
-                className="h-9 flex-1 min-w-[110px] rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px]"
+                className="h-9 flex-1 min-w-[110px] rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px] text-stone-50"
               />
               <input
                 type="number"
@@ -135,7 +135,7 @@ export default function AdminCars({ companyId, cars }) {
                   })
                 }
                 placeholder="Sahibə/gün ₼"
-                className="h-9 w-28 rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px]"
+                className="h-9 w-28 rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px] text-stone-50"
               />
             </div>
           </div>
