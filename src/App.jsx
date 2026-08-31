@@ -34,7 +34,7 @@ export default function App() {
   if (!ready) {
     return (
       <div className="min-h-screen bg-paper flex items-center justify-center">
-        <div className="h-8 w-8 rounded-full border-2 border-stone-300 border-t-stone-800 animate-spin" />
+        <div className="h-8 w-8 rounded-full border-2 border-stone-700 border-t-gold animate-spin" />
       </div>
     );
   }

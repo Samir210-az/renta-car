@@ -43,7 +43,7 @@ export default function AdminCars({ companyId, cars }) {
     <div className="space-y-6">
       <form
         onSubmit={handleAdd}
-        className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft p-4 space-y-3"
+        className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4 space-y-3"
       >
         <p className="text-[13px] font-medium text-stone-500">Yeni maşın</p>
         <div className="grid grid-cols-2 gap-3">
@@ -51,13 +51,13 @@ export default function AdminCars({ companyId, cars }) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Marka / Model"
-            className="h-11 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
+            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
           />
           <input
             value={plate}
             onChange={(e) => setPlate(e.target.value)}
             placeholder="Dövlət nömrəsi"
-            className="h-11 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
+            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
           />
         </div>
         <div className="flex gap-3">
@@ -67,7 +67,7 @@ export default function AdminCars({ companyId, cars }) {
             type="text"
             inputMode="numeric"
             placeholder="İl (məs. 2021)"
-            className="h-11 w-32 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
+            className="h-11 w-32 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
           />
           <input
             value={dailyPrice}
@@ -75,12 +75,12 @@ export default function AdminCars({ companyId, cars }) {
             type="number"
             min="0"
             placeholder="Günlük qiymət (₼)"
-            className="h-11 flex-1 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
+            className="h-11 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
           />
           <button
             type="submit"
             disabled={saving}
-            className="h-11 px-4 rounded-lg bg-ink text-white flex items-center gap-1.5 text-[13.5px] font-medium disabled:opacity-40"
+            className="h-11 px-4 rounded-lg bg-gold text-ink flex items-center gap-1.5 text-[13.5px] font-semibold disabled:opacity-40"
           >
             <Plus size={16} />
             Əlavə et
@@ -97,11 +97,11 @@ export default function AdminCars({ companyId, cars }) {
         {cars.map((car) => (
           <div
             key={car.id}
-            className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft p-4"
+            className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4"
           >
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="font-medium text-ink text-[14px]">
+                <p className="font-medium text-stone-50 text-[14px]">
                   {car.name}
                   {car.year ? (
                     <span className="text-stone-400 font-normal"> · {car.year}</span>
@@ -111,7 +111,7 @@ export default function AdminCars({ companyId, cars }) {
               </div>
               <button
                 onClick={() => handleDelete(car)}
-                className="h-8 w-8 rounded-lg flex items-center justify-center text-stone-300 hover:text-rose-500 hover:bg-rose-50 transition-colors"
+                className="h-8 w-8 rounded-lg flex items-center justify-center text-stone-300 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
                 aria-label="Sil"
               >
                 <Trash2 size={15} />
@@ -126,7 +126,7 @@ export default function AdminCars({ companyId, cars }) {
                 onChange={(e) =>
                   updateCar(companyId, car.id, { status: e.target.value })
                 }
-                className="h-9 rounded-lg bg-paper ring-1 ring-stone-200 px-2.5 text-[12.5px]"
+                className="h-9 rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px]"
               >
                 {STATUS_OPTIONS.map((s) => (
                   <option key={s} value={s}>
@@ -146,7 +146,7 @@ export default function AdminCars({ companyId, cars }) {
                   })
                 }
                 placeholder="İl"
-                className="h-9 w-16 rounded-lg bg-paper ring-1 ring-stone-200 px-2 text-[12.5px]"
+                className="h-9 w-16 rounded-lg bg-paper ring-1 ring-stone-700 px-2 text-[12.5px]"
               />
               <input
                 type="number"
@@ -157,7 +157,7 @@ export default function AdminCars({ companyId, cars }) {
                     dailyPrice: Number(e.target.value),
                   })
                 }
-                className="h-9 w-24 rounded-lg bg-paper ring-1 ring-stone-200 px-2.5 text-[12.5px]"
+                className="h-9 w-24 rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px]"
               />
               <span className="text-[12px] text-stone-400">₼/gün</span>
               <div className="ml-auto">
@@ -204,7 +204,7 @@ function CarPhotos({ companyId, car }) {
           <img
             src={src}
             alt=""
-            className="h-16 w-16 rounded-lg object-cover ring-1 ring-stone-200"
+            className="h-16 w-16 rounded-lg object-cover ring-1 ring-stone-700"
           />
           <button
             onClick={() => removePhoto(i)}
@@ -216,7 +216,7 @@ function CarPhotos({ companyId, car }) {
         </div>
       ))}
       {photos.length < MAX_PHOTOS && (
-        <label className="h-16 w-16 rounded-lg bg-paper ring-1 ring-dashed ring-stone-300 flex flex-col items-center justify-center gap-0.5 text-stone-400 cursor-pointer shrink-0">
+        <label className="h-16 w-16 rounded-lg bg-paper ring-1 ring-dashed ring-stone-600 flex flex-col items-center justify-center gap-0.5 text-stone-400 cursor-pointer shrink-0">
           <ImagePlus size={15} />
           <span className="text-[9.5px]">{busy ? "..." : "əlavə et"}</span>
           <input

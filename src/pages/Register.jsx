@@ -51,7 +51,7 @@ export default function Register() {
       <div className="min-h-screen bg-paper flex flex-col">
         <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
           <CheckCircle2 size={40} className="text-emerald-500 mb-3" />
-          <p className="font-semibold text-ink text-[16px]">
+          <p className="font-semibold text-stone-50 text-[16px]">
             Qeydiyyat göndərildi
           </p>
           <p className="text-[13.5px] text-stone-500 mt-2 max-w-[260px]">
@@ -60,7 +60,7 @@ export default function Register() {
           </p>
           <Link
             to="/login"
-            className="mt-6 h-11 px-6 rounded-xl bg-ink text-white text-[14px] font-medium flex items-center"
+            className="mt-6 h-11 px-6 rounded-xl bg-gold text-ink text-[14px] font-semibold flex items-center"
           >
             Giriş ekranına qayıt
           </Link>
@@ -75,13 +75,13 @@ export default function Register() {
       <div className="max-w-sm w-full mx-auto px-6 pt-8">
         <button
           onClick={() => navigate("/login")}
-          className="flex items-center gap-1.5 text-[13px] text-stone-500 hover:text-ink transition-colors mb-6"
+          className="flex items-center gap-1.5 text-[13px] text-stone-500 hover:text-stone-50 transition-colors mb-6"
         >
           <ArrowLeft size={16} />
           Geri
         </button>
 
-        <h1 className="text-lg font-semibold text-ink mb-1 flex items-center gap-2">
+        <h1 className="text-lg font-semibold text-stone-50 mb-1 flex items-center gap-2">
           <img src="/logo-icon.png" alt="" className="h-6 w-6" />
           Qeydiyyat
         </h1>
@@ -96,19 +96,19 @@ export default function Register() {
                 <img
                   src={logo}
                   alt=""
-                  className="h-14 w-14 rounded-xl object-cover ring-1 ring-stone-200"
+                  className="h-14 w-14 rounded-xl object-cover ring-1 ring-stone-700"
                 />
                 <button
                   type="button"
                   onClick={() => setLogo(null)}
-                  className="h-8 px-3 rounded-lg ring-1 ring-stone-200 text-[12px] text-stone-500 flex items-center gap-1.5"
+                  className="h-8 px-3 rounded-lg ring-1 ring-stone-700 text-[12px] text-stone-500 flex items-center gap-1.5"
                 >
                   <X size={13} />
                   Sil
                 </button>
               </div>
             ) : (
-              <label className="h-20 rounded-xl bg-white ring-1 ring-dashed ring-stone-300 flex flex-col items-center justify-center gap-1 text-stone-400 cursor-pointer">
+              <label className="h-20 rounded-xl bg-surface ring-1 ring-dashed ring-stone-600 flex flex-col items-center justify-center gap-1 text-stone-400 cursor-pointer">
                 <ImagePlus size={18} />
                 <span className="text-[12px]">
                   {logoBusy ? "Yüklənir..." : "Loqo seç"}
@@ -128,7 +128,7 @@ export default function Register() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Məs. Ram Rent a Car"
-              className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3.5 text-[14px] text-ink placeholder:text-stone-400"
+              className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3.5 text-[14px] text-stone-50 placeholder:text-stone-400"
             />
           </Field>
 
@@ -138,7 +138,7 @@ export default function Register() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+994 XX XXX XX XX"
-              className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3.5 text-[14px] text-ink placeholder:text-stone-400"
+              className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3.5 text-[14px] text-stone-50 placeholder:text-stone-400"
             />
           </Field>
 
@@ -151,7 +151,7 @@ export default function Register() {
                 setPin(e.target.value.replace(/\D/g, "").slice(0, 4))
               }
               placeholder="••••"
-              className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3.5 text-[16px] tracking-[0.4em] text-ink placeholder:text-stone-400"
+              className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3.5 text-[16px] tracking-[0.4em] text-stone-50 placeholder:text-stone-400"
             />
           </Field>
 
@@ -162,7 +162,7 @@ export default function Register() {
           <button
             type="submit"
             disabled={!isValid || saving}
-            className="w-full h-12 rounded-xl bg-ink text-white font-medium text-[14px] disabled:opacity-40 active:scale-[0.98] transition-transform"
+            className="w-full h-12 rounded-xl bg-gold text-ink font-semibold text-[14px] disabled:opacity-40 active:scale-[0.98] transition-transform"
           >
             {saving ? "Göndərilir..." : "Qeydiyyatdan keç"}
           </button>

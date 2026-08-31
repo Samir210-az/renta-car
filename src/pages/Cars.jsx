@@ -15,7 +15,7 @@ import CarCard from "../components/CarCard";
 const FILTERS = ["hamısı", "boş", "icarədə", "servisdə"];
 
 export default function Cars() {
-  const { setCompanyName, setCompanyLogo } = useOutletContext();
+  const { setCompanyName, setCompanyLogo, setHeaderAction } = useOutletContext();
   const companyId = getCompanyId();
   const [cars, setCars] = useState(null);
   const [rentals, setRentals] = useState([]);
@@ -39,6 +39,19 @@ export default function Cars() {
       unsubProfile();
     };
   }, [companyId, setCompanyName, setCompanyLogo]);
+
+  useEffect(() => {
+    setHeaderAction(
+      <button
+        onClick={() => setShowAddForm((v) => !v)}
+        className="h-8 px-3 rounded-full bg-gold text-ink text-[12.5px] font-semibold flex items-center gap-1.5 active:scale-95 transition-transform"
+      >
+        {showAddForm ? <X size={15} /> : <Plus size={15} />}
+        Maşın əlavə et
+      </button>
+    );
+    return () => setHeaderAction(null);
+  }, [showAddForm, setHeaderAction]);
 
   function copyCatalogLink() {
     const url = `${window.location.origin}/kataloq/${companyId}`;
@@ -71,7 +84,7 @@ export default function Cars() {
     return (
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-[76px] rounded-xl2 bg-stone-100 animate-pulse" />
+          <div key={i} className="h-[76px] rounded-xl2 bg-stone-800/60 animate-pulse" />
         ))}
       </div>
     );
@@ -80,32 +93,23 @@ export default function Cars() {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-lg font-semibold text-ink">Maşınlar</h1>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={copyCatalogLink}
-            className="h-9 px-3 rounded-full bg-white ring-1 ring-stone-200 text-stone-600 text-[12.5px] font-medium flex items-center gap-1.5 active:scale-95 transition-transform"
-          >
-            <Share2 size={14} />
-            {copied ? "Kopyalandı!" : "Kataloq linki"}
-          </button>
-          <button
-            onClick={() => setShowAddForm((v) => !v)}
-            className="h-9 w-9 rounded-full bg-ink text-white flex items-center justify-center active:scale-95 transition-transform"
-            aria-label="Maşın əlavə et"
-          >
-            {showAddForm ? <X size={17} /> : <Plus size={18} />}
-          </button>
-        </div>
+        <h1 className="text-lg font-semibold text-stone-50">Maşınlar</h1>
+        <button
+          onClick={copyCatalogLink}
+          className="h-9 px-3 rounded-full bg-surface ring-1 ring-stone-700 text-stone-300 text-[12.5px] font-medium flex items-center gap-1.5 active:scale-95 transition-transform"
+        >
+          <Share2 size={14} />
+          {copied ? "Kopyalandı!" : "Kataloq linki"}
+        </button>
       </div>
 
       {requests.length > 0 && (
         <Link
           to="/tenant-admin"
-          className="flex items-center gap-2.5 rounded-xl2 bg-amber-50 ring-1 ring-amber-200 px-4 py-3 mb-4"
+          className="flex items-center gap-2.5 rounded-xl2 bg-amber-500/15 ring-1 ring-amber-500/25 px-4 py-3 mb-4"
         >
-          <Inbox size={16} className="text-amber-600 shrink-0" />
-          <span className="text-[13px] text-amber-800 font-medium">
+          <Inbox size={16} className="text-amber-400 shrink-0" />
+          <span className="text-[13px] text-amber-300 font-medium">
             {requests.length} yeni sorğu gözləyir
           </span>
         </Link>
@@ -125,8 +129,8 @@ export default function Cars() {
             onClick={() => setFilter(f)}
             className={`shrink-0 rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition-colors ${
               filter === f
-                ? "bg-ink text-white"
-                : "bg-white text-stone-500 ring-1 ring-stone-100"
+                ? "bg-gold text-ink"
+                : "bg-surface text-stone-500 ring-1 ring-stone-700"
             }`}
           >
             {f}
@@ -159,12 +163,12 @@ export default function Cars() {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center text-center mt-16">
-      <div className="h-14 w-14 rounded-2xl bg-stone-100 flex items-center justify-center mb-4">
+      <div className="h-14 w-14 rounded-2xl bg-stone-800/60 flex items-center justify-center mb-4">
         <CarFront size={24} className="text-stone-400" />
       </div>
-      <p className="text-[14px] font-medium text-ink">Hələ maşın əlavə olunmayıb</p>
+      <p className="text-[14px] font-medium text-stone-50">Hələ maşın əlavə olunmayıb</p>
       <p className="text-[13px] text-stone-400 mt-1 max-w-[240px]">
-        Yuxarıdakı + düyməsi ilə ilk maşınızı əlavə edin
+        Yuxarıda "Maşın əlavə et" düyməsi ilə ilk maşınızı əlavə edin
       </p>
     </div>
   );
@@ -173,6 +177,7 @@ function EmptyState() {
 function AddCarForm({ companyId, onDone }) {
   const [name, setName] = useState("");
   const [plate, setPlate] = useState("");
+  const [year, setYear] = useState("");
   const [dailyPrice, setDailyPrice] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -184,6 +189,7 @@ function AddCarForm({ companyId, onDone }) {
       await addCar(companyId, {
         name: name.trim(),
         plate: plate.trim().toUpperCase(),
+        year: year ? Number(year) : null,
         dailyPrice: Number(dailyPrice),
       });
       onDone();
@@ -195,7 +201,7 @@ function AddCarForm({ companyId, onDone }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft p-4 space-y-3 mb-4"
+      className="rounded-xl2 bg-surface ring-1 ring-stone-700 shadow-soft p-4 space-y-3 mb-4"
     >
       <div className="grid grid-cols-2 gap-3">
         <input
@@ -203,28 +209,36 @@ function AddCarForm({ companyId, onDone }) {
           onChange={(e) => setName(e.target.value)}
           placeholder="Marka / Model"
           autoFocus
-          className="h-11 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
+          className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
         />
         <input
           value={plate}
           onChange={(e) => setPlate(e.target.value)}
           placeholder="Dövlət nömrəsi"
-          className="h-11 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
+          className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
         />
       </div>
       <div className="flex gap-3">
+        <input
+          value={year}
+          onChange={(e) => setYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          type="text"
+          inputMode="numeric"
+          placeholder="İl"
+          className="h-11 w-20 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
+        />
         <input
           value={dailyPrice}
           onChange={(e) => setDailyPrice(e.target.value)}
           type="number"
           min="0"
           placeholder="Günlük qiymət (₼)"
-          className="h-11 flex-1 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
+          className="h-11 flex-1 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
         />
         <button
           type="submit"
           disabled={saving}
-          className="h-11 px-4 rounded-lg bg-ink text-white text-[13.5px] font-medium disabled:opacity-40"
+          className="h-11 px-4 rounded-lg bg-gold text-ink text-[13.5px] font-semibold disabled:opacity-40"
         >
           {saving ? "..." : "Əlavə et"}
         </button>

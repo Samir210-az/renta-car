@@ -50,7 +50,7 @@ export default function Lightbox({ photos, onClose }) {
           >
             <ChevronRight size={20} />
           </button>
-          <div className="absolute bottom-6 left-1/2 -transtone-x-1/2 text-white/70 text-[12px]">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-[12px]">
             {index + 1} / {photos.length}
           </div>
         </>

@@ -53,7 +53,7 @@ export default function DamageDiagram({ value = [], onChange, readOnly = false }
       <svg
         viewBox="0 0 320 160"
         onClick={handleClick}
-        className={`w-full rounded-lg bg-paper ring-1 ring-stone-200 ${
+        className={`w-full rounded-lg bg-paper ring-1 ring-stone-700 ${
           !readOnly ? "cursor-crosshair" : ""
         }`}
       >

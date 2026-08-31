@@ -44,7 +44,7 @@ export default function AdminReport({ cars, rentals }) {
         <StatCard label="Ümumi icarələr" value={rentals.length} />
       </div>
 
-      <div className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft p-4">
+      <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4">
         <p className="text-[13px] font-medium text-stone-500 mb-3">
           Maşın statusları
         </p>
@@ -60,9 +60,9 @@ export default function AdminReport({ cars, rentals }) {
 
 function StatCard({ label, value }) {
   return (
-    <div className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft p-4">
+    <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4">
       <p className="text-[12px] text-stone-400 mb-1">{label}</p>
-      <p className="text-[19px] font-semibold text-ink">{value}</p>
+      <p className="text-[19px] font-semibold text-stone-50">{value}</p>
     </div>
   );
 }
@@ -70,11 +70,11 @@ function StatCard({ label, value }) {
 function Row({ label, value, color }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="flex items-center gap-2 text-stone-600">
+      <span className="flex items-center gap-2 text-stone-300">
         <span className={`h-2 w-2 rounded-full ${color}`} />
         {label}
       </span>
-      <span className="font-medium text-ink">{value}</span>
+      <span className="font-medium text-stone-50">{value}</span>
     </div>
   );
 }

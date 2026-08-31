@@ -54,14 +54,14 @@ export default function Calendar() {
 
   return (
     <div>
-      <h1 className="text-lg font-semibold text-ink mb-4">Qayıdışlar</h1>
+      <h1 className="text-lg font-semibold text-stone-50 mb-4">Qayıdışlar</h1>
 
       {!hasAny ? (
         <div className="flex flex-col items-center text-center mt-20">
-          <div className="h-14 w-14 rounded-2xl bg-stone-100 flex items-center justify-center mb-4">
+          <div className="h-14 w-14 rounded-2xl bg-stone-800 flex items-center justify-center mb-4">
             <CalendarClock size={24} className="text-stone-400" />
           </div>
-          <p className="text-[14px] font-medium text-ink">Aktiv icarə yoxdur</p>
+          <p className="text-[14px] font-medium text-stone-50">Aktiv icarə yoxdur</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -80,17 +80,17 @@ export default function Calendar() {
                   return (
                     <div
                       key={r.id}
-                      className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft p-4 flex items-center justify-between gap-3"
+                      className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4 flex items-center justify-between gap-3"
                     >
                       <div className="min-w-0">
-                        <p className="font-medium text-ink text-[14px] truncate">
+                        <p className="font-medium text-stone-50 text-[14px] truncate">
                           {car?.name || "Silinmiş maşın"}
                         </p>
                         <p className="text-[12.5px] text-stone-500 mt-0.5">
                           {r.customerName}
                         </p>
                       </div>
-                      <span className="text-[12.5px] font-medium text-stone-600 shrink-0">
+                      <span className="text-[12.5px] font-medium text-stone-300 shrink-0">
                         {format(parseISO(r.endDate), "d MMM", { locale: az })}
                       </span>
                     </div>

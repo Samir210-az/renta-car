@@ -123,21 +123,21 @@ export default function NewRental() {
     return (
       <div className="flex flex-col items-center justify-center text-center mt-24">
         <CheckCircle2 size={40} className="text-emerald-500 mb-3" />
-        <p className="font-medium text-ink">İcarə qeydə alındı</p>
+        <p className="font-medium text-stone-50">İcarə qeydə alındı</p>
       </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <h1 className="text-lg font-semibold text-ink mb-1">Yeni icarə</h1>
+      <h1 className="text-lg font-semibold text-stone-50 mb-1">Yeni icarə</h1>
 
       <Field label="Maşın">
         <select
           value={carId}
           onChange={(e) => setCarId(e.target.value)}
           required
-          className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3.5 text-[14px] text-ink"
+          className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3.5 text-[14px] text-stone-50"
         >
           <option value="" disabled>
             {cars === null
@@ -161,7 +161,7 @@ export default function NewRental() {
           onChange={(e) => setCustomerName(e.target.value)}
           required
           placeholder="Ad Soyad"
-          className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3.5 text-[14px] text-ink placeholder:text-stone-400"
+          className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3.5 text-[14px] text-stone-50 placeholder:text-stone-400"
         />
       </Field>
 
@@ -172,7 +172,7 @@ export default function NewRental() {
           onChange={(e) => setCustomerPhone(e.target.value)}
           required
           placeholder="+994 XX XXX XX XX"
-          className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3.5 text-[14px] text-ink placeholder:text-stone-400"
+          className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3.5 text-[14px] text-stone-50 placeholder:text-stone-400"
         />
       </Field>
 
@@ -183,7 +183,7 @@ export default function NewRental() {
             value={licenseNumber}
             onChange={(e) => setLicenseNumber(e.target.value)}
             placeholder="AZE0000000"
-            className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3.5 text-[14px] text-ink placeholder:text-stone-400"
+            className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3.5 text-[14px] text-stone-50 placeholder:text-stone-400"
           />
         </Field>
         <Field label="Vəsiqə hüququ bitmə tarixi">
@@ -191,7 +191,7 @@ export default function NewRental() {
             type="date"
             value={licenseValidUntil}
             onChange={(e) => setLicenseValidUntil(e.target.value)}
-            className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3 text-[14px] text-ink"
+            className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3 text-[14px] text-stone-50"
           />
         </Field>
       </div>
@@ -203,7 +203,7 @@ export default function NewRental() {
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             required
-            className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3 text-[14px] text-ink"
+            className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3 text-[14px] text-stone-50"
           />
         </Field>
         <Field label="Bitmə">
@@ -213,23 +213,23 @@ export default function NewRental() {
             min={startDate}
             onChange={(e) => setEndDate(e.target.value)}
             required
-            className="w-full h-12 rounded-xl bg-white ring-1 ring-stone-200 px-3 text-[14px] text-ink"
+            className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3 text-[14px] text-stone-50"
           />
         </Field>
       </div>
 
       {selectedCar && (
-        <div className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft p-4 flex items-center justify-between">
+        <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4 flex items-center justify-between">
           <span className="text-[13px] text-stone-500">
             {daysBetween(startDate, endDate)} gün × {selectedCar.dailyPrice} ₼
           </span>
-          <span className="font-semibold text-ink text-[16px]">
+          <span className="font-semibold text-stone-50 text-[16px]">
             {totalPrice} ₼
           </span>
         </div>
       )}
 
-      <div className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft p-4 space-y-3">
+      <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4 space-y-3">
         <p className="text-[13px] font-medium text-stone-500">
           Təhvil zamanı vəziyyət (aktın hissəsi)
         </p>
@@ -240,12 +240,12 @@ export default function NewRental() {
             value={pickupKm}
             onChange={(e) => setPickupKm(e.target.value)}
             placeholder="Km sayğacı"
-            className="h-11 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
+            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
           />
           <select
             value={pickupFuel}
             onChange={(e) => setPickupFuel(e.target.value)}
-            className="h-11 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
+            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
           >
             {FUEL_LEVELS.map((f) => (
               <option key={f} value={f}>
@@ -260,7 +260,7 @@ export default function NewRental() {
           onChange={(e) => setPickupExteriorNotes(e.target.value)}
           placeholder="Xarici vəziyyət qeydi (istəyə görə)"
           rows={2}
-          className="w-full rounded-lg bg-paper ring-1 ring-stone-200 px-3 py-2.5 text-[13.5px] resize-none"
+          className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2.5 text-[13.5px] resize-none"
         />
         <DamageDiagram value={pickupDamage} onChange={setPickupDamage} />
 
@@ -269,7 +269,7 @@ export default function NewRental() {
           onChange={(e) => setPickupInteriorNotes(e.target.value)}
           placeholder="Daxili vəziyyət qeydi (salon, oturacaqlar, ləkə və s.)"
           rows={2}
-          className="w-full rounded-lg bg-paper ring-1 ring-stone-200 px-3 py-2.5 text-[13.5px] resize-none"
+          className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2.5 text-[13.5px] resize-none"
         />
 
         <div>
@@ -281,7 +281,7 @@ export default function NewRental() {
               <img
                 src={platePhoto}
                 alt=""
-                className="w-28 h-20 rounded-lg object-cover ring-1 ring-stone-200"
+                className="w-28 h-20 rounded-lg object-cover ring-1 ring-stone-700"
               />
               <button
                 type="button"
@@ -292,7 +292,7 @@ export default function NewRental() {
               </button>
             </div>
           ) : (
-            <label className="w-28 h-20 rounded-lg bg-paper ring-1 ring-dashed ring-stone-300 flex flex-col items-center justify-center gap-0.5 text-stone-400 cursor-pointer">
+            <label className="w-28 h-20 rounded-lg bg-paper ring-1 ring-dashed ring-stone-600 flex flex-col items-center justify-center gap-0.5 text-stone-400 cursor-pointer">
               <ImagePlus size={16} />
               <span className="text-[10px]">
                 {platePhotoBusy ? "..." : "şəkil çək"}
@@ -312,7 +312,7 @@ export default function NewRental() {
       <button
         type="submit"
         disabled={!isValid || saving}
-        className="w-full h-12 rounded-xl bg-ink text-white font-medium text-[14px] disabled:opacity-40 active:scale-[0.98] transition-transform"
+        className="w-full h-12 rounded-xl bg-gold text-ink font-semibold text-[14px] disabled:opacity-40 active:scale-[0.98] transition-transform"
       >
         {saving ? "Yadda saxlanılır..." : "İcarəni təsdiqlə"}
       </button>

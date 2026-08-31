@@ -1,7 +1,7 @@
 const STATUS_STYLES = {
-  boş: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-  icarədə: "bg-rose-50 text-rose-700 ring-rose-600/20",
-  servisdə: "bg-amber-50 text-amber-700 ring-amber-600/20",
+  boş: "bg-emerald-500/15 text-emerald-400 ring-emerald-500/25",
+  icarədə: "bg-rose-500/15 text-rose-400 ring-rose-500/25",
+  servisdə: "bg-amber-500/15 text-amber-400 ring-amber-500/25",
 };
 
 const STATUS_DOT = {

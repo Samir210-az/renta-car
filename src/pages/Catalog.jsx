@@ -19,7 +19,7 @@ export default function Catalog() {
   if (company === undefined || cars === null) {
     return (
       <div className="min-h-screen bg-paper flex items-center justify-center">
-        <div className="h-8 w-8 rounded-full border-2 border-stone-300 border-t-stone-800 animate-spin" />
+        <div className="h-8 w-8 rounded-full border-2 border-stone-700 border-t-gold animate-spin" />
       </div>
     );
   }
@@ -97,7 +97,7 @@ function CarListing({ companyId, car }) {
   }
 
   return (
-    <div className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft overflow-hidden">
+    <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft overflow-hidden">
       {photos.length > 0 && (
         <button
           onClick={() => setLightboxOpen(true)}
@@ -116,13 +116,13 @@ function CarListing({ companyId, car }) {
       <div className="p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="font-semibold text-ink text-[15px]">{car.name}</p>
+            <p className="font-semibold text-stone-50 text-[15px]">{car.name}</p>
             <p className="text-[12.5px] text-stone-500 mt-0.5">
               {car.plate}
               {car.year ? ` · ${car.year}` : ""}
             </p>
           </div>
-          <p className="font-semibold text-ink text-[16px] shrink-0">
+          <p className="font-semibold text-stone-50 text-[16px] shrink-0">
             {car.dailyPrice} ₼<span className="text-[12px] text-stone-400 font-normal">/gün</span>
           </p>
         </div>
@@ -138,19 +138,19 @@ function CarListing({ companyId, car }) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Adınız"
-              className="w-full h-10 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
+              className="w-full h-10 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
             />
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="Telefon nömrəniz"
-              className="w-full h-10 rounded-lg bg-paper ring-1 ring-stone-200 px-3 text-[13.5px]"
+              className="w-full h-10 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px]"
             />
             <button
               type="submit"
               disabled={sending}
-              className="w-full h-10 rounded-lg bg-ink text-white text-[13px] font-medium disabled:opacity-40"
+              className="w-full h-10 rounded-lg bg-gold text-ink text-[13px] font-semibold disabled:opacity-40"
             >
               {sending ? "Göndərilir..." : "Sorğunu göndər"}
             </button>
@@ -158,7 +158,7 @@ function CarListing({ companyId, car }) {
         ) : (
           <button
             onClick={() => setOpen(true)}
-            className="w-full h-10 rounded-lg bg-ink text-white text-[13px] font-medium mt-3 flex items-center justify-center gap-1.5"
+            className="w-full h-10 rounded-lg bg-gold text-ink text-[13px] font-semibold mt-3 flex items-center justify-center gap-1.5"
           >
             <Phone size={14} />
             Bu maşını istəyirəm

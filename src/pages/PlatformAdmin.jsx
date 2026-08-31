@@ -142,10 +142,10 @@ function CompanyCard({ company, status, busy, onActivate, onDeactivate }) {
       : null;
 
   return (
-    <div className="rounded-xl2 bg-white ring-1 ring-stone-100 shadow-soft p-4">
+    <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-medium text-ink text-[14px] truncate">
+          <p className="font-medium text-stone-50 text-[14px] truncate">
             {company.name}
           </p>
           <p className="text-[12.5px] text-stone-500 mt-0.5">
@@ -170,7 +170,7 @@ function CompanyCard({ company, status, busy, onActivate, onDeactivate }) {
             key={p.id}
             disabled={busy}
             onClick={() => onActivate(company.id, p.id)}
-            className="h-8 px-3 rounded-lg bg-paper ring-1 ring-stone-200 text-[12px] font-medium text-stone-700 hover:bg-stone-100 disabled:opacity-40 transition-colors"
+            className="h-8 px-3 rounded-lg bg-paper ring-1 ring-stone-700 text-[12px] font-medium text-stone-300 hover:bg-stone-800 disabled:opacity-40 transition-colors"
           >
             {p.label}
           </button>
@@ -179,7 +179,7 @@ function CompanyCard({ company, status, busy, onActivate, onDeactivate }) {
           <button
             disabled={busy}
             onClick={() => onDeactivate(company.id)}
-            className="h-8 px-3 rounded-lg text-[12px] font-medium text-rose-500 hover:bg-rose-50 disabled:opacity-40 transition-colors ml-auto"
+            className="h-8 px-3 rounded-lg text-[12px] font-medium text-rose-500 hover:bg-rose-500/10 disabled:opacity-40 transition-colors ml-auto"
           >
             Deaktiv et
           </button>
@@ -192,10 +192,10 @@ function CompanyCard({ company, status, busy, onActivate, onDeactivate }) {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center text-center mt-20">
-      <div className="h-14 w-14 rounded-2xl bg-stone-100 flex items-center justify-center mb-4">
+      <div className="h-14 w-14 rounded-2xl bg-stone-800 flex items-center justify-center mb-4">
         <Building2 size={24} className="text-stone-400" />
       </div>
-      <p className="text-[14px] font-medium text-ink">Hələ qeydiyyat yoxdur</p>
+      <p className="text-[14px] font-medium text-stone-50">Hələ qeydiyyat yoxdur</p>
     </div>
   );
 }

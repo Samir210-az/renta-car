@@ -88,7 +88,7 @@ export default function Login() {
           aria-label="logo"
           className="mb-3 touch-manipulation active:scale-95 transition-transform"
         >
-          <img src="/logo-wide-light.png" alt="AutoCar" className="w-64" />
+          <img src="/logo-wide-dark.png" alt="AutoCar" className="w-64" />
         </button>
         <p className="text-[13px] text-stone-400 mt-1 mb-6">
           Telefon və PIN kodu ilə daxil olun
@@ -99,7 +99,7 @@ export default function Login() {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="+994 XX XXX XX XX"
-          className="w-full max-w-[280px] h-12 rounded-xl bg-white ring-1 ring-stone-200 px-4 text-center text-[15px] text-ink placeholder:text-stone-400 mb-6"
+          className="w-full max-w-[280px] h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-4 text-center text-[15px] text-stone-50 placeholder:text-stone-500 mb-6"
         />
 
         <div
@@ -114,8 +114,8 @@ export default function Login() {
                 i < pin.length
                   ? error
                     ? "bg-rose-500"
-                    : "bg-ink"
-                  : "bg-stone-200"
+                    : "bg-gold"
+                  : "bg-stone-700"
               }`}
             />
           ))}
@@ -134,7 +134,7 @@ export default function Login() {
             <button
               key={d}
               onClick={() => press(d)}
-              className="h-16 rounded-2xl bg-white ring-1 ring-stone-100 shadow-soft text-xl font-medium text-ink active:scale-95 transition-transform"
+              className="h-16 rounded-2xl bg-surface ring-1 ring-stone-800 shadow-soft text-xl font-medium text-stone-50 active:scale-95 transition-transform"
             >
               {d}
             </button>
@@ -142,7 +142,7 @@ export default function Login() {
           <div />
           <button
             onClick={() => press("0")}
-            className="h-16 rounded-2xl bg-white ring-1 ring-stone-100 shadow-soft text-xl font-medium text-ink active:scale-95 transition-transform"
+            className="h-16 rounded-2xl bg-surface ring-1 ring-stone-800 shadow-soft text-xl font-medium text-stone-50 active:scale-95 transition-transform"
           >
             0
           </button>
@@ -157,9 +157,9 @@ export default function Login() {
 
         <Link
           to="/register"
-          className="text-[13px] text-stone-500 mt-8 hover:text-ink transition-colors"
+          className="text-[13px] text-stone-500 mt-8 hover:text-stone-50 transition-colors"
         >
-          Hələ hesabınız yoxdur? <span className="font-medium text-ink">Qeydiyyatdan keçin</span>
+          Hələ hesabınız yoxdur? <span className="font-medium text-stone-50">Qeydiyyatdan keçin</span>
         </Link>
       </div>
       <Footer />

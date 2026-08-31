@@ -39,7 +39,7 @@ export default function Akt() {
   const ret = rental.returnCondition || null;
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-stone-100">
       <div className="max-w-lg mx-auto px-5 py-5 print:hidden flex items-center justify-between">
         <button
           onClick={() => navigate(-1)}
@@ -50,14 +50,14 @@ export default function Akt() {
         </button>
         <button
           onClick={() => window.print()}
-          className="h-9 px-3.5 rounded-full bg-ink text-white text-[12.5px] font-medium flex items-center gap-1.5"
+          className="h-9 px-3.5 rounded-full bg-gold text-ink text-[12.5px] font-semibold flex items-center gap-1.5"
         >
           <Printer size={14} />
           Çap et
         </button>
       </div>
 
-      <div className="max-w-lg mx-auto bg-white px-6 py-8 print:px-0 print:py-0 text-[13px] text-ink">
+      <div className="max-w-lg mx-auto bg-white px-6 py-8 print:px-0 print:py-0 text-[13px] text-stone-900">
         <h1 className="text-[17px] font-semibold text-center mb-1">
           MAŞIN TƏHVİL-TƏSLİM AKTI
         </h1>
@@ -179,7 +179,7 @@ function Row({ label, value }) {
   return (
     <div className="flex items-center justify-between border-b border-dashed border-stone-100 py-1">
       <span className="text-stone-500">{label}</span>
-      <span className="font-medium text-ink">{value}</span>
+      <span className="font-medium text-stone-900">{value}</span>
     </div>
   );
 }
