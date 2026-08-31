@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, ImagePlus, X } from "lucide-react";
 import { registerCompany } from "../lib/data";
 import { compressImage } from "../lib/image";
+import { notifyTelegram } from "../lib/telegram";
 import Footer from "../components/Footer";
 
 export default function Register() {
@@ -38,6 +39,9 @@ export default function Register() {
     setError("");
     try {
       await registerCompany({ name, phone, pin, logo });
+      notifyTelegram(
+        `🚗 <b>Renta-Car — yeni qeydiyyat</b>\nŞirkət: ${name.trim()}\nTelefon: +${phone.trim()}\n3 günlük pulsuz sınaq avtomatik aktivləşdi.`
+      );
       setDone(true);
     } catch (err) {
       setError(err.message || "Xəta baş verdi");
@@ -52,11 +56,11 @@ export default function Register() {
         <div className="flex-1 flex flex-col items-center justify-center text-center px-6">
           <CheckCircle2 size={40} className="text-emerald-500 mb-3" />
           <p className="font-semibold text-stone-50 text-[16px]">
-            Qeydiyyat göndərildi
+            Hesabınız hazırdır!
           </p>
           <p className="text-[13.5px] text-stone-500 mt-2 max-w-[260px]">
-            Hesabınız təsdiqləndikdən sonra bu telefon nömrəsi və PIN kodu ilə
-            daxil ola bilərsiniz.
+            3 günlük pulsuz sınaq aktivləşdi. Bu telefon nömrəsi və PIN kodu
+            ilə dərhal daxil ola bilərsiniz.
           </p>
           <Link
             to="/login"

@@ -79,15 +79,16 @@ export async function registerCompany({ name, phone, pin, logo }) {
   }
   const companyRef = push(ref(db, "companies"));
   const id = companyRef.key;
+  const trialDays = planDays("trial");
   const profile = {
     name: name.trim(),
     phone: normalized,
     pinHash: await hashPin(pin),
     logo: logo || null,
-    status: "pending",
-    plan: null,
-    activatedAt: null,
-    expiresAt: null,
+    status: "active",
+    plan: "trial",
+    activatedAt: Date.now(),
+    expiresAt: Date.now() + trialDays * 86400000,
     createdAt: Date.now(),
   };
   await Promise.all([
