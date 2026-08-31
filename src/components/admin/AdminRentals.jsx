@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { CheckCircle2, Trash2, FileText, X } from "lucide-react";
 import { closeRental, deleteRental } from "../../lib/data";
 import StatusBadge from "../StatusBadge";
+import DamageDiagram from "../DamageDiagram";
 
 const FUEL_LEVELS = ["Boş", "1/4", "1/2", "3/4", "Dolu"];
 
@@ -98,6 +99,7 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
   const [km, setKm] = useState("");
   const [fuel, setFuel] = useState("Dolu");
   const [notes, setNotes] = useState("");
+  const [damage, setDamage] = useState([]);
   const [saving, setSaving] = useState(false);
 
   async function handleConfirm() {
@@ -107,6 +109,7 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
         km: km ? Number(km) : null,
         fuel,
         notes: notes.trim(),
+        damageMarkers: damage,
         signedAt: Date.now(),
       });
       onDone();
@@ -144,10 +147,11 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
       <textarea
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
-        placeholder="Yeni cızıq/zədə qeydi (yoxdursa boş saxlayın)"
+        placeholder="Əlavə qeyd (istəyə görə)"
         rows={2}
         className="w-full rounded-lg bg-paper ring-1 ring-slate-200 px-3 py-2 text-[13px] resize-none"
       />
+      <DamageDiagram value={damage} onChange={setDamage} />
       <div className="flex items-center gap-2">
         <button
           onClick={handleConfirm}

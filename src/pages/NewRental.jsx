@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import { getCompanyId } from "../lib/session";
 import { listenCars, addRental } from "../lib/data";
+import DamageDiagram from "../components/DamageDiagram";
 
 const FUEL_LEVELS = ["Boş", "1/4", "1/2", "3/4", "Dolu"];
 
@@ -27,6 +28,7 @@ export default function NewRental() {
   const [pickupKm, setPickupKm] = useState("");
   const [pickupFuel, setPickupFuel] = useState("Dolu");
   const [pickupNotes, setPickupNotes] = useState("");
+  const [pickupDamage, setPickupDamage] = useState([]);
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -84,6 +86,7 @@ export default function NewRental() {
           km: pickupKm ? Number(pickupKm) : null,
           fuel: pickupFuel,
           notes: pickupNotes.trim(),
+          damageMarkers: pickupDamage,
           signedAt: Date.now(),
         },
       });
@@ -212,10 +215,11 @@ export default function NewRental() {
         <textarea
           value={pickupNotes}
           onChange={(e) => setPickupNotes(e.target.value)}
-          placeholder="Mövcud cızıq/zədə qeydi (yoxdursa boş saxlayın)"
+          placeholder="Əlavə qeyd (istəyə görə)"
           rows={2}
           className="w-full rounded-lg bg-paper ring-1 ring-slate-200 px-3 py-2.5 text-[13.5px] resize-none"
         />
+        <DamageDiagram value={pickupDamage} onChange={setPickupDamage} />
       </div>
 
       <button

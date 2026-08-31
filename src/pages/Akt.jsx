@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Printer } from "lucide-react";
 import { getRentalDetail } from "../lib/data";
+import DamageDiagram, { DAMAGE_TYPES } from "../components/DamageDiagram";
 
 function fmtDate(ts) {
   if (!ts) return "—";
@@ -91,6 +92,11 @@ export default function Akt() {
           <Row label="Km sayğacı" value={pickup.km ?? "—"} />
           <Row label="Yanacaq" value={pickup.fuel || "—"} />
           <Row label="Qeyd" value={pickup.notes || "Qeyd yoxdur"} />
+          {pickup.damageMarkers?.length > 0 && (
+            <div className="mt-2">
+              <DamageDiagram value={pickup.damageMarkers} readOnly />
+            </div>
+          )}
         </Section>
 
         <Section title="Qaytarma zamanı vəziyyət">
@@ -100,11 +106,30 @@ export default function Akt() {
               <Row label="Km sayğacı" value={ret.km ?? "—"} />
               <Row label="Yanacaq" value={ret.fuel || "—"} />
               <Row label="Qeyd" value={ret.notes || "Qeyd yoxdur"} />
+              {ret.damageMarkers?.length > 0 && (
+                <div className="mt-2">
+                  <DamageDiagram value={ret.damageMarkers} readOnly />
+                </div>
+              )}
             </>
           ) : (
             <p className="text-slate-400">Maşın hələ qaytarılmayıb</p>
           )}
         </Section>
+
+        {(pickup.damageMarkers?.length > 0 || ret?.damageMarkers?.length > 0) && (
+          <div className="flex items-center gap-3 -mt-2 mb-5">
+            {DAMAGE_TYPES.map((t) => (
+              <span key={t.id} className="flex items-center gap-1 text-[11px] text-slate-500">
+                <span
+                  className="h-2 w-2 rounded-full inline-block"
+                  style={{ background: t.color }}
+                />
+                {t.label}
+              </span>
+            ))}
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-8 mt-12 pt-6">
           <div>
