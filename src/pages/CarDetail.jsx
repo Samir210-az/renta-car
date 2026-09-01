@@ -194,6 +194,21 @@ export default function CarDetail() {
               {activeRental.customerName} · {activeRental.startDate} →{" "}
               {activeRental.endDate}
             </p>
+            <div className="flex items-center gap-2 mt-2">
+              <PhoneActions phone={activeRental.customerPhone} />
+              <Link
+                to={`/akt/${companyId}/${activeRental.id}`}
+                className="text-[11.5px] text-stone-400 hover:text-stone-200 underline underline-offset-2"
+              >
+                Akt
+              </Link>
+              <Link
+                to={`/muqavile/${companyId}/${activeRental.id}`}
+                className="text-[11.5px] text-stone-400 hover:text-stone-200 underline underline-offset-2"
+              >
+                Müqavilə
+              </Link>
+            </div>
 
             {returning ? (
               <ReturnConditionForm

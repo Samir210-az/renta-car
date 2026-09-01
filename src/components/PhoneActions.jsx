@@ -1,12 +1,15 @@
 import { Phone, MessageCircle, MessageSquareText } from "lucide-react";
+import { toIntlDigits } from "../lib/phone";
 
 // Telefon nömrəsinin yanında zəng + SMS + WhatsApp düymələri.
-// `az` = Azərbaycan nömrəsi kimi normalize et (994 prefiksi yoxdursa əlavə et).
-export default function PhoneActions({ phone, size = 14 }) {
+// `message` verilsə, SMS/WhatsApp mətni əvvəlcədən doldurulur.
+export default function PhoneActions({ phone, message, size = 14 }) {
   if (!phone) return null;
-  let digits = phone.replace(/\D/g, "");
-  if (digits.length === 9) digits = `994${digits}`; // 050XXXXXXX -> 99450XXXXXXX
+  const digits = toIntlDigits(phone);
   if (!digits) return null;
+
+  const smsBody = message ? `?body=${encodeURIComponent(message)}` : "";
+  const waText = message ? `?text=${encodeURIComponent(message)}` : "";
 
   return (
     <span className="inline-flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
@@ -18,14 +21,14 @@ export default function PhoneActions({ phone, size = 14 }) {
         <Phone size={size - 3} />
       </a>
       <a
-        href={`sms:+${digits}`}
+        href={`sms:+${digits}${smsBody}`}
         aria-label="SMS yaz"
         className="h-6 w-6 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center hover:bg-emerald-500/25 transition-colors"
       >
         <MessageSquareText size={size - 3} />
       </a>
       <a
-        href={`https://wa.me/${digits}`}
+        href={`https://wa.me/${digits}${waText}`}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="WhatsApp"

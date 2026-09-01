@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import PhoneActions from "./PhoneActions";
 
 const STATUS_STYLE = {
   boş: "ring-emerald-500/40 bg-emerald-500/[0.06]",
@@ -13,14 +14,17 @@ const STATUS_DOT = {
 };
 
 export default function CarCard({ car, activeRental }) {
+  const navigate = useNavigate();
   const ring = STATUS_STYLE[car.status] || STATUS_STYLE.boş;
   const dot = STATUS_DOT[car.status] || STATUS_DOT.boş;
   const photo = car.photos?.[0];
 
   return (
-    <Link
-      to={`/masin/${car.id}`}
-      className={`rounded-xl2 bg-surface ring-2 ${ring} p-3 flex flex-col active:scale-[0.98] transition-transform`}
+    <div
+      onClick={() => navigate(`/masin/${car.id}`)}
+      role="button"
+      tabIndex={0}
+      className={`rounded-xl2 bg-surface ring-2 ${ring} p-3 flex flex-col active:scale-[0.98] transition-transform cursor-pointer`}
     >
       {photo ? (
         <img
@@ -46,10 +50,15 @@ export default function CarCard({ car, activeRental }) {
       </p>
 
       {car.status === "icarədə" && activeRental && (
-        <p className="text-[11px] text-stone-400 mt-1.5 truncate">
-          {activeRental.customerName} · {activeRental.endDate}
-        </p>
+        <div className="mt-1.5">
+          <p className="text-[11px] text-stone-400 truncate">
+            {activeRental.customerName} · {activeRental.endDate}
+          </p>
+          <div className="mt-1">
+            <PhoneActions phone={activeRental.customerPhone} size={13} />
+          </div>
+        </div>
       )}
-    </Link>
+    </div>
   );
 }
