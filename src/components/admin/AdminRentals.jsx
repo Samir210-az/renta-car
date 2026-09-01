@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Trash2, FileText, X, PlayCircle, Ban } from "lucide-react";
+import { CheckCircle2, Trash2, FileText, X, PlayCircle, Ban, ImagePlus } from "lucide-react";
 import { closeRental, deleteRental, startReservation, cancelRental } from "../../lib/data";
 import { getStaffName } from "../../lib/session";
+import { compressImage } from "../../lib/image";
 import StatusBadge from "../StatusBadge";
 import DamageDiagram from "../DamageDiagram";
 import PhoneActions from "../PhoneActions";
@@ -18,18 +19,8 @@ const STATUS_TO_BADGE = {
 
 export default function AdminRentals({ companyId, rentals, carsById }) {
   const [closingId, setClosingId] = useState(null);
+  const [startingId, setStartingId] = useState(null);
   const [busyId, setBusyId] = useState(null);
-
-  async function handleStart(rental) {
-    setBusyId(rental.id);
-    try {
-      await startReservation(companyId, rental, getStaffName());
-    } catch (err) {
-      alert(err.message || "Başlada bilmədik");
-    } finally {
-      setBusyId(null);
-    }
-  }
 
   async function handleCancel(rental) {
     const reason = prompt("Ləğv etmə səbəbi (istəyə görə):");
@@ -115,13 +106,19 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
                 onDone={() => setClosingId(null)}
                 onCancel={() => setClosingId(null)}
               />
+            ) : startingId === r.id ? (
+              <PickupConditionForm
+                companyId={companyId}
+                rental={r}
+                onDone={() => setStartingId(null)}
+                onCancel={() => setStartingId(null)}
+              />
             ) : (
               <div className="flex items-center gap-3 mt-3 pt-3 border-t border-stone-700 flex-wrap">
                 {r.status === "rezerv" && (
                   <button
-                    onClick={() => handleStart(r)}
-                    disabled={busy}
-                    className="flex items-center gap-1.5 text-[12.5px] font-medium text-gold hover:text-amber-300 disabled:opacity-40"
+                    onClick={() => setStartingId(r.id)}
+                    className="flex items-center gap-1.5 text-[12.5px] font-medium text-gold hover:text-amber-300"
                   >
                     <PlayCircle size={14} />
                     Təhvil ver (başlat)
@@ -283,6 +280,151 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
           className="h-9 px-3.5 rounded-lg bg-emerald-600 text-white text-[12.5px] font-medium disabled:opacity-40"
         >
           {saving ? "..." : "Təsdiqlə və bağla"}
+        </button>
+        <button
+          onClick={onCancel}
+          className="h-9 w-9 rounded-lg flex items-center justify-center text-stone-400 hover:text-stone-200"
+          aria-label="Ləğv et"
+        >
+          <X size={15} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PickupConditionForm({ companyId, rental, onDone, onCancel }) {
+  const [km, setKm] = useState("");
+  const [fuel, setFuel] = useState("Dolu");
+  const [exteriorNotes, setExteriorNotes] = useState("");
+  const [interiorNotes, setInteriorNotes] = useState("");
+  const [damage, setDamage] = useState([]);
+  const [platePhoto, setPlatePhoto] = useState(null);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handlePlatePhoto(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoBusy(true);
+    try {
+      const dataUrl = await compressImage(file, { maxWidth: 640, quality: 0.6 });
+      setPlatePhoto(dataUrl);
+    } finally {
+      setPhotoBusy(false);
+    }
+  }
+
+  async function handleConfirm() {
+    setSaving(true);
+    setError("");
+    try {
+      await startReservation(
+        companyId,
+        rental,
+        {
+          km: km ? Number(km) : null,
+          fuel,
+          exteriorNotes: exteriorNotes.trim(),
+          interiorNotes: interiorNotes.trim(),
+          damageMarkers: damage,
+          platePhoto: platePhoto || null,
+          signedAt: Date.now(),
+        },
+        getStaffName()
+      );
+      onDone();
+    } catch (err) {
+      setError(err.message || "Təhvil verilə bilmədi");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="mt-3 pt-3 border-t border-stone-700 space-y-2.5">
+      <p className="text-[12.5px] font-medium text-stone-500">
+        Təhvil zamanı vəziyyət — maşın indi müştəriyə verilir
+      </p>
+      <div className="grid grid-cols-2 gap-2.5">
+        <input
+          type="number"
+          min="0"
+          value={km}
+          onChange={(e) => setKm(e.target.value)}
+          placeholder="Km sayğacı"
+          className="h-10 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
+        />
+        <select
+          value={fuel}
+          onChange={(e) => setFuel(e.target.value)}
+          className="h-10 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
+        >
+          {FUEL_LEVELS.map((f) => (
+            <option key={f} value={f}>
+              Yanacaq: {f}
+            </option>
+          ))}
+        </select>
+      </div>
+      <textarea
+        value={exteriorNotes}
+        onChange={(e) => setExteriorNotes(e.target.value)}
+        placeholder="Xarici vəziyyət qeydi (istəyə görə)"
+        rows={2}
+        className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2 text-[13px] resize-none text-stone-50"
+      />
+      <DamageDiagram value={damage} onChange={setDamage} />
+      <textarea
+        value={interiorNotes}
+        onChange={(e) => setInteriorNotes(e.target.value)}
+        placeholder="Daxili vəziyyət qeydi (salon, oturacaqlar, ləkə və s.)"
+        rows={2}
+        className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2 text-[13px] resize-none text-stone-50"
+      />
+
+      <div>
+        <p className="text-[12px] text-stone-500 mb-1.5">Nömrə şəkli</p>
+        {platePhoto ? (
+          <div className="relative w-24">
+            <img
+              src={platePhoto}
+              alt=""
+              className="w-24 h-16 rounded-lg object-cover ring-1 ring-stone-700"
+            />
+            <button
+              type="button"
+              onClick={() => setPlatePhoto(null)}
+              className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-rose-500 text-white flex items-center justify-center"
+            >
+              <X size={11} />
+            </button>
+          </div>
+        ) : (
+          <label className="w-24 h-16 rounded-lg bg-paper ring-1 ring-dashed ring-stone-600 flex flex-col items-center justify-center gap-0.5 text-stone-400 cursor-pointer">
+            <ImagePlus size={14} />
+            <span className="text-[9.5px]">{photoBusy ? "..." : "şəkil çək"}</span>
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={handlePlatePhoto}
+            />
+          </label>
+        )}
+      </div>
+
+      {error && <p className="text-[12px] text-rose-400">{error}</p>}
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={handleConfirm}
+          disabled={saving}
+          className="h-9 px-3.5 rounded-lg bg-gold text-ink text-[12.5px] font-semibold disabled:opacity-40"
+        >
+          {saving ? "..." : "Təhvili təsdiqlə"}
         </button>
         <button
           onClick={onCancel}

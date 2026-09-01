@@ -306,13 +306,14 @@ export async function addRental(companyId, rental) {
 
 // Rezerv edilmiş (gələcək tarixli) icarəni faktiki başladır — müştəri
 // gəlib maşını təhvil alanda çağırılır.
-export async function startReservation(companyId, rental, staffName) {
+export async function startReservation(companyId, rental, pickupCondition, staffName) {
   const reserved = await tryReserveCar(companyId, rental.carId);
   if (!reserved) {
     throw new Error("Bu maşın hazırda boş deyil.");
   }
   await update(ref(db, `companies/${companyId}/rentals/${rental.id}`), {
     status: "aktiv",
+    pickupCondition,
     startedBy: staffName || null,
   });
 }

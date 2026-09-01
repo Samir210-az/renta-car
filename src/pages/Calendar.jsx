@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { differenceInCalendarDays, format, parseISO } from "date-fns";
 import { az } from "date-fns/locale";
 import { CalendarClock, PlayCircle } from "lucide-react";
-import { getCompanyId, getStaffName } from "../lib/session";
-import { listenCars, listenRentals, startReservation } from "../lib/data";
+import { getCompanyId } from "../lib/session";
+import { listenCars, listenRentals } from "../lib/data";
 
 function groupLabel(days) {
   if (days < 0) return "Gecikib";
@@ -20,7 +21,6 @@ export default function Calendar() {
   const [cars, setCars] = useState({});
   const [rentals, setRentals] = useState([]);
   const [tab, setTab] = useState("returns");
-  const [busyId, setBusyId] = useState(null);
 
   useEffect(() => {
     const unsubCars = listenCars(companyId, (list) => {
@@ -74,17 +74,6 @@ export default function Calendar() {
   const pickupCount = pickupGroups
     ? Object.values(pickupGroups).reduce((s, arr) => s + arr.length, 0)
     : 0;
-
-  async function handleStart(rental) {
-    setBusyId(rental.id);
-    try {
-      await startReservation(companyId, rental, getStaffName());
-    } catch (err) {
-      alert(err.message || "Başlada bilmədik");
-    } finally {
-      setBusyId(null);
-    }
-  }
 
   return (
     <div>
@@ -157,14 +146,13 @@ export default function Calendar() {
                           {format(parseISO(r.dateField), "d MMM", { locale: az })}
                         </span>
                         {tab === "pickups" && (
-                          <button
-                            onClick={() => handleStart(r)}
-                            disabled={busyId === r.id}
+                          <Link
+                            to="/tenant-admin"
                             aria-label="Təhvil ver"
-                            className="h-7 w-7 rounded-full bg-gold/15 text-gold flex items-center justify-center disabled:opacity-40"
+                            className="h-7 w-7 rounded-full bg-gold/15 text-gold flex items-center justify-center"
                           >
                             <PlayCircle size={15} />
-                          </button>
+                          </Link>
                         )}
                       </div>
                     </div>

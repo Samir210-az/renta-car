@@ -162,15 +162,17 @@ export default function NewRental() {
         dailyPrice: Number(selectedCar.dailyPrice || 0),
         totalPrice: priceBreakdown.total,
         priceTier: priceBreakdown.tierLabel,
-        pickupCondition: {
-          km: pickupKm ? Number(pickupKm) : null,
-          fuel: pickupFuel,
-          exteriorNotes: pickupExteriorNotes.trim(),
-          interiorNotes: pickupInteriorNotes.trim(),
-          damageMarkers: pickupDamage,
-          platePhoto: platePhoto || null,
-          signedAt: Date.now(),
-        },
+        pickupCondition: isFuture
+          ? null
+          : {
+              km: pickupKm ? Number(pickupKm) : null,
+              fuel: pickupFuel,
+              exteriorNotes: pickupExteriorNotes.trim(),
+              interiorNotes: pickupInteriorNotes.trim(),
+              damageMarkers: pickupDamage,
+              platePhoto: platePhoto || null,
+              signedAt: Date.now(),
+            },
       });
       if (prefillRequestId) {
         await resolveRequest(companyId, prefillRequestId, "approved");
@@ -341,14 +343,6 @@ export default function NewRental() {
         </Field>
       </div>
 
-      {isFuture && (
-        <p className="flex items-center gap-1.5 text-[12.5px] text-gold -mt-2">
-          <AlertTriangle size={13} />
-          Bu, gələcək tarixli rezervasiyadır — maşın həmin gün "Təqvim"
-          bölməsindən təhvil verilməli olacaq
-        </p>
-      )}
-
       <Field label="Depozit (girov) məbləği">
         <input
           type="number"
@@ -379,85 +373,99 @@ export default function NewRental() {
         </div>
       )}
 
-      <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4 space-y-3">
-        <p className="text-[13px] font-medium text-stone-500">
-          Təhvil zamanı vəziyyət (aktın hissəsi)
-        </p>
-        <div className="grid grid-cols-2 gap-3">
-          <input
-            type="number"
-            min="0"
-            value={pickupKm}
-            onChange={(e) => setPickupKm(e.target.value)}
-            placeholder="Km sayğacı"
-            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
-          />
-          <select
-            value={pickupFuel}
-            onChange={(e) => setPickupFuel(e.target.value)}
-            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
-          >
-            {FUEL_LEVELS.map((f) => (
-              <option key={f} value={f}>
-                Yanacaq: {f}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <textarea
-          value={pickupExteriorNotes}
-          onChange={(e) => setPickupExteriorNotes(e.target.value)}
-          placeholder="Xarici vəziyyət qeydi (istəyə görə)"
-          rows={2}
-          className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2.5 text-[13.5px] resize-none text-stone-50"
-        />
-        <DamageDiagram value={pickupDamage} onChange={setPickupDamage} />
-
-        <textarea
-          value={pickupInteriorNotes}
-          onChange={(e) => setPickupInteriorNotes(e.target.value)}
-          placeholder="Daxili vəziyyət qeydi (salon, oturacaqlar, ləkə və s.)"
-          rows={2}
-          className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2.5 text-[13.5px] resize-none text-stone-50"
-        />
-
-        <div>
-          <p className="text-[12.5px] font-medium text-stone-500 mb-1.5">
-            Nömrə şəkli
+      {isFuture ? (
+        <div className="rounded-xl2 bg-gold/10 ring-1 ring-gold/25 p-4">
+          <p className="flex items-center gap-1.5 text-[12.5px] font-medium text-gold">
+            <AlertTriangle size={13} />
+            Bu, gələcək tarixli rezervasiyadır
           </p>
-          {platePhoto ? (
-            <div className="relative w-28">
-              <img
-                src={platePhoto}
-                alt=""
-                className="w-28 h-20 rounded-lg object-cover ring-1 ring-stone-700"
-              />
-              <button
-                type="button"
-                onClick={() => setPlatePhoto(null)}
-                className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-rose-500 text-white flex items-center justify-center"
-              >
-                <X size={11} />
-              </button>
-            </div>
-          ) : (
-            <label className="w-28 h-20 rounded-lg bg-paper ring-1 ring-dashed ring-stone-600 flex flex-col items-center justify-center gap-0.5 text-stone-400 cursor-pointer">
-              <ImagePlus size={16} />
-              <span className="text-[10px]">
-                {platePhotoBusy ? "..." : "şəkil çək"}
-              </span>
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                className="hidden"
-                onChange={handlePlatePhoto}
-              />
-            </label>
-          )}
+          <p className="text-[12px] text-stone-400 mt-1">
+            Maşının vəziyyəti (km, yanacaq, zədə, şəkil) indi deyil, məhz{" "}
+            <b>təhvil verilən gün</b> qeydə alınacaq — Admin → İcarələr və ya
+            Təqvim → "Gələn təhvillər" bölməsindən "Təhvil ver" edərək.
+          </p>
         </div>
-      </div>
+      ) : (
+        <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4 space-y-3">
+          <p className="text-[13px] font-medium text-stone-500">
+            Təhvil zamanı vəziyyət (aktın hissəsi)
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <input
+              type="number"
+              min="0"
+              value={pickupKm}
+              onChange={(e) => setPickupKm(e.target.value)}
+              placeholder="Km sayğacı"
+              className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+            />
+            <select
+              value={pickupFuel}
+              onChange={(e) => setPickupFuel(e.target.value)}
+              className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+            >
+              {FUEL_LEVELS.map((f) => (
+                <option key={f} value={f}>
+                  Yanacaq: {f}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <textarea
+            value={pickupExteriorNotes}
+            onChange={(e) => setPickupExteriorNotes(e.target.value)}
+            placeholder="Xarici vəziyyət qeydi (istəyə görə)"
+            rows={2}
+            className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2.5 text-[13.5px] resize-none text-stone-50"
+          />
+          <DamageDiagram value={pickupDamage} onChange={setPickupDamage} />
+
+          <textarea
+            value={pickupInteriorNotes}
+            onChange={(e) => setPickupInteriorNotes(e.target.value)}
+            placeholder="Daxili vəziyyət qeydi (salon, oturacaqlar, ləkə və s.)"
+            rows={2}
+            className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2.5 text-[13.5px] resize-none text-stone-50"
+          />
+
+          <div>
+            <p className="text-[12.5px] font-medium text-stone-500 mb-1.5">
+              Nömrə şəkli
+            </p>
+            {platePhoto ? (
+              <div className="relative w-28">
+                <img
+                  src={platePhoto}
+                  alt=""
+                  className="w-28 h-20 rounded-lg object-cover ring-1 ring-stone-700"
+                />
+                <button
+                  type="button"
+                  onClick={() => setPlatePhoto(null)}
+                  className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-rose-500 text-white flex items-center justify-center"
+                >
+                  <X size={11} />
+                </button>
+              </div>
+            ) : (
+              <label className="w-28 h-20 rounded-lg bg-paper ring-1 ring-dashed ring-stone-600 flex flex-col items-center justify-center gap-0.5 text-stone-400 cursor-pointer">
+                <ImagePlus size={16} />
+                <span className="text-[10px]">
+                  {platePhotoBusy ? "..." : "şəkil çək"}
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={handlePlatePhoto}
+                />
+              </label>
+            )}
+          </div>
+        </div>
+      )}
 
       <button
         type="submit"
