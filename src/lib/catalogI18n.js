@@ -1,0 +1,40 @@
+export const LANGS = ["az", "en", "ru"];
+
+export const CATALOG_TEXT = {
+  az: {
+    availableCars: "Mövcud maşınlar",
+    linkInvalid: "Bu link mövcud deyil",
+    noCars: "Hazırda boş maşın yoxdur",
+    perDay: "gün",
+    requestSent: "Sorğunuz göndərildi, tezliklə əlaqə saxlanılacaq",
+    yourName: "Adınız",
+    yourPhone: "Telefon nömrəniz",
+    sending: "Göndərilir...",
+    sendRequest: "Sorğunu göndər",
+    iWantThis: "Bu maşını istəyirəm",
+  },
+  en: {
+    availableCars: "Available cars",
+    linkInvalid: "This link is not available",
+    noCars: "No cars available right now",
+    perDay: "day",
+    requestSent: "Your request has been sent, we'll contact you soon",
+    yourName: "Your name",
+    yourPhone: "Your phone number",
+    sending: "Sending...",
+    sendRequest: "Send request",
+    iWantThis: "I want this car",
+  },
+  ru: {
+    availableCars: "Доступные автомобили",
+    linkInvalid: "Эта ссылка недоступна",
+    noCars: "Сейчас нет свободных машин",
+    perDay: "день",
+    requestSent: "Ваш запрос отправлен, мы скоро свяжемся с вами",
+    yourName: "Ваше имя",
+    yourPhone: "Ваш номер телефона",
+    sending: "Отправка...",
+    sendRequest: "Отправить запрос",
+    iWantThis: "Хочу эту машину",
+  },
+};

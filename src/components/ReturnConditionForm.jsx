@@ -70,7 +70,11 @@ export default function ReturnConditionForm({ companyId, rental, onDone, onCance
         rows={2}
         className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2 text-[13px] resize-none text-stone-50"
       />
-      <DamageDiagram value={damage} onChange={setDamage} />
+      <DamageDiagram
+        value={damage}
+        onChange={setDamage}
+        compareMarkers={rental.pickupCondition?.damageMarkers || []}
+      />
       <textarea
         value={interiorNotes}
         onChange={(e) => setInteriorNotes(e.target.value)}

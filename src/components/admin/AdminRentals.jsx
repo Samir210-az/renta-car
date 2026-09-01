@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Trash2, FileText, X, PlayCircle, Ban, ImagePlus } from "lucide-react";
+import { CheckCircle2, Trash2, FileText, X, PlayCircle, Ban, ImagePlus, Search, Download } from "lucide-react";
 import { deleteRental, startReservation, cancelRental } from "../../lib/data";
 import { getStaffName } from "../../lib/session";
 import { compressImage } from "../../lib/image";
+import { downloadCsv } from "../../lib/csv";
 import StatusBadge from "../StatusBadge";
 import DamageDiagram from "../DamageDiagram";
 import PhoneActions from "../PhoneActions";
 import ReturnConditionForm from "../ReturnConditionForm";
 
 const FUEL_LEVELS = ["Boş", "1/4", "1/2", "3/4", "Dolu"];
+const PAGE_SIZE = 20;
 
 const STATUS_TO_BADGE = {
   aktiv: "icarədə",
@@ -22,6 +24,55 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
   const [closingId, setClosingId] = useState(null);
   const [startingId, setStartingId] = useState(null);
   const [busyId, setBusyId] = useState(null);
+  const [query, setQuery] = useState("");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return rentals;
+    return rentals.filter((r) => {
+      const car = carsById[r.carId];
+      return (
+        r.customerName?.toLowerCase().includes(q) ||
+        r.customerPhone?.toLowerCase().includes(q) ||
+        car?.plate?.toLowerCase().includes(q) ||
+        car?.name?.toLowerCase().includes(q)
+      );
+    });
+  }, [rentals, query, carsById]);
+
+  function handleExport() {
+    const headers = [
+      "Maşın",
+      "Nömrə",
+      "Müştəri",
+      "Telefon",
+      "Başlanğıc",
+      "Bitmə",
+      "Günlük qiymət",
+      "Ümumi məbləğ",
+      "Depozit",
+      "Status",
+      "Qeydə alıb",
+    ];
+    const rows = filtered.map((r) => {
+      const car = carsById[r.carId];
+      return [
+        car?.name || "",
+        car?.plate || "",
+        r.customerName || "",
+        r.customerPhone || "",
+        r.startDate || "",
+        r.endDate || "",
+        r.dailyPrice || 0,
+        r.totalPrice || 0,
+        r.depositAmount || 0,
+        r.status || "",
+        r.createdBy || "",
+      ];
+    });
+    downloadCsv(`icareler-${new Date().toISOString().slice(0, 10)}.csv`, headers, rows);
+  }
 
   async function handleCancel(rental) {
     const reason = prompt("Ləğv etmə səbəbi (istəyə görə):");
@@ -49,8 +100,34 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
   }
 
   return (
-    <div className="space-y-2.5">
-      {rentals.map((r) => {
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1 min-w-0">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500" />
+          <input
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setVisibleCount(PAGE_SIZE);
+            }}
+            placeholder="Müştəri, telefon və ya nömrə üzrə axtar"
+            className="w-full h-10 rounded-lg bg-surface ring-1 ring-stone-700 pl-9 pr-3 text-[13px] text-stone-50 placeholder:text-stone-500"
+          />
+        </div>
+        <button
+          onClick={handleExport}
+          aria-label="CSV ixrac et"
+          className="h-10 w-10 rounded-lg bg-surface ring-1 ring-stone-700 flex items-center justify-center text-stone-400 hover:text-gold shrink-0"
+        >
+          <Download size={16} />
+        </button>
+      </div>
+
+      {filtered.length === 0 && (
+        <p className="text-[13px] text-stone-400 text-center py-8">Nəticə tapılmadı</p>
+      )}
+
+      {filtered.slice(0, visibleCount).map((r) => {
         const car = carsById[r.carId];
         const busy = busyId === r.id;
         return (
@@ -170,6 +247,15 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
           </div>
         );
       })}
+
+      {visibleCount < filtered.length && (
+        <button
+          onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+          className="w-full h-10 rounded-lg ring-1 ring-stone-700 text-[13px] text-stone-400"
+        >
+          Daha çox göstər ({filtered.length - visibleCount})
+        </button>
+      )}
     </div>
   );
 }

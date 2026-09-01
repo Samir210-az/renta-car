@@ -138,6 +138,9 @@ export default function CarDetail() {
   const photos = car.photos || [];
   const currentKm = getCurrentKm(rentals);
   const serviceDue = isServiceDue(car, currentKm);
+  const insuranceExpired =
+    car.insuranceExpiryDate &&
+    car.insuranceExpiryDate < new Date().toISOString().slice(0, 10);
   const activeRental = rentals.find((r) => r.status === "aktiv");
 
   return (
@@ -273,6 +276,15 @@ export default function CarDetail() {
               {currentKm != null && car.nextServiceKm
                 ? ` — ${currentKm} km (limit: ${car.nextServiceKm} km)`
                 : ""}
+            </span>
+          </div>
+        )}
+
+        {insuranceExpired && (
+          <div className="flex items-center gap-2.5 rounded-xl2 bg-rose-500/15 ring-1 ring-rose-500/25 px-4 py-3">
+            <AlertOctagon size={16} className="text-rose-400 shrink-0" />
+            <span className="text-[13px] text-rose-300 font-medium">
+              Sığortanın müddəti bitib ({car.insuranceExpiryDate})
             </span>
           </div>
         )}
@@ -514,6 +526,13 @@ function CarEditForm({ companyId, car, onDone }) {
   const [ownerDailyRate, setOwnerDailyRate] = useState(car.ownerDailyRate ?? "");
   const [nextServiceKm, setNextServiceKm] = useState(car.nextServiceKm ?? "");
   const [nextServiceDate, setNextServiceDate] = useState(car.nextServiceDate || "");
+  const [insuranceProvider, setInsuranceProvider] = useState(car.insuranceProvider || "");
+  const [insurancePolicyNumber, setInsurancePolicyNumber] = useState(
+    car.insurancePolicyNumber || ""
+  );
+  const [insuranceExpiryDate, setInsuranceExpiryDate] = useState(
+    car.insuranceExpiryDate || ""
+  );
   const [saving, setSaving] = useState(false);
 
   async function handleSave(e) {
@@ -530,6 +549,9 @@ function CarEditForm({ companyId, car, onDone }) {
         ownerDailyRate: ownerDailyRate ? Number(ownerDailyRate) : null,
         nextServiceKm: nextServiceKm ? Number(nextServiceKm) : null,
         nextServiceDate: nextServiceDate || null,
+        insuranceProvider: insuranceProvider.trim(),
+        insurancePolicyNumber: insurancePolicyNumber.trim(),
+        insuranceExpiryDate: insuranceExpiryDate || null,
       });
       onDone();
     } finally {
@@ -597,6 +619,30 @@ function CarEditForm({ companyId, car, onDone }) {
             className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
           />
         </div>
+      </div>
+
+      <div className="border-t border-stone-700 pt-3">
+        <p className="text-[12px] text-stone-500 mb-2">Sığorta (istəyə görə)</p>
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <input
+            value={insuranceProvider}
+            onChange={(e) => setInsuranceProvider(e.target.value)}
+            placeholder="Sığorta şirkəti"
+            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+          />
+          <input
+            value={insurancePolicyNumber}
+            onChange={(e) => setInsurancePolicyNumber(e.target.value)}
+            placeholder="Polis nömrəsi"
+            className="h-11 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+          />
+        </div>
+        <input
+          value={insuranceExpiryDate}
+          onChange={(e) => setInsuranceExpiryDate(e.target.value)}
+          type="date"
+          className="h-11 w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+        />
       </div>
 
       <div className="border-t border-stone-700 pt-3">

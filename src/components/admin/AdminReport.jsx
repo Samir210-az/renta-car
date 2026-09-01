@@ -56,6 +56,42 @@ export default function AdminReport({ cars, rentals }) {
     return map;
   }, [rentals]);
 
+  const topCars = useMemo(() => {
+    const revenueByCarId = {};
+    for (const r of rentals) {
+      if (r.status !== "aktiv" && r.status !== "bitib") continue;
+      revenueByCarId[r.carId] = (revenueByCarId[r.carId] || 0) + Number(r.totalPrice || 0);
+    }
+    return Object.entries(revenueByCarId)
+      .map(([carId, revenue]) => ({
+        car: cars.find((c) => c.id === carId),
+        revenue,
+      }))
+      .filter((x) => x.car)
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 5);
+  }, [cars, rentals]);
+
+  const monthlyTrend = useMemo(() => {
+    const now = new Date();
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ year: d.getFullYear(), month: d.getMonth(), revenue: 0 });
+    }
+    for (const r of rentals) {
+      if (r.status !== "aktiv" && r.status !== "bitib") continue;
+      const d = new Date(r.createdAt);
+      const m = months.find(
+        (x) => x.year === d.getFullYear() && x.month === d.getMonth()
+      );
+      if (m) m.revenue += Number(r.totalPrice || 0);
+    }
+    return months;
+  }, [rentals]);
+
+  const maxMonthly = Math.max(1, ...monthlyTrend.map((m) => m.revenue));
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
@@ -75,6 +111,56 @@ export default function AdminReport({ cars, rentals }) {
           <Row label="Servisdə" value={stats.serviceCount} color="bg-amber-500" />
         </div>
       </div>
+
+      {monthlyTrend.some((m) => m.revenue > 0) && (
+        <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4">
+          <p className="text-[13px] font-medium text-stone-500 mb-3">
+            Son 6 ay — gəlir trendi
+          </p>
+          <div className="flex items-end gap-2 h-24">
+            {monthlyTrend.map((m, i) => (
+              <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                <div
+                  className="w-full bg-gold/70 rounded-t"
+                  style={{
+                    height: `${Math.max(4, (m.revenue / maxMonthly) * 100)}%`,
+                  }}
+                />
+                <span className="text-[9px] text-stone-500">
+                  {new Date(m.year, m.month).toLocaleDateString("az-AZ", {
+                    month: "short",
+                  })}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {topCars.length > 0 && (
+        <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4">
+          <p className="text-[13px] font-medium text-stone-500 mb-3">
+            Ən çox gəlir gətirən maşınlar
+          </p>
+          <div className="space-y-2.5">
+            {topCars.map(({ car, revenue }, i) => (
+              <Link
+                key={car.id}
+                to={`/masin/${car.id}`}
+                className="flex items-center justify-between"
+              >
+                <span className="flex items-center gap-2 text-[13px] text-stone-300 min-w-0">
+                  <span className="text-stone-600 shrink-0">{i + 1}.</span>
+                  <span className="truncate">{car.name}</span>
+                </span>
+                <span className="text-[13px] font-medium text-gold shrink-0">
+                  {revenue} ₼
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {carsWithOwner.length > 0 && (
         <div>

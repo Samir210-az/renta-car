@@ -6,8 +6,27 @@ export const DAMAGE_TYPES = [
   { id: "sinig", label: "Sınıq / Fara", color: "#ef4444" },
 ];
 
-export default function DamageDiagram({ value = [], onChange, readOnly = false }) {
+// Bir markerin əvvəlki dəstdə (yaxın məsafədə, eyni tipdə) qarşılığı
+// yoxdursa "yeni" hesab olunur.
+function isNewMarker(marker, previousMarkers) {
+  if (!previousMarkers || previousMarkers.length === 0) return true;
+  return !previousMarkers.some(
+    (p) =>
+      p.type === marker.type &&
+      Math.hypot(p.x - marker.x, p.y - marker.y) < 18
+  );
+}
+
+export default function DamageDiagram({
+  value = [],
+  onChange,
+  readOnly = false,
+  compareMarkers = null,
+}) {
   const [activeType, setActiveType] = useState(DAMAGE_TYPES[0].id);
+  const newCount = compareMarkers
+    ? value.filter((m) => isNewMarker(m, compareMarkers)).length
+    : 0;
 
   function handleClick(e) {
     if (readOnly || !onChange) return;
@@ -50,6 +69,12 @@ export default function DamageDiagram({ value = [], onChange, readOnly = false }
         </div>
       )}
 
+      {compareMarkers !== null && newCount > 0 && (
+        <p className="text-[11.5px] font-medium text-rose-400 mb-1.5">
+          ⚠ {newCount} yeni zədə (qırmızı halqa ilə işarələnib)
+        </p>
+      )}
+
       <svg
         viewBox="0 0 320 160"
         onClick={handleClick}
@@ -69,18 +94,23 @@ export default function DamageDiagram({ value = [], onChange, readOnly = false }
 
         {value.map((m, i) => {
           const t = DAMAGE_TYPES.find((x) => x.id === m.type) || DAMAGE_TYPES[0];
+          const flagged = compareMarkers !== null && isNewMarker(m, compareMarkers);
           return (
-            <circle
-              key={i}
-              cx={m.x}
-              cy={m.y}
-              r="6"
-              fill={t.color}
-              stroke="white"
-              strokeWidth="1.5"
-              onClick={(e) => removeMarker(i, e)}
-              className={!readOnly ? "cursor-pointer" : ""}
-            />
+            <g key={i}>
+              {flagged && (
+                <circle cx={m.x} cy={m.y} r="10" fill="none" stroke="#f43f5e" strokeWidth="1.5" />
+              )}
+              <circle
+                cx={m.x}
+                cy={m.y}
+                r="6"
+                fill={t.color}
+                stroke="white"
+                strokeWidth="1.5"
+                onClick={(e) => removeMarker(i, e)}
+                className={!readOnly ? "cursor-pointer" : ""}
+              />
+            </g>
           );
         })}
       </svg>

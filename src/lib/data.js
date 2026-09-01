@@ -344,6 +344,13 @@ export async function getRentalDetail(companyId, rentalId) {
   };
 }
 
+// field: "companySignature" | "customerSignature"
+export async function saveSignature(companyId, rentalId, field, dataUrl) {
+  await update(ref(db, `companies/${companyId}/rentals/${rentalId}`), {
+    [field]: dataUrl,
+  });
+}
+
 export async function cancelRental(companyId, rental, reason, staffName) {
   await update(ref(db, `companies/${companyId}/rentals/${rental.id}`), {
     status: "ləğv edilib",

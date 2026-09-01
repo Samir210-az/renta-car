@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Printer } from "lucide-react";
-import { getRentalDetail } from "../lib/data";
+import { ArrowLeft, Printer, PenLine } from "lucide-react";
+import { getRentalDetail, saveSignature } from "../lib/data";
+import SignaturePad from "../components/SignaturePad";
 
 function fmtDate(ts) {
   if (!ts) return "—";
@@ -12,10 +13,20 @@ export default function Muqavile() {
   const { companyId, rentalId } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState(undefined);
+  const [signing, setSigning] = useState(null); // "companySignature" | "customerSignature" | null
 
   useEffect(() => {
     getRentalDetail(companyId, rentalId).then(setData);
   }, [companyId, rentalId]);
+
+  async function handleSaveSignature(dataUrl) {
+    await saveSignature(companyId, rentalId, signing, dataUrl);
+    setData((prev) => ({
+      ...prev,
+      rental: { ...prev.rental, [signing]: dataUrl },
+    }));
+    setSigning(null);
+  }
 
   if (data === undefined) {
     return (
@@ -222,19 +233,46 @@ export default function Muqavile() {
 
         <div className="grid grid-cols-2 gap-8 mt-12 pt-6">
           <div>
-            <div className="border-b border-stone-300 h-10" />
+            {rental.companySignature ? (
+              <img src={rental.companySignature} alt="" className="h-10 object-contain object-left" />
+            ) : (
+              <button
+                onClick={() => setSigning("companySignature")}
+                className="h-10 border-b border-stone-300 w-full flex items-center gap-1.5 text-[11.5px] text-stone-400 print:hidden"
+              >
+                <PenLine size={13} />
+                İmza atmaq üçün toxunun
+              </button>
+            )}
             <p className="text-[11.5px] text-stone-400 mt-1.5">
               İcarəyə verən — {company?.name}
             </p>
           </div>
           <div>
-            <div className="border-b border-stone-300 h-10" />
+            {rental.customerSignature ? (
+              <img src={rental.customerSignature} alt="" className="h-10 object-contain object-left" />
+            ) : (
+              <button
+                onClick={() => setSigning("customerSignature")}
+                className="h-10 border-b border-stone-300 w-full flex items-center gap-1.5 text-[11.5px] text-stone-400 print:hidden"
+              >
+                <PenLine size={13} />
+                İmza atmaq üçün toxunun
+              </button>
+            )}
             <p className="text-[11.5px] text-stone-400 mt-1.5">
               İcarəçi — {rental.customerName}
             </p>
           </div>
         </div>
       </div>
+
+      {signing && (
+        <SignaturePad
+          onSave={handleSaveSignature}
+          onCancel={() => setSigning(null)}
+        />
+      )}
     </div>
   );
 }

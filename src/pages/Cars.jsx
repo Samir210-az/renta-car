@@ -82,6 +82,13 @@ export default function Cars() {
     }).length;
   }, [cars, rentals]);
 
+  const insuranceExpiredCount = useMemo(() => {
+    if (!cars) return 0;
+    const today = new Date().toISOString().slice(0, 10);
+    return cars.filter((c) => c.insuranceExpiryDate && c.insuranceExpiryDate < today)
+      .length;
+  }, [cars]);
+
   const visibleCars = useMemo(() => {
     if (!cars) return [];
     if (filter === "hamısı") return cars;
@@ -128,6 +135,15 @@ export default function Cars() {
           <Wrench size={16} className="text-amber-400 shrink-0" />
           <span className="text-[13px] text-amber-300 font-medium">
             {serviceCount} maşının servis vaxtı çatıb
+          </span>
+        </div>
+      )}
+
+      {insuranceExpiredCount > 0 && (
+        <div className="flex items-center gap-2.5 rounded-xl2 bg-rose-500/15 ring-1 ring-rose-500/25 px-4 py-3 mb-4">
+          <AlertTriangle size={16} className="text-rose-400 shrink-0" />
+          <span className="text-[13px] text-rose-300 font-medium">
+            {insuranceExpiredCount} maşının sığortası bitib
           </span>
         </div>
       )}
