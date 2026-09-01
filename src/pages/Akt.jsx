@@ -112,6 +112,9 @@ export default function Akt() {
           <Row label="Başlanğıc" value={rental.startDate} />
           <Row label="Bitmə" value={rental.endDate} />
           <Row label="Ümumi məbləğ" value={`${rental.totalPrice} ₼`} />
+          {rental.depositAmount > 0 && (
+            <Row label="Depozit (girov)" value={`${rental.depositAmount} ₼`} />
+          )}
         </Section>
 
         <Section title="Təhvil zamanı vəziyyət">
@@ -150,6 +153,16 @@ export default function Akt() {
                   <DamageDiagram value={ret.damageMarkers} readOnly />
                 </div>
               )}
+              {rental.depositAmount > 0 && (
+                <Row
+                  label="Depozit statusu"
+                  value={
+                    ret.depositReturned
+                      ? "Tam qaytarıldı"
+                      : `${ret.depositReturnedAmount ?? 0} ₼ qaytarıldı`
+                  }
+                />
+              )}
             </>
           ) : (
             <p className="text-stone-400">Maşın hələ qaytarılmayıb</p>
@@ -169,6 +182,21 @@ export default function Akt() {
             ))}
           </div>
         )}
+
+        <Section title="Şərtlər">
+          <ol className="list-decimal list-inside space-y-1.5 text-[12px] text-stone-700 leading-relaxed">
+            <li>İcarəçi maşını yalnız Azərbaycan Respublikasının qanunvericiliyinə uyğun, sürücülük vəsiqəsi olan şəxs kimi idarə edə bilər.</li>
+            <li>İcarə müddəti bitdikdən sonra maşının gecikdirilməsi hər gün üçün gündəlik icarə haqqının 1.5 misli məbləğində əlavə ödəniş yaradır.</li>
+            <li>Yanacaq səviyyəsi təhvil alınan zamankı səviyyədə qaytarılmalıdır, əks halda fərq İcarəçidən tutulur.</li>
+            <li>Təhvil zamanı aktda qeyd olunmayan zədə/nasazlıq İcarəçinin məsuliyyətindədir və dəyəri depozitdən (və ya əlavə ödənişlə) qarşılanır.</li>
+            <li>Yol qaydalarının pozulması nəticəsində yaranan cərimələr İcarəçinin öhdəsindədir.</li>
+            <li>Maşından üçüncü şəxsə icarə müddətində istifadə etdirmək qadağandır.</li>
+            <li>Tərəflər arasında yaranan mübahisələr qarşılıqlı razılaşma yolu ilə, mümkün olmadıqda isə qüvvədə olan qanunvericiliyə uyğun həll edilir.</li>
+          </ol>
+          <p className="text-[10.5px] text-stone-400 mt-2 italic">
+            Bu şərtlər ümumi çərçivə xarakteri daşıyır və hüquqi məsləhət deyil — şirkət öz konkret şərtlərini əlavə etmək üçün hüquqşünasla məsləhətləşməlidir.
+          </p>
+        </Section>
 
         <div className="grid grid-cols-2 gap-8 mt-12 pt-6">
           <div>

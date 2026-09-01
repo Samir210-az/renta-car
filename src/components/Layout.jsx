@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { Car, CalendarDays, PlusCircle, ShieldCheck, LogOut } from "lucide-react";
-import { logoutCompany } from "../lib/session";
+import { logoutCompany, getStaffName, setStaffName } from "../lib/session";
 import Footer from "./Footer";
 
 const NAV_ITEMS = [
@@ -16,6 +16,15 @@ export default function Layout() {
   const [companyName, setCompanyName] = useState("Renta-Car");
   const [companyLogo, setCompanyLogo] = useState(null);
   const [headerAction, setHeaderAction] = useState(null);
+
+  useEffect(() => {
+    if (!getStaffName()) {
+      const name = window.prompt(
+        "Adınızı yazın (icarə/ödəniş qeydlərində kim etdiyini bilmək üçün):"
+      );
+      if (name && name.trim()) setStaffName(name.trim());
+    }
+  }, []);
 
   function handleLogout() {
     logoutCompany();

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Wallet, Users } from "lucide-react";
 import { addOwnerPayment } from "../../lib/data";
+import { getStaffName } from "../../lib/session";
 import { calcOwnerOwed, calcTotalPaid } from "../../lib/money";
 
 export default function AdminPayments({ companyId, cars, rentals, payments }) {
@@ -107,7 +108,7 @@ function PaymentDetail({ companyId, car, owed, paid, payments }) {
     if (!amount || saving) return;
     setSaving(true);
     try {
-      await addOwnerPayment(companyId, { carId: car.id, amount, note });
+      await addOwnerPayment(companyId, { carId: car.id, amount, note, staffName: getStaffName() });
       setAmount("");
       setNote("");
     } finally {
@@ -167,6 +168,7 @@ function PaymentDetail({ companyId, car, owed, paid, payments }) {
               <span>
                 {new Date(p.paidAt).toLocaleDateString("az-AZ")}
                 {p.note ? ` · ${p.note}` : ""}
+                {p.paidBy ? ` · ${p.paidBy}` : ""}
               </span>
               <span className="text-stone-300 font-medium">{p.amount} ₼</span>
             </div>

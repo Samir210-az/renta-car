@@ -1,5 +1,6 @@
 const COMPANY_KEY = "rc_company_id";
 const PLATFORM_KEY = "rc_platform_session";
+const STAFF_NAME_KEY = "rc_staff_name";
 
 // ---- Şirkət (tenant) sessiyası ----
 
@@ -17,6 +18,17 @@ export function isCompanyAuthed() {
 
 export function logoutCompany() {
   sessionStorage.removeItem(COMPANY_KEY);
+  sessionStorage.removeItem(STAFF_NAME_KEY);
+}
+
+// ---- İşçi adı (kim etdi izini saxlamaq üçün, sessiya boyu bir dəfə soruşulur) ----
+
+export function getStaffName() {
+  return sessionStorage.getItem(STAFF_NAME_KEY) || "";
+}
+
+export function setStaffName(name) {
+  sessionStorage.setItem(STAFF_NAME_KEY, name);
 }
 
 // ---- Platform admin (sən — bütün şirkətləri idarə edirsən) ----

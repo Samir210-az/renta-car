@@ -2,12 +2,14 @@ const STATUS_STYLES = {
   boş: "bg-emerald-500/15 text-emerald-400 ring-emerald-500/25",
   icarədə: "bg-rose-500/15 text-rose-400 ring-rose-500/25",
   servisdə: "bg-amber-500/15 text-amber-400 ring-amber-500/25",
+  rezerv: "bg-sky-500/15 text-sky-400 ring-sky-500/25",
 };
 
 const STATUS_DOT = {
   boş: "bg-emerald-500",
   icarədə: "bg-rose-500",
   servisdə: "bg-amber-500",
+  rezerv: "bg-sky-500",
 };
 
 export default function StatusBadge({ status }) {

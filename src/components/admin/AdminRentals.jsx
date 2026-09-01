@@ -1,18 +1,50 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, Trash2, FileText, X } from "lucide-react";
-import { closeRental, deleteRental } from "../../lib/data";
+import { CheckCircle2, Trash2, FileText, X, PlayCircle, Ban } from "lucide-react";
+import { closeRental, deleteRental, startReservation, cancelRental } from "../../lib/data";
+import { getStaffName } from "../../lib/session";
 import StatusBadge from "../StatusBadge";
 import DamageDiagram from "../DamageDiagram";
 import PhoneActions from "../PhoneActions";
 
 const FUEL_LEVELS = ["Boş", "1/4", "1/2", "3/4", "Dolu"];
 
+const STATUS_TO_BADGE = {
+  aktiv: "icarədə",
+  rezerv: "rezerv",
+  bitib: "boş",
+  "ləğv edilib": "servisdə",
+};
+
 export default function AdminRentals({ companyId, rentals, carsById }) {
   const [closingId, setClosingId] = useState(null);
+  const [busyId, setBusyId] = useState(null);
+
+  async function handleStart(rental) {
+    setBusyId(rental.id);
+    try {
+      await startReservation(companyId, rental, getStaffName());
+    } catch (err) {
+      alert(err.message || "Başlada bilmədik");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleCancel(rental) {
+    const reason = prompt("Ləğv etmə səbəbi (istəyə görə):");
+    if (reason === null) return; // "İmtina" basıldı
+    setBusyId(rental.id);
+    try {
+      await cancelRental(companyId, rental, reason, getStaffName());
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   async function handleDelete(rental) {
-    if (!confirm("Bu icarə qeydi silinsin?")) return;
+    if (!confirm("Bu icarə qeydi tamamilə silinsin? (Ləğv etmək əvəzinə tarixçədə saxlamaq üçün 'Ləğv et' istifadə edin)"))
+      return;
     await deleteRental(companyId, rental);
   }
 
@@ -28,6 +60,7 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
     <div className="space-y-2.5">
       {rentals.map((r) => {
         const car = carsById[r.carId];
+        const busy = busyId === r.id;
         return (
           <div
             key={r.id}
@@ -44,14 +77,26 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
                 </p>
                 <p className="text-[12.5px] text-stone-400 mt-0.5">
                   {r.startDate} → {r.endDate}
+                  {r.depositAmount > 0 ? ` · Depozit: ${r.depositAmount} ₼` : ""}
                 </p>
+                {r.status === "ləğv edilib" && r.cancelReason && (
+                  <p className="text-[12px] text-rose-400 mt-1">
+                    Səbəb: {r.cancelReason}
+                    {r.cancelledBy ? ` · ${r.cancelledBy}` : ""}
+                  </p>
+                )}
+                {r.createdBy && (
+                  <p className="text-[11px] text-stone-500 mt-0.5">
+                    Qeydə alıb: {r.createdBy}
+                  </p>
+                )}
               </div>
               <div className="text-right shrink-0">
                 <p className="font-semibold text-stone-50 text-[14px]">
                   {r.totalPrice} ₼
                 </p>
                 <div className="mt-1.5">
-                  <StatusBadge status={r.status === "aktiv" ? "icarədə" : "boş"} />
+                  <StatusBadge status={STATUS_TO_BADGE[r.status] || "boş"} />
                 </div>
               </div>
             </div>
@@ -64,14 +109,34 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
                 onCancel={() => setClosingId(null)}
               />
             ) : (
-              <div className="flex items-center gap-3 mt-3 pt-3 border-t border-stone-700">
+              <div className="flex items-center gap-3 mt-3 pt-3 border-t border-stone-700 flex-wrap">
+                {r.status === "rezerv" && (
+                  <button
+                    onClick={() => handleStart(r)}
+                    disabled={busy}
+                    className="flex items-center gap-1.5 text-[12.5px] font-medium text-gold hover:text-amber-300 disabled:opacity-40"
+                  >
+                    <PlayCircle size={14} />
+                    Təhvil ver (başlat)
+                  </button>
+                )}
                 {r.status === "aktiv" && (
                   <button
                     onClick={() => setClosingId(r.id)}
-                    className="flex items-center gap-1.5 text-[12.5px] font-medium text-emerald-600 hover:text-emerald-700"
+                    className="flex items-center gap-1.5 text-[12.5px] font-medium text-emerald-400 hover:text-emerald-300"
                   >
                     <CheckCircle2 size={14} />
                     Maşını qaytar
+                  </button>
+                )}
+                {(r.status === "aktiv" || r.status === "rezerv") && (
+                  <button
+                    onClick={() => handleCancel(r)}
+                    disabled={busy}
+                    className="flex items-center gap-1.5 text-[12.5px] text-stone-400 hover:text-rose-400 disabled:opacity-40"
+                  >
+                    <Ban size={13} />
+                    Ləğv et
                   </button>
                 )}
                 <Link
@@ -83,7 +148,7 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
                 </Link>
                 <button
                   onClick={() => handleDelete(r)}
-                  className="flex items-center gap-1.5 text-[12.5px] text-stone-400 hover:text-rose-500 ml-auto"
+                  className="flex items-center gap-1.5 text-[12.5px] text-stone-500 hover:text-rose-500 ml-auto"
                 >
                   <Trash2 size={13} />
                   Sil
@@ -103,6 +168,10 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
   const [exteriorNotes, setExteriorNotes] = useState("");
   const [interiorNotes, setInteriorNotes] = useState("");
   const [damage, setDamage] = useState([]);
+  const [depositReturned, setDepositReturned] = useState(true);
+  const [depositReturnedAmount, setDepositReturnedAmount] = useState(
+    rental.depositAmount || 0
+  );
   const [saving, setSaving] = useState(false);
 
   async function handleConfirm() {
@@ -114,8 +183,10 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
         exteriorNotes: exteriorNotes.trim(),
         interiorNotes: interiorNotes.trim(),
         damageMarkers: damage,
+        depositReturned: rental.depositAmount > 0 ? depositReturned : null,
+        depositReturnedAmount: rental.depositAmount > 0 ? Number(depositReturnedAmount) : null,
         signedAt: Date.now(),
-      });
+      }, getStaffName());
       onDone();
     } finally {
       setSaving(false);
@@ -163,6 +234,34 @@ function ReturnConditionForm({ companyId, rental, onDone, onCancel }) {
         rows={2}
         className="w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 py-2 text-[13px] resize-none text-stone-50"
       />
+
+      {rental.depositAmount > 0 && (
+        <div className="rounded-lg bg-paper ring-1 ring-stone-700 p-3 space-y-2">
+          <p className="text-[12px] text-stone-400">
+            Depozit: {rental.depositAmount} ₼
+          </p>
+          <div className="flex items-center gap-2">
+            <select
+              value={depositReturned ? "yes" : "no"}
+              onChange={(e) => setDepositReturned(e.target.value === "yes")}
+              className="h-9 rounded-lg bg-surface ring-1 ring-stone-700 px-2.5 text-[12.5px] text-stone-50"
+            >
+              <option value="yes">Tam qaytarıldı</option>
+              <option value="no">Qismən / saxlanıldı</option>
+            </select>
+            <input
+              type="number"
+              min="0"
+              value={depositReturnedAmount}
+              onChange={(e) => setDepositReturnedAmount(e.target.value)}
+              disabled={depositReturned}
+              placeholder="Qaytarılan (₼)"
+              className="h-9 flex-1 min-w-0 rounded-lg bg-surface ring-1 ring-stone-700 px-2.5 text-[12.5px] text-stone-50 disabled:opacity-50"
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center gap-2">
         <button
           onClick={handleConfirm}

@@ -146,6 +146,38 @@ export default function AdminCars({ companyId, cars }) {
               />
               {car.ownerPhone && <PhoneActions phone={car.ownerPhone} />}
             </div>
+
+            <div
+              key={`${car.id}-disc-${car.weeklyDiscountPercent}-${car.monthlyDiscountPercent}`}
+              className="flex items-center gap-2 mt-2 flex-wrap"
+            >
+              <input
+                type="number"
+                min="0"
+                max="99"
+                defaultValue={car.weeklyDiscountPercent ?? ""}
+                onBlur={(e) =>
+                  updateCar(companyId, car.id, {
+                    weeklyDiscountPercent: e.target.value ? Number(e.target.value) : null,
+                  })
+                }
+                placeholder="7+ gün endirim %"
+                className="h-9 flex-1 min-w-[110px] rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px] text-stone-50"
+              />
+              <input
+                type="number"
+                min="0"
+                max="99"
+                defaultValue={car.monthlyDiscountPercent ?? ""}
+                onBlur={(e) =>
+                  updateCar(companyId, car.id, {
+                    monthlyDiscountPercent: e.target.value ? Number(e.target.value) : null,
+                  })
+                }
+                placeholder="30+ gün endirim %"
+                className="h-9 flex-1 min-w-[110px] rounded-lg bg-paper ring-1 ring-stone-700 px-2.5 text-[12.5px] text-stone-50"
+              />
+            </div>
           </div>
         ))}
       </div>

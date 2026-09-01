@@ -2,19 +2,21 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, LogOut } from "lucide-react";
 import { getCompanyId, logoutCompany } from "../lib/session";
-import { listenCars, listenRentals, listenCompanyProfile, listenRequests, listenOwnerPayments } from "../lib/data";
+import { listenCars, listenRentals, listenCompanyProfile, listenRequests, listenOwnerPayments, listenCustomers } from "../lib/data";
 import Footer from "../components/Footer";
 import AdminCars from "../components/admin/AdminCars";
 import AdminRentals from "../components/admin/AdminRentals";
 import AdminReport from "../components/admin/AdminReport";
 import AdminRequests from "../components/admin/AdminRequests";
 import AdminPayments from "../components/admin/AdminPayments";
+import AdminCustomers from "../components/admin/AdminCustomers";
 import TenantSettings from "../components/admin/TenantSettings";
 
 const TABS = [
   { id: "requests", label: "Sorğular" },
   { id: "cars", label: "Maşınlar" },
   { id: "rentals", label: "İcarələr" },
+  { id: "customers", label: "Müştərilər" },
   { id: "payments", label: "Ödənişlər" },
   { id: "report", label: "Hesabat" },
   { id: "settings", label: "Tənzimləmələr" },
@@ -28,6 +30,7 @@ export default function TenantAdmin() {
   const [rentals, setRentals] = useState([]);
   const [requests, setRequests] = useState([]);
   const [payments, setPayments] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
@@ -35,12 +38,14 @@ export default function TenantAdmin() {
     const unsubRentals = listenRentals(companyId, setRentals);
     const unsubRequests = listenRequests(companyId, setRequests);
     const unsubPayments = listenOwnerPayments(companyId, setPayments);
+    const unsubCustomers = listenCustomers(companyId, setCustomers);
     const unsubProfile = listenCompanyProfile(companyId, setProfile);
     return () => {
       unsubCars();
       unsubRentals();
       unsubRequests();
       unsubPayments();
+      unsubCustomers();
       unsubProfile();
     };
   }, [companyId]);
@@ -127,6 +132,7 @@ export default function TenantAdmin() {
             carsById={carsById}
           />
         )}
+        {tab === "customers" && <AdminCustomers customers={customers} />}
         {tab === "payments" && (
           <AdminPayments
             companyId={companyId}

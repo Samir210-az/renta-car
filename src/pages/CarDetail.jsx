@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Wallet, FileText, ImagePlus, Trash2 } from "lucide-react";
-import { getCompanyId } from "../lib/session";
-import { getCarDetail, updateCar, addOwnerPayment, deleteCar } from "../lib/data";
+import { ArrowLeft, Wallet, FileText, ImagePlus, Trash2, AlertOctagon, Check } from "lucide-react";
+import { getCompanyId, getStaffName } from "../lib/session";
+import { getCarDetail, updateCar, addOwnerPayment, deleteCar, addFine, toggleFinePaid, deleteFine } from "../lib/data";
 import { calcOwnerOwed, calcTotalPaid } from "../lib/money";
 import { compressImage } from "../lib/image";
 import StatusBadge from "../components/StatusBadge";
@@ -19,6 +19,9 @@ export default function CarDetail() {
   const [payNote, setPayNote] = useState("");
   const [paySaving, setPaySaving] = useState(false);
   const [photoBusy, setPhotoBusy] = useState(false);
+  const [fineAmount, setFineAmount] = useState("");
+  const [fineDesc, setFineDesc] = useState("");
+  const [fineSaving, setFineSaving] = useState(false);
 
   async function reload() {
     const result = await getCarDetail(companyId, carId);
@@ -71,13 +74,38 @@ export default function CarDetail() {
     if (!payAmount || paySaving) return;
     setPaySaving(true);
     try {
-      await addOwnerPayment(companyId, { carId, amount: payAmount, note: payNote });
+      await addOwnerPayment(companyId, { carId, amount: payAmount, note: payNote, staffName: getStaffName() });
       setPayAmount("");
       setPayNote("");
       reload();
     } finally {
       setPaySaving(false);
     }
+  }
+
+  async function handleAddFine(e) {
+    e.preventDefault();
+    if (!fineAmount || fineSaving) return;
+    setFineSaving(true);
+    try {
+      await addFine(companyId, { carId, amount: fineAmount, description: fineDesc });
+      setFineAmount("");
+      setFineDesc("");
+      reload();
+    } finally {
+      setFineSaving(false);
+    }
+  }
+
+  async function handleToggleFine(fine) {
+    await toggleFinePaid(companyId, fine.id, !fine.paid);
+    reload();
+  }
+
+  async function handleDeleteFine(fineId) {
+    if (!confirm("Bu cərimə qeydi silinsin?")) return;
+    await deleteFine(companyId, fineId);
+    reload();
   }
 
   if (data === undefined) {
@@ -96,8 +124,10 @@ export default function CarDetail() {
     );
   }
 
-  const { car, rentals, payments } = data;
-  const totalRevenue = rentals.reduce((s, r) => s + Number(r.totalPrice || 0), 0);
+  const { car, rentals, payments, fines = [] } = data;
+  const countedRentals = rentals.filter((r) => r.status === "aktiv" || r.status === "bitib");
+  const totalRevenue = countedRentals.reduce((s, r) => s + Number(r.totalPrice || 0), 0);
+  const unpaidFines = fines.filter((f) => !f.paid).reduce((s, f) => s + Number(f.amount || 0), 0);
   const owed = calcOwnerOwed(car, rentals);
   const paid = calcTotalPaid(payments);
   const remaining = owed - paid;
@@ -261,6 +291,7 @@ export default function CarDetail() {
                     <span>
                       {new Date(p.paidAt).toLocaleDateString("az-AZ")}
                       {p.note ? ` · ${p.note}` : ""}
+                {p.paidBy ? ` · ${p.paidBy}` : ""}
                     </span>
                     <span className="font-medium text-stone-200">{p.amount} ₼</span>
                   </div>
@@ -269,6 +300,76 @@ export default function CarDetail() {
             )}
           </Section>
         )}
+
+        <Section title={`Cərimələr${unpaidFines > 0 ? ` · ${unpaidFines} ₼ ödənilməmiş` : ""}`}>
+          <form onSubmit={handleAddFine} className="rounded-xl2 bg-surface ring-1 ring-stone-700 p-4 space-y-2.5 mb-3">
+            <div className="flex gap-2">
+              <input
+                type="number"
+                min="0"
+                value={fineAmount}
+                onChange={(e) => setFineAmount(e.target.value)}
+                placeholder="Məbləğ (₼)"
+                className="h-10 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
+              />
+              <input
+                value={fineDesc}
+                onChange={(e) => setFineDesc(e.target.value)}
+                placeholder="Səbəb (məs. sürət cəriməsi)"
+                className="h-10 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13px] text-stone-50"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={!fineAmount || fineSaving}
+              className="h-9 px-4 rounded-lg bg-gold text-ink text-[12.5px] font-semibold disabled:opacity-40"
+            >
+              {fineSaving ? "..." : "Cərimə əlavə et"}
+            </button>
+          </form>
+
+          {fines.length === 0 ? (
+            <p className="text-[13px] text-stone-500">Cərimə qeydi yoxdur</p>
+          ) : (
+            <div className="space-y-2">
+              {fines.map((f) => (
+                <div
+                  key={f.id}
+                  className="flex items-center justify-between rounded-xl2 bg-surface ring-1 ring-stone-700 px-4 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[13px] font-medium text-stone-100">
+                      {f.amount} ₼
+                    </p>
+                    {f.description && (
+                      <p className="text-[12px] text-stone-500">{f.description}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => handleToggleFine(f)}
+                      className={`h-7 px-2.5 rounded-full text-[11.5px] font-medium flex items-center gap-1 ${
+                        f.paid
+                          ? "bg-emerald-500/15 text-emerald-400"
+                          : "bg-rose-500/15 text-rose-400"
+                      }`}
+                    >
+                      {f.paid ? <Check size={11} /> : <AlertOctagon size={11} />}
+                      {f.paid ? "Ödənilib" : "Ödənilməyib"}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteFine(f.id)}
+                      aria-label="Sil"
+                      className="h-7 w-7 rounded-lg flex items-center justify-center text-stone-500 hover:text-rose-400"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Section>
 
         <Section title={`İcarə tarixçəsi (${rentals.length})`}>
           {rentals.length === 0 ? (

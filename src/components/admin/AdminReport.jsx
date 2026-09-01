@@ -13,14 +13,18 @@ export default function AdminReport({ cars, rentals }) {
     const serviceCount = cars.filter((c) => c.status === "servisdə").length;
     const freeCount = cars.filter((c) => c.status === "boş").length;
 
-    const monthRevenue = rentals
+    const countedRentals = rentals.filter(
+      (r) => r.status === "aktiv" || r.status === "bitib"
+    );
+
+    const monthRevenue = countedRentals
       .filter((r) => {
         const d = new Date(r.createdAt);
         return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
       })
       .reduce((sum, r) => sum + Number(r.totalPrice || 0), 0);
 
-    const totalRevenue = rentals.reduce(
+    const totalRevenue = countedRentals.reduce(
       (sum, r) => sum + Number(r.totalPrice || 0),
       0
     );

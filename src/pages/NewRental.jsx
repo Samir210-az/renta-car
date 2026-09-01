@@ -1,20 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ImagePlus, X, AlertTriangle } from "lucide-react";
-import { getCompanyId } from "../lib/session";
-import { listenCars, addRental, resolveRequest } from "../lib/data";
+import { CheckCircle2, ImagePlus, X, AlertTriangle, UserCheck } from "lucide-react";
+import { getCompanyId, getStaffName } from "../lib/session";
+import {
+  listenCars,
+  addRental,
+  resolveRequest,
+  findCustomerByPhone,
+  findOrCreateCustomer,
+} from "../lib/data";
 import { compressImage } from "../lib/image";
+import { daysBetween, calcRentalPrice } from "../lib/money";
 import DamageDiagram from "../components/DamageDiagram";
 
 const FUEL_LEVELS = ["Boş", "1/4", "1/2", "3/4", "Dolu"];
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
-}
-
-function daysBetween(start, end) {
-  const ms = new Date(end) - new Date(start);
-  return Math.max(1, Math.round(ms / 86400000));
 }
 
 export default function NewRental() {
@@ -24,8 +26,12 @@ export default function NewRental() {
   const [carId, setCarId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [knownCustomer, setKnownCustomer] = useState(null);
   const [licenseNumber, setLicenseNumber] = useState("");
   const [licenseValidUntil, setLicenseValidUntil] = useState("");
+  const [licensePhoto, setLicensePhoto] = useState(null);
+  const [licensePhotoBusy, setLicensePhotoBusy] = useState(false);
+  const [depositAmount, setDepositAmount] = useState("");
   const [startDate, setStartDate] = useState(todayISO());
   const [endDate, setEndDate] = useState(todayISO());
   const [pickupKm, setPickupKm] = useState("");
@@ -60,23 +66,40 @@ export default function NewRental() {
     }
   }, []);
 
-  const availableCars = useMemo(
-    () => (cars || []).filter((c) => c.status === "boş"),
-    [cars]
-  );
+  // Telefon yazılan kimi mövcud müştərini tanı və məlumatını doldur
+  useEffect(() => {
+    const digits = customerPhone.replace(/\D/g, "");
+    if (digits.length < 7) {
+      setKnownCustomer(null);
+      return;
+    }
+    const t = setTimeout(async () => {
+      const found = await findCustomerByPhone(companyId, customerPhone);
+      setKnownCustomer(found);
+      if (found) {
+        if (!customerName.trim()) setCustomerName(found.name || "");
+        if (!licenseNumber.trim()) setLicenseNumber(found.licenseNumber || "");
+        if (!licenseValidUntil) setLicenseValidUntil(found.licenseValidUntil || "");
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, 500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customerPhone, companyId]);
 
   const selectedCar = useMemo(
-    () => availableCars.find((c) => c.id === carId),
-    [availableCars, carId]
+    () => (cars || []).find((c) => c.id === carId),
+    [cars, carId]
   );
 
-  const totalPrice = useMemo(() => {
-    if (!selectedCar) return 0;
-    return daysBetween(startDate, endDate) * Number(selectedCar.dailyPrice || 0);
-  }, [selectedCar, startDate, endDate]);
+  const days = useMemo(() => daysBetween(startDate, endDate), [startDate, endDate]);
 
-  const licenseExpired =
-    licenseValidUntil && licenseValidUntil < startDate;
+  const priceBreakdown = useMemo(() => {
+    if (!selectedCar) return null;
+    return calcRentalPrice(selectedCar, days);
+  }, [selectedCar, days]);
+
+  const licenseExpired = licenseValidUntil && licenseValidUntil < startDate;
 
   const isValid =
     carId &&
@@ -99,22 +122,46 @@ export default function NewRental() {
     }
   }
 
+  async function handleLicensePhoto(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLicensePhotoBusy(true);
+    try {
+      const dataUrl = await compressImage(file, { maxWidth: 640, quality: 0.6 });
+      setLicensePhoto(dataUrl);
+    } finally {
+      setLicensePhotoBusy(false);
+    }
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (!isValid || saving) return;
     setSaving(true);
     setFormError("");
     try {
+      const customerId = await findOrCreateCustomer(companyId, {
+        name: customerName,
+        phone: customerPhone,
+        licenseNumber,
+        licenseValidUntil,
+      });
+
       await addRental(companyId, {
         carId,
+        customerId,
+        createdBy: getStaffName() || null,
         customerName: customerName.trim(),
         customerPhone: customerPhone.trim(),
         licenseNumber: licenseNumber.trim(),
         licenseValidUntil: licenseValidUntil || null,
+        licensePhoto: licensePhoto || null,
+        depositAmount: depositAmount ? Number(depositAmount) : 0,
         startDate,
         endDate,
         dailyPrice: Number(selectedCar.dailyPrice || 0),
-        totalPrice,
+        totalPrice: priceBreakdown.total,
+        priceTier: priceBreakdown.tierLabel,
         pickupCondition: {
           km: pickupKm ? Number(pickupKm) : null,
           fuel: pickupFuel,
@@ -141,14 +188,20 @@ export default function NewRental() {
     return (
       <div className="flex flex-col items-center justify-center text-center mt-24">
         <CheckCircle2 size={40} className="text-emerald-500 mb-3" />
-        <p className="font-medium text-stone-50">İcarə qeydə alındı</p>
+        <p className="font-medium text-stone-50">
+          {startDate > todayISO() ? "Rezervasiya qeydə alındı" : "İcarə qeydə alındı"}
+        </p>
       </div>
     );
   }
 
+  const isFuture = startDate > todayISO();
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <h1 className="text-lg font-semibold text-stone-50 mb-1">Yeni icarə</h1>
+      <h1 className="text-lg font-semibold text-stone-50 mb-1">
+        {isFuture ? "Yeni rezervasiya" : "Yeni icarə"}
+      </h1>
 
       <Field label="Maşın">
         <select
@@ -158,29 +211,22 @@ export default function NewRental() {
           className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3.5 text-[14px] text-stone-50"
         >
           <option value="" disabled>
-            {cars === null
-              ? "Yüklənir..."
-              : availableCars.length === 0
-              ? "Boş maşın yoxdur"
-              : "Seçin"}
+            {cars === null ? "Yüklənir..." : "Seçin"}
           </option>
-          {availableCars.map((c) => (
+          {(cars || []).map((c) => (
             <option key={c.id} value={c.id}>
               {c.name} · {c.plate}
+              {c.status !== "boş" ? ` (hazırda ${c.status})` : ""}
             </option>
           ))}
         </select>
-      </Field>
-
-      <Field label="Müştəri adı">
-        <input
-          type="text"
-          value={customerName}
-          onChange={(e) => setCustomerName(e.target.value)}
-          required
-          placeholder="Ad Soyad"
-          className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3.5 text-[14px] text-stone-50 placeholder:text-stone-400"
-        />
+        {selectedCar && selectedCar.status !== "boş" && !isFuture && (
+          <p className="text-[11.5px] text-amber-400 mt-1.5 flex items-center gap-1.5">
+            <AlertTriangle size={12} />
+            Bu maşın hazırda "{selectedCar.status}" — yalnız gələcək tarixə
+            rezervasiya edə bilərsiniz
+          </p>
+        )}
       </Field>
 
       <Field label="Telefon">
@@ -190,6 +236,23 @@ export default function NewRental() {
           onChange={(e) => setCustomerPhone(e.target.value)}
           required
           placeholder="+994 XX XXX XX XX"
+          className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3.5 text-[14px] text-stone-50 placeholder:text-stone-400"
+        />
+        {knownCustomer && (
+          <p className="text-[11.5px] text-emerald-400 mt-1.5 flex items-center gap-1.5">
+            <UserCheck size={12} />
+            Tanınan müştəri — məlumatları avtomatik dolduruldu
+          </p>
+        )}
+      </Field>
+
+      <Field label="Müştəri adı">
+        <input
+          type="text"
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+          required
+          placeholder="Ad Soyad"
           className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3.5 text-[14px] text-stone-50 placeholder:text-stone-400"
         />
       </Field>
@@ -222,11 +285,45 @@ export default function NewRental() {
         </p>
       )}
 
+      <Field label="Sürücülük vəsiqəsinin şəkli (istəyə görə)">
+        {licensePhoto ? (
+          <div className="relative w-28">
+            <img
+              src={licensePhoto}
+              alt=""
+              className="w-28 h-20 rounded-lg object-cover ring-1 ring-stone-700"
+            />
+            <button
+              type="button"
+              onClick={() => setLicensePhoto(null)}
+              className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-rose-500 text-white flex items-center justify-center"
+            >
+              <X size={11} />
+            </button>
+          </div>
+        ) : (
+          <label className="w-28 h-20 rounded-lg bg-surface ring-1 ring-dashed ring-stone-600 flex flex-col items-center justify-center gap-0.5 text-stone-400 cursor-pointer">
+            <ImagePlus size={16} />
+            <span className="text-[10px]">
+              {licensePhotoBusy ? "..." : "şəkil çək"}
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={handleLicensePhoto}
+            />
+          </label>
+        )}
+      </Field>
+
       <div className="grid grid-cols-2 gap-3">
         <Field label="Başlanğıc">
           <input
             type="date"
             value={startDate}
+            min={todayISO()}
             onChange={(e) => setStartDate(e.target.value)}
             required
             className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3 text-[14px] text-stone-50"
@@ -244,14 +341,41 @@ export default function NewRental() {
         </Field>
       </div>
 
-      {selectedCar && (
-        <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4 flex items-center justify-between">
-          <span className="text-[13px] text-stone-500">
-            {daysBetween(startDate, endDate)} gün × {selectedCar.dailyPrice} ₼
-          </span>
-          <span className="font-semibold text-stone-50 text-[16px]">
-            {totalPrice} ₼
-          </span>
+      {isFuture && (
+        <p className="flex items-center gap-1.5 text-[12.5px] text-gold -mt-2">
+          <AlertTriangle size={13} />
+          Bu, gələcək tarixli rezervasiyadır — maşın həmin gün "Təqvim"
+          bölməsindən təhvil verilməli olacaq
+        </p>
+      )}
+
+      <Field label="Depozit (girov) məbləği">
+        <input
+          type="number"
+          min="0"
+          value={depositAmount}
+          onChange={(e) => setDepositAmount(e.target.value)}
+          placeholder="0 ₼ (istəyə görə)"
+          className="w-full h-12 rounded-xl bg-surface ring-1 ring-stone-700 px-3.5 text-[14px] text-stone-50 placeholder:text-stone-400"
+        />
+      </Field>
+
+      {priceBreakdown && (
+        <div className="rounded-xl2 bg-surface ring-1 ring-white/5 shadow-soft p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] text-stone-500">
+              {days} gün × {selectedCar.dailyPrice} ₼
+              {priceBreakdown.percent > 0 && ` (${priceBreakdown.tierLabel} -${priceBreakdown.percent}%)`}
+            </span>
+            <span className="font-semibold text-stone-50 text-[16px]">
+              {priceBreakdown.total} ₼
+            </span>
+          </div>
+          {depositAmount > 0 && (
+            <p className="text-[12px] text-stone-500 mt-1.5">
+              + {depositAmount} ₼ depozit (icarə bitəndə qaytarılacaq)
+            </p>
+          )}
         </div>
       )}
 
@@ -340,7 +464,11 @@ export default function NewRental() {
         disabled={!isValid || saving}
         className="w-full h-12 rounded-xl bg-gold text-ink font-semibold text-[14px] disabled:opacity-40 active:scale-[0.98] transition-transform"
       >
-        {saving ? "Yadda saxlanılır..." : "İcarəni təsdiqlə"}
+        {saving
+          ? "Yadda saxlanılır..."
+          : isFuture
+          ? "Rezervasiyanı təsdiqlə"
+          : "İcarəni təsdiqlə"}
       </button>
 
       {formError && (

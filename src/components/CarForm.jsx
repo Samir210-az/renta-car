@@ -9,6 +9,8 @@ export default function CarForm({ companyId, onDone, className = "" }) {
   const [ownerName, setOwnerName] = useState("");
   const [ownerPhone, setOwnerPhone] = useState("");
   const [ownerDailyRate, setOwnerDailyRate] = useState("");
+  const [weeklyDiscountPercent, setWeeklyDiscountPercent] = useState("");
+  const [monthlyDiscountPercent, setMonthlyDiscountPercent] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -34,6 +36,8 @@ export default function CarForm({ companyId, onDone, className = "" }) {
         ownerName: ownerName.trim(),
         ownerPhone: ownerPhone.trim(),
         ownerDailyRate: Number(ownerDailyRate),
+        weeklyDiscountPercent: weeklyDiscountPercent ? Number(weeklyDiscountPercent) : null,
+        monthlyDiscountPercent: monthlyDiscountPercent ? Number(monthlyDiscountPercent) : null,
       });
       setName("");
       setPlate("");
@@ -42,6 +46,8 @@ export default function CarForm({ companyId, onDone, className = "" }) {
       setOwnerName("");
       setOwnerPhone("");
       setOwnerDailyRate("");
+      setWeeklyDiscountPercent("");
+      setMonthlyDiscountPercent("");
       onDone?.();
     } catch (err) {
       setError(err.message || "Xəta baş verdi");
@@ -85,6 +91,25 @@ export default function CarForm({ companyId, onDone, className = "" }) {
           type="number"
           min="0"
           placeholder="Müştəriyə günlük (₼)"
+          className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+        />
+      </div>
+
+      <div className="flex gap-3">
+        <input
+          value={weeklyDiscountPercent}
+          onChange={(e) => setWeeklyDiscountPercent(e.target.value.replace(/\D/g, "").slice(0, 2))}
+          type="text"
+          inputMode="numeric"
+          placeholder="7+ gün endirim %"
+          className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+        />
+        <input
+          value={monthlyDiscountPercent}
+          onChange={(e) => setMonthlyDiscountPercent(e.target.value.replace(/\D/g, "").slice(0, 2))}
+          type="text"
+          inputMode="numeric"
+          placeholder="30+ gün endirim %"
           className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
         />
       </div>

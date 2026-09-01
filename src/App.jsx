@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import Catalog from "./pages/Catalog";
 import Akt from "./pages/Akt";
 import CarDetail from "./pages/CarDetail";
+import CustomerDetail from "./pages/CustomerDetail";
 import Cars from "./pages/Cars";
 import NewRental from "./pages/NewRental";
 import Calendar from "./pages/Calendar";
@@ -77,6 +78,14 @@ export default function App() {
         element={
           <RequireCompany>
             <CarDetail />
+          </RequireCompany>
+        }
+      />
+      <Route
+        path="/musteri/:customerId"
+        element={
+          <RequireCompany>
+            <CustomerDetail />
           </RequireCompany>
         }
       />
