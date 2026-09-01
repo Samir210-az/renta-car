@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Catalog from "./pages/Catalog";
 import Akt from "./pages/Akt";
+import Muqavile from "./pages/Muqavile";
 import CarDetail from "./pages/CarDetail";
 import CustomerDetail from "./pages/CustomerDetail";
 import Cars from "./pages/Cars";
@@ -70,6 +71,14 @@ export default function App() {
         element={
           <RequireCompany>
             <Akt />
+          </RequireCompany>
+        }
+      />
+      <Route
+        path="/muqavile/:companyId/:rentalId"
+        element={
+          <RequireCompany>
+            <Muqavile />
           </RequireCompany>
         }
       />

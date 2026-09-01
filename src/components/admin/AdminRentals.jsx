@@ -146,6 +146,13 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
                   <FileText size={14} />
                   Akt
                 </Link>
+                <Link
+                  to={`/muqavile/${companyId}/${r.id}`}
+                  className="flex items-center gap-1.5 text-[12.5px] font-medium text-stone-500 hover:text-stone-50"
+                >
+                  <FileText size={14} />
+                  Müqavilə
+                </Link>
                 <button
                   onClick={() => handleDelete(r)}
                   className="flex items-center gap-1.5 text-[12.5px] text-stone-500 hover:text-rose-500 ml-auto"
