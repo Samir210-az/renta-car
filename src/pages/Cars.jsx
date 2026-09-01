@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useOutletContext, Link } from "react-router-dom";
-import { CarFront, Plus, X, Share2, Inbox, AlertTriangle } from "lucide-react";
+import { CarFront, Plus, X, Share2, Inbox, AlertTriangle, Wrench } from "lucide-react";
 import { getCompanyId } from "../lib/session";
 import {
   listenCars,
@@ -8,6 +8,7 @@ import {
   listenRequests,
   listenCompanyProfile,
 } from "../lib/data";
+import { getCurrentKm, isServiceDue } from "../lib/maintenance";
 import CarCard from "../components/CarCard";
 import CarForm from "../components/CarForm";
 
@@ -73,6 +74,14 @@ export default function Cars() {
     return rentals.filter((r) => r.status === "aktiv" && r.endDate < today).length;
   }, [rentals]);
 
+  const serviceCount = useMemo(() => {
+    if (!cars) return 0;
+    return cars.filter((car) => {
+      const carRentals = rentals.filter((r) => r.carId === car.id);
+      return isServiceDue(car, getCurrentKm(carRentals));
+    }).length;
+  }, [cars, rentals]);
+
   const visibleCars = useMemo(() => {
     if (!cars) return [];
     if (filter === "hamısı") return cars;
@@ -112,6 +121,15 @@ export default function Cars() {
             {overdueCount} maşının qaytarılma vaxtı keçib
           </span>
         </Link>
+      )}
+
+      {serviceCount > 0 && (
+        <div className="flex items-center gap-2.5 rounded-xl2 bg-amber-500/15 ring-1 ring-amber-500/25 px-4 py-3 mb-4">
+          <Wrench size={16} className="text-amber-400 shrink-0" />
+          <span className="text-[13px] text-amber-300 font-medium">
+            {serviceCount} maşının servis vaxtı çatıb
+          </span>
+        </div>
       )}
 
       {requests.length > 0 && (

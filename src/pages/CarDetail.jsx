@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Wallet, FileText, ImagePlus, Trash2, AlertOctagon, Check, Pencil, X } from "lucide-react";
+import { ArrowLeft, Wallet, FileText, ImagePlus, Trash2, AlertOctagon, Check, Pencil, X, Wrench } from "lucide-react";
 import { getCompanyId, getStaffName } from "../lib/session";
 import { getCarDetail, updateCar, addOwnerPayment, deleteCar, addFine, toggleFinePaid, deleteFine } from "../lib/data";
 import { calcOwnerOwed, calcTotalPaid } from "../lib/money";
+import { getCurrentKm, isServiceDue } from "../lib/maintenance";
 import { compressImage } from "../lib/image";
 import StatusBadge from "../components/StatusBadge";
 import Lightbox from "../components/Lightbox";
@@ -133,6 +134,8 @@ export default function CarDetail() {
   const paid = calcTotalPaid(payments);
   const remaining = owed - paid;
   const photos = car.photos || [];
+  const currentKm = getCurrentKm(rentals);
+  const serviceDue = isServiceDue(car, currentKm);
 
   return (
     <div className="min-h-screen bg-paper flex flex-col">
@@ -220,6 +223,23 @@ export default function CarDetail() {
           <StatCard label="Gəlir" value={`${totalRevenue} ₼`} />
           <StatCard label="Günlük" value={`${car.dailyPrice} ₼`} />
         </div>
+
+        {serviceDue && (
+          <div className="flex items-center gap-2.5 rounded-xl2 bg-amber-500/15 ring-1 ring-amber-500/25 px-4 py-3">
+            <Wrench size={16} className="text-amber-400 shrink-0" />
+            <span className="text-[13px] text-amber-300 font-medium">
+              Servis vaxtıdır
+              {currentKm != null && car.nextServiceKm
+                ? ` — ${currentKm} km (limit: ${car.nextServiceKm} km)`
+                : ""}
+            </span>
+          </div>
+        )}
+        {currentKm != null && (
+          <p className="text-[12px] text-stone-500 -mt-2">
+            Bilinən son km: {currentKm}
+          </p>
+        )}
 
         <button
           onClick={() => setEditing((v) => !v)}
@@ -451,6 +471,8 @@ function CarEditForm({ companyId, car, onDone }) {
   const [ownerName, setOwnerName] = useState(car.ownerName || "");
   const [ownerPhone, setOwnerPhone] = useState(car.ownerPhone || "");
   const [ownerDailyRate, setOwnerDailyRate] = useState(car.ownerDailyRate ?? "");
+  const [nextServiceKm, setNextServiceKm] = useState(car.nextServiceKm ?? "");
+  const [nextServiceDate, setNextServiceDate] = useState(car.nextServiceDate || "");
   const [saving, setSaving] = useState(false);
 
   async function handleSave(e) {
@@ -465,6 +487,8 @@ function CarEditForm({ companyId, car, onDone }) {
         ownerName: ownerName.trim(),
         ownerPhone: ownerPhone.trim(),
         ownerDailyRate: ownerDailyRate ? Number(ownerDailyRate) : null,
+        nextServiceKm: nextServiceKm ? Number(nextServiceKm) : null,
+        nextServiceDate: nextServiceDate || null,
       });
       onDone();
     } finally {
@@ -512,6 +536,26 @@ function CarEditForm({ companyId, car, onDone }) {
           placeholder="30+ gün endirim %"
           className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
         />
+      </div>
+
+      <div className="border-t border-stone-700 pt-3">
+        <p className="text-[12px] text-stone-500 mb-2">Servis xatırlatması (istəyə görə)</p>
+        <div className="flex gap-3">
+          <input
+            value={nextServiceKm}
+            onChange={(e) => setNextServiceKm(e.target.value.replace(/\D/g, ""))}
+            type="text"
+            inputMode="numeric"
+            placeholder="Növbəti servis km-i"
+            className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+          />
+          <input
+            value={nextServiceDate}
+            onChange={(e) => setNextServiceDate(e.target.value)}
+            type="date"
+            className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+          />
+        </div>
       </div>
 
       <div className="border-t border-stone-700 pt-3">
