@@ -1,6 +1,6 @@
-import { Phone, MessageCircle } from "lucide-react";
+import { Phone, MessageCircle, MessageSquareText } from "lucide-react";
 
-// Telefon nömrəsinin yanında zəng + WhatsApp düymələri.
+// Telefon nömrəsinin yanında zəng + SMS + WhatsApp düymələri.
 // `az` = Azərbaycan nömrəsi kimi normalize et (994 prefiksi yoxdursa əlavə et).
 export default function PhoneActions({ phone, size = 14 }) {
   if (!phone) return null;
@@ -16,6 +16,13 @@ export default function PhoneActions({ phone, size = 14 }) {
         className="h-6 w-6 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center hover:bg-emerald-500/25 transition-colors"
       >
         <Phone size={size - 3} />
+      </a>
+      <a
+        href={`sms:+${digits}`}
+        aria-label="SMS yaz"
+        className="h-6 w-6 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center hover:bg-emerald-500/25 transition-colors"
+      >
+        <MessageSquareText size={size - 3} />
       </a>
       <a
         href={`https://wa.me/${digits}`}

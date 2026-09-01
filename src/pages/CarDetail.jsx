@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Wallet, FileText, ImagePlus, Trash2, AlertOctagon, Check } from "lucide-react";
+import { ArrowLeft, Wallet, FileText, ImagePlus, Trash2, AlertOctagon, Check, Pencil, X } from "lucide-react";
 import { getCompanyId, getStaffName } from "../lib/session";
 import { getCarDetail, updateCar, addOwnerPayment, deleteCar, addFine, toggleFinePaid, deleteFine } from "../lib/data";
 import { calcOwnerOwed, calcTotalPaid } from "../lib/money";
@@ -22,6 +22,7 @@ export default function CarDetail() {
   const [fineAmount, setFineAmount] = useState("");
   const [fineDesc, setFineDesc] = useState("");
   const [fineSaving, setFineSaving] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   async function reload() {
     const result = await getCarDetail(companyId, carId);
@@ -220,6 +221,25 @@ export default function CarDetail() {
           <StatCard label="Günlük" value={`${car.dailyPrice} ₼`} />
         </div>
 
+        <button
+          onClick={() => setEditing((v) => !v)}
+          className="flex items-center gap-1.5 text-[12.5px] font-medium text-stone-400 hover:text-gold transition-colors"
+        >
+          {editing ? <X size={14} /> : <Pencil size={13} />}
+          {editing ? "Redaktəni bağla" : "Maşın məlumatlarını redaktə et"}
+        </button>
+
+        {editing && (
+          <CarEditForm
+            companyId={companyId}
+            car={car}
+            onDone={() => {
+              setEditing(false);
+              reload();
+            }}
+          />
+        )}
+
         {(car.ownerName || car.ownerDailyRate) && (
           <Section title="Maşın sahibi">
             <div className="rounded-xl2 bg-surface ring-1 ring-stone-700 p-4 space-y-1.5 text-stone-50">
@@ -416,6 +436,118 @@ function StatCard({ label, value }) {
       <p className="text-[17px] font-semibold text-stone-50">{value}</p>
       <p className="text-[11px] text-stone-500 mt-0.5">{label}</p>
     </div>
+  );
+}
+
+function CarEditForm({ companyId, car, onDone }) {
+  const [year, setYear] = useState(car.year ?? "");
+  const [dailyPrice, setDailyPrice] = useState(car.dailyPrice ?? "");
+  const [weeklyDiscountPercent, setWeeklyDiscountPercent] = useState(
+    car.weeklyDiscountPercent ?? ""
+  );
+  const [monthlyDiscountPercent, setMonthlyDiscountPercent] = useState(
+    car.monthlyDiscountPercent ?? ""
+  );
+  const [ownerName, setOwnerName] = useState(car.ownerName || "");
+  const [ownerPhone, setOwnerPhone] = useState(car.ownerPhone || "");
+  const [ownerDailyRate, setOwnerDailyRate] = useState(car.ownerDailyRate ?? "");
+  const [saving, setSaving] = useState(false);
+
+  async function handleSave(e) {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await updateCar(companyId, car.id, {
+        year: year ? Number(year) : null,
+        dailyPrice: Number(dailyPrice) > 0 ? Number(dailyPrice) : car.dailyPrice,
+        weeklyDiscountPercent: weeklyDiscountPercent ? Number(weeklyDiscountPercent) : null,
+        monthlyDiscountPercent: monthlyDiscountPercent ? Number(monthlyDiscountPercent) : null,
+        ownerName: ownerName.trim(),
+        ownerPhone: ownerPhone.trim(),
+        ownerDailyRate: ownerDailyRate ? Number(ownerDailyRate) : null,
+      });
+      onDone();
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form
+      onSubmit={handleSave}
+      className="rounded-xl2 bg-surface ring-1 ring-stone-700 p-4 space-y-3"
+    >
+      <div className="flex gap-3">
+        <input
+          value={year}
+          onChange={(e) => setYear(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          type="text"
+          inputMode="numeric"
+          placeholder="İl"
+          className="h-11 w-20 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+        />
+        <input
+          value={dailyPrice}
+          onChange={(e) => setDailyPrice(e.target.value)}
+          type="number"
+          min="0"
+          placeholder="Müştəriyə günlük (₼)"
+          className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+        />
+      </div>
+      <div className="flex gap-3">
+        <input
+          value={weeklyDiscountPercent}
+          onChange={(e) => setWeeklyDiscountPercent(e.target.value.replace(/\D/g, "").slice(0, 2))}
+          type="text"
+          inputMode="numeric"
+          placeholder="7+ gün endirim %"
+          className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+        />
+        <input
+          value={monthlyDiscountPercent}
+          onChange={(e) => setMonthlyDiscountPercent(e.target.value.replace(/\D/g, "").slice(0, 2))}
+          type="text"
+          inputMode="numeric"
+          placeholder="30+ gün endirim %"
+          className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+        />
+      </div>
+
+      <div className="border-t border-stone-700 pt-3">
+        <p className="text-[12px] text-stone-500 mb-2">Maşın sahibi</p>
+        <div className="flex gap-3 mb-3">
+          <input
+            value={ownerName}
+            onChange={(e) => setOwnerName(e.target.value)}
+            placeholder="Sahibin adı"
+            className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+          />
+          <input
+            value={ownerPhone}
+            onChange={(e) => setOwnerPhone(e.target.value)}
+            placeholder="Sahibin telefonu"
+            className="h-11 flex-1 min-w-0 rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+          />
+        </div>
+        <input
+          value={ownerDailyRate}
+          onChange={(e) => setOwnerDailyRate(e.target.value)}
+          type="number"
+          min="0"
+          placeholder="Sahibə günlük ödəniləcək məbləğ (₼)"
+          className="h-11 w-full rounded-lg bg-paper ring-1 ring-stone-700 px-3 text-[13.5px] text-stone-50"
+        />
+      </div>
+
+      <button
+        type="submit"
+        disabled={saving}
+        className="w-full h-11 rounded-lg bg-gold text-ink text-[13.5px] font-semibold disabled:opacity-40"
+      >
+        {saving ? "..." : "Yadda saxla"}
+      </button>
+    </form>
   );
 }
 

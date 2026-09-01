@@ -68,9 +68,16 @@ export default function AdminRentals({ companyId, rentals, carsById }) {
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="font-medium text-stone-50 text-[14px]">
-                  {car?.name || "Silinmiş maşın"}
-                </p>
+                {car ? (
+                  <Link
+                    to={`/masin/${car.id}`}
+                    className="font-medium text-stone-50 text-[14px] hover:text-gold transition-colors"
+                  >
+                    {car.name}
+                  </Link>
+                ) : (
+                  <p className="font-medium text-stone-50 text-[14px]">Silinmiş maşın</p>
+                )}
                 <p className="text-[12.5px] text-stone-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
                   <span>{r.customerName} · {r.customerPhone}</span>
                   <PhoneActions phone={r.customerPhone} />
