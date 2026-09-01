@@ -9,6 +9,7 @@ import { compressImage } from "../lib/image";
 import StatusBadge from "../components/StatusBadge";
 import Lightbox from "../components/Lightbox";
 import PhoneActions from "../components/PhoneActions";
+import ReturnConditionForm from "../components/ReturnConditionForm";
 
 export default function CarDetail() {
   const { carId } = useParams();
@@ -24,6 +25,7 @@ export default function CarDetail() {
   const [fineDesc, setFineDesc] = useState("");
   const [fineSaving, setFineSaving] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [returning, setReturning] = useState(false);
 
   async function reload() {
     const result = await getCarDetail(companyId, carId);
@@ -136,6 +138,7 @@ export default function CarDetail() {
   const photos = car.photos || [];
   const currentKm = getCurrentKm(rentals);
   const serviceDue = isServiceDue(car, currentKm);
+  const activeRental = rentals.find((r) => r.status === "aktiv");
 
   return (
     <div className="min-h-screen bg-paper flex flex-col">
@@ -182,12 +185,35 @@ export default function CarDetail() {
           </div>
         )}
 
-        {car.status === "icarədə" && (
-          <p className="flex items-center gap-1.5 text-[12px] text-stone-500">
-            <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
-            Bu maşın hazırda aktiv icarədədir — statusu dəyişmək üçün əvvəlcə
-            İcarələr bölməsindən "Maşını qaytar" edin
-          </p>
+        {activeRental && (
+          <div className="rounded-xl2 bg-rose-500/10 ring-1 ring-rose-500/25 p-4">
+            <p className="text-[12.5px] font-medium text-rose-300 mb-1">
+              Aktiv icarədə
+            </p>
+            <p className="text-[13px] text-stone-200">
+              {activeRental.customerName} · {activeRental.startDate} →{" "}
+              {activeRental.endDate}
+            </p>
+
+            {returning ? (
+              <ReturnConditionForm
+                companyId={companyId}
+                rental={activeRental}
+                onDone={() => {
+                  setReturning(false);
+                  reload();
+                }}
+                onCancel={() => setReturning(false)}
+              />
+            ) : (
+              <button
+                onClick={() => setReturning(true)}
+                className="h-9 px-3.5 rounded-lg bg-emerald-600 text-white text-[12.5px] font-medium mt-3"
+              >
+                Maşını qaytar
+              </button>
+            )}
+          </div>
         )}
 
         <div className="flex items-center gap-2">
