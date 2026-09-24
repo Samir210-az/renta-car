@@ -51,6 +51,11 @@ body {
 
 /* Ekranda overflow-x: hidden + height: 100% body-ni scroll konteynerinə
    çevirir; çapda bu, məzmunu ilk səhifədən sonra kəsir. */
+@page {
+  size: A4;
+  margin: 14mm 12mm;
+}
+
 @media print {
   html,
   body,
