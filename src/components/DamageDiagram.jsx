@@ -78,7 +78,7 @@ export default function DamageDiagram({
       <svg
         viewBox="0 0 320 160"
         onClick={handleClick}
-        className={`w-full rounded-lg bg-paper ring-1 ring-stone-700 ${
+        className={`w-full rounded-lg bg-paper ring-1 ring-stone-700 print:bg-white print:ring-0 print:border print:border-stone-300 ${
           !readOnly ? "cursor-crosshair" : ""
         }`}
       >
@@ -89,8 +89,8 @@ export default function DamageDiagram({
         <rect x="85" y="130" width="26" height="10" rx="4" fill="#a8a29e" />
         <rect x="205" y="20" width="26" height="10" rx="4" fill="#a8a29e" />
         <rect x="205" y="130" width="26" height="10" rx="4" fill="#a8a29e" />
-        <text x="262" y="85" fontSize="11" fontWeight="600" fill="#e7e5e4">ÖN</text>
-        <text x="58" y="85" fontSize="11" fontWeight="600" fill="#e7e5e4" textAnchor="end">ARXA</text>
+        <text x="262" y="85" fontSize="11" fontWeight="600" fill="#e7e5e4" className="print:fill-stone-500">ÖN</text>
+        <text x="58" y="85" fontSize="11" fontWeight="600" fill="#e7e5e4" textAnchor="end" className="print:fill-stone-500">ARXA</text>
 
         {value.map((m, i) => {
           const t = DAMAGE_TYPES.find((x) => x.id === m.type) || DAMAGE_TYPES[0];

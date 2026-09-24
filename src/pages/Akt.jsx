@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Printer, PenLine } from "lucide-react";
+import { ArrowLeft, Printer } from "lucide-react";
 import { getRentalDetail, saveSignature } from "../lib/data";
 import DamageDiagram, { DAMAGE_TYPES } from "../components/DamageDiagram";
 import PhoneActions from "../components/PhoneActions";
 import SignaturePad from "../components/SignaturePad";
+import SignatureSlot from "../components/SignatureSlot";
 
 function fmtDate(ts) {
   if (!ts) return "—";
@@ -135,12 +136,12 @@ export default function Akt() {
           <Row label="Xarici qeyd" value={pickup.exteriorNotes || "Qeyd yoxdur"} />
           <Row label="Daxili qeyd" value={pickup.interiorNotes || "Qeyd yoxdur"} />
           {pickup.damageMarkers?.length > 0 && (
-            <div className="mt-2">
+            <div className="mt-2 break-inside-avoid">
               <DamageDiagram value={pickup.damageMarkers} readOnly />
             </div>
           )}
           {pickup.platePhoto && (
-            <div className="mt-2">
+            <div className="mt-2 break-inside-avoid">
               <p className="text-stone-500 mb-1.5">Nömrə şəkli</p>
               <img
                 src={pickup.platePhoto}
@@ -160,7 +161,7 @@ export default function Akt() {
               <Row label="Xarici qeyd" value={ret.exteriorNotes || "Qeyd yoxdur"} />
               <Row label="Daxili qeyd" value={ret.interiorNotes || "Qeyd yoxdur"} />
               {ret.damageMarkers?.length > 0 && (
-                <div className="mt-2">
+                <div className="mt-2 break-inside-avoid">
                   <DamageDiagram
                     value={ret.damageMarkers}
                     readOnly
@@ -198,35 +199,17 @@ export default function Akt() {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-8 mt-12 pt-6">
-          <div>
-            {rental.companySignature ? (
-              <img src={rental.companySignature} alt="" className="h-10 object-contain object-left" />
-            ) : (
-              <button
-                onClick={() => setSigning("companySignature")}
-                className="h-10 border-b border-stone-300 w-full flex items-center gap-1.5 text-[11.5px] text-stone-400 print:hidden"
-              >
-                <PenLine size={13} />
-                İmza atmaq üçün toxunun
-              </button>
-            )}
-            <p className="text-[11.5px] text-stone-400 mt-1.5">Şirkət imzası</p>
-          </div>
-          <div>
-            {rental.customerSignature ? (
-              <img src={rental.customerSignature} alt="" className="h-10 object-contain object-left" />
-            ) : (
-              <button
-                onClick={() => setSigning("customerSignature")}
-                className="h-10 border-b border-stone-300 w-full flex items-center gap-1.5 text-[11.5px] text-stone-400 print:hidden"
-              >
-                <PenLine size={13} />
-                İmza atmaq üçün toxunun
-              </button>
-            )}
-            <p className="text-[11.5px] text-stone-400 mt-1.5">Müştəri imzası</p>
-          </div>
+        <div className="grid grid-cols-2 gap-8 mt-12 pt-6 print:mt-10 print:pt-0 break-inside-avoid">
+          <SignatureSlot
+            src={rental.companySignature}
+            onSign={() => setSigning("companySignature")}
+            label="Şirkət imzası"
+          />
+          <SignatureSlot
+            src={rental.customerSignature}
+            onSign={() => setSigning("customerSignature")}
+            label="Müştəri imzası"
+          />
         </div>
       </div>
 
@@ -243,7 +226,7 @@ export default function Akt() {
 function Section({ title, children }) {
   return (
     <div className="mb-5">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-400 mb-1.5">
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-400 mb-1.5 break-after-avoid">
         {title}
       </p>
       <div className="space-y-1">{children}</div>
@@ -253,7 +236,7 @@ function Section({ title, children }) {
 
 function Row({ label, value }) {
   return (
-    <div className="flex items-center justify-between border-b border-dashed border-stone-100 py-1">
+    <div className="flex items-center justify-between border-b border-dashed border-stone-100 py-1 break-inside-avoid">
       <span className="text-stone-500">{label}</span>
       <span className="font-medium text-stone-900">{value}</span>
     </div>
