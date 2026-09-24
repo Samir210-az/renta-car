@@ -49,7 +49,17 @@ body {
   scrollbar-width: none;
 }
 
+/* Ekranda overflow-x: hidden + height: 100% body-ni scroll konteynerinə
+   çevirir; çapda bu, məzmunu ilk səhifədən sonra kəsir. */
 @media print {
+  html,
+  body,
+  #root {
+    height: auto;
+    overflow: visible;
+    max-width: none;
+  }
+
   body {
     background: white;
   }
